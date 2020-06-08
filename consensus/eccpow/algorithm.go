@@ -194,6 +194,7 @@ outerLoop:
 								close(goRoutineSignal)
 								close(innerLoopSignal)
 								fmt.Printf("Codeword is founded with nonce = %d\n", goRoutineNonce)
+								fmt.Printf("Codeword : %d\n", goRoutineOutputWord)
 								hashVector = goRoutineHashVector
 								outputWord = goRoutineOutputWord
 								LDPCNonce = goRoutineNonce
