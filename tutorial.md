@@ -4,7 +4,7 @@ Writer : Hyoungsung Kim(김형성)
 
 Email : hyoungsung@gist.ac.kr / rktkek456@gmail.com
 
-Github for this example : https://github.com/HyoungsungKim/Studying-ethereum/tree/master/study-in-geth
+Github for this example : https://github.com/cryptoecc/ETH-ECC
 
 For more information : [INFONET](https://infonet.gist.ac.kr/)
 
