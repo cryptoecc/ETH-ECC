@@ -8,56 +8,78 @@ Github for this example : https://github.com/cryptoecc/ETH-ECC
 
 For more information : [INFONET](https://infonet.gist.ac.kr/)
 
-- Eth-ECC is an Ethereum blockchain which INFONET has made and publicized at github. The new characteristic of this blockchain is to enable ECCPoW a new protocol for time-varying proof-of-work generation system. 
-- This package is designed to run in Linux-environment. For this you need to download and install Linux-mint (see below). If you are Windows users, you need to install the Linux-mint. If you are Linux users, you may skip this part. 
-- Under the assumption that you are in a Linux environment, you may follow this note to proceed. This note is to illustrate how to locate the Eth-ECC package reposited in github, download, install, and run Eth-ECC in a local computer.
+- Eth-ECC is an Ethereum blockchain which INFONET has made public at github. The new characteristic of this blockchain is to enable ECCPoW a new protocol for time-varying proof-of-work generation system. 
+- This package is designed to run in Linux-environment. For this you need to download and install Linux-mint (see below). If you are Windows users, you need to install the Linux-mint first. If you are Linux users, you may skip this part. 
+- Under the assumption that you are in a Linux environment, you may follow this note to proceed. This note is to illustrate how to locate the Eth-ECC package at the github link, download, install, and run Eth-ECC in a local computer.
 
 ---
 
-Index
+Agenda
 
-1. [Environment](#environment)
-2. [Build private network](#build-private-network)
-3. [Test private network](#test-private-network)
-4. [Make a transaction for testing private network](#make-a-transaction-for-testing-private-network)
+1. [Environment](#1.-environment)
+   1. [Download](##1.1-download)
+   2. [Install](##1.2-install)
+2. [Run Eth-ECC in your local computer](#2.-run-eth-ecc-in-your-local-computer)
+   1. [Configuration of Eth-ECC network options using puppeth](##2.1-configuration-of-eth-ecc-network-options-using-puppeth)
+   2. [Set the directory path for block data stroage](##2.2-set-the-directory-path-for-block-data-stroage)
+   3. [Run Eth-ECC](##2.3-run-eth-ecc)
+3. [Test Eth-ECC](#3.-test-eth-ecc)
+   1. [Basic tests](##3.1-basic-tests)
+   2. [Make a transaction for testing private network](##3.2-make-a-transaction-for-testing-private-network)
+   3. [(Appendix) Block generation time log](##3.3-(appendix)-block-generation-time-log)
 
 ---
 
-## Environment
+## 1. Environment
+
+Eth-ECC package uses the follow two environment
 
 - Linux mint 19.1 or Linux manjaro 19.0.0
-- Go (version 1.10 or later)
-- [geth-lecture branch](https://github.com/HyoungsungKim/go-ethereum/tree/lecture) (go-ethereum)
+- Go (version 1.10 or later) develope language
 
-### Download and install geth
+You can follow two step below to download Eth-ECC and install(build)
 
-First clone geth from go-ethereum repository to `GOPATH` directory. my `GOPATH` is `/home/hskim/go` so i cloned geth to `/home/hskim/go/src/github.com`
+### 1.1 Download
 
->If you don't want to change any code in .go, you can clone it anywhere
+Download can be done as follows
 
-```
-git clone https://github.com/cryptoecc/ETH-ECC.git
-```
-
-Then geth will be downloaded. after downloading, move to `go-ethereum` directory and open terminal and type this line
+- First `clone` Eth-ECC repository to a directory that you want to locate Eth-ECC
+- For `clone`, open terminal in the driectory and type command below
 
 ```
-make all
+$ git clone https://github.com/cryptoecc/ETH-ECC.git
 ```
 
-If build is successful then you can see `geth` in /go-ethereum/build/bin
+Then Eth-ECC will be downloaded.
+
+### 1.2 Installation of Eth-ECC
+
+- Installation of Eth-ECC can be done as follows
+
+After download is completed, move to `ETH-ECC` directory, open terminal and type this command
+
+```
+$ make all
+```
+
+If build is successful then you can see `geth` in /ETH-ECC/build/bin
 
 ![you can see the geth in bin folder](./img/geth-directory.png)
 
-## Run Eth-ECC in your local computer
+## 2. Run Eth-ECC in your local computer
 
-1. Configure Eth-ECC environment. In order to run Eth-ECC, you need to configure the network settings. 	They include chainID, network name, and consensus algorithm. This is done with /puppeth command.
-2. Set the directory path for block data stroage
-3. Run Eth-ECC
+In this chapter, we will follow three steps 
 
-### 1. Configuration of Eth-ECC network options using puppeth
+- Configure Eth-ECC environment.
+  - In order to run Eth-ECC, you need to configure the network settings. They include chainID, network name, and consensus algorithm. This is done with `./puppeth` command.
+- Set the directory path for block data stroage
+- Run Eth-ECC
 
-You need to find puppet which is located in same directory with geth. We will use it to make our own network. For our network, we have to make a genesis file first.
+### 2.1 Configuration of Eth-ECC environment
+
+- For our network, we have to make a `genesis file` first
+  - `genesis file` includes network settings(chainID, network name and consensus algorithm)
+- You need to find `puppet` which is located in same directory(/Eth-ECC/build/bin) with `geth`
 
 Run `puppeth` and follow the steps below
 
@@ -165,13 +187,11 @@ What would you like to do? (default = stats)
 
 Except these, you can use any `chainId` like 12345 what i did.
 
-### 2. Set the directory path for block data stroage
+### 2.2 Set the directory path for block data stroage
 
 Now we have to make a directory to store information. I made `geth-test` folder. You can make it anywhere. my directory is `/home/hskim/Documents/geth-test`
 
-Finally, We are ready to start.
-
-Move to `/go-ethereum/build/bin`, open terminal and follow it
+Move to `/Eth-ECC/build/bin`, open terminal and follow it
 
 ```
 $ ./geth --datadir your_own_storage init genesis_file_name.json 
@@ -203,12 +223,12 @@ After that, you can see geth and keystore folders in your storage folder:
 
 ![geth-test folder](./img/geth-test.png)
 
-### 3. Run your private netwrok
+### 2.3 Run Eth-ECC
 
-Open terminal in `/go-ethereum/build/bin` and follow it!
+Open terminal in `/Eth-ECC/build/bin` and follow it
 
 ```
-$ ./geth --datadir Your_own_storage --networkid 12345 console
+$ ./geth --datadir Your_own_storage --networkid YOUR_NETWORK_ID console
 ```
 
 We set the `chainid` as 12345 when we make genesis file(In this example, genesis file name is `eccpow1.json`). Therefore our `networkid` is 12345 too
@@ -260,32 +280,24 @@ There are some lines of the box above that we need to check
 INFO [08-06|21:27:43.904] Initialised chain configuration          config="{ChainID: 12345 Homestead: 0 DAO: <nil> DAOSupport: false EIP150: <nil> EIP155: 0 EIP158: 0 Byzantium: <nil> Constantinople: <nil>  Petersburg: <nil> Engine: unknown}"
 ```
 
-In this line, we can check ChainID is 12345 like we expected.
+In this line, we can check ChainID is 12345.
 
-Now our private network is running!
+Now our Eth-ECC network is running!
 
-## Test private network
+## 3. Test Eth-ECC
 
-> I added few lines of source code in miner/worker.go
->
-> (For this you have to uncomment in in miner/worker.go)
->
-> ```go
-> csvFile, _ := os.OpenFile("elapseTime.csv", os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0644)
-> 
-> wr := csv.NewWriter(csvFile)
-> wr.Write([]string{block.Number().String(), time.Since(task.createdAt).String()})
-> wr.Flush()
-> ```
->
-> This source will make `elapseTime.csv` file in /build/bin directory(Same directory with `geth` and `puppeth`).
-> In this file, block generation time will be written by source code.
-> You can see a example below
+1. Basic tests
+   - We will make an account, mine block and check result of mining
+2. Make a transaction
+3. (Appendix) Block generation time log
 
-<img src="./img/elapse_time.png" alt="Elapse time" style="zoom:80%;" />
+### 3.1 Basic tests
 
-- 1, 2, ... ,41 is block height
-- 2m53.376, 3m24.504... , 5m44.6046 is elapsed time(block generation time)
+In this test, we will follow 3 steps
+
+- Generate account
+- Check account's balance
+- Mining
 
 Now let's test our private network
 
@@ -297,6 +309,8 @@ Now let's test our private network
 ```
 
 `eth.blockNumber` check the number of blocks. We just generate this network. Therefore there is 0 block. `eth.account` check accounts of network. There are no accounts.
+
+#### Generate account
 
 Let's generate account
 
@@ -317,6 +331,8 @@ We just generated the address of Alice:`0xb8C941069cC2B71B1a00dB15E6E00A200d3870
 
 we will use it as miner's address so block generation reward will be sent to Alice's address
 
+#### Check account's balance
+
 Before mining, let's check Alice's balance
 
 ```
@@ -335,15 +351,15 @@ I will use first one in this example to avoid confusion.
 
 As we expect, there is no ether at all. Let's do mining.
 
-First we have to set miner's address
+#### Mining
 
-We will use 3 commands
+First we have to set miner's address. For this, we will use 3 commands
 
 - miner.setEtherbase(address)
   - It sets miner's address. Mining reward will be sent to this account
 - miner.start(number of threads)
   - Start mining. You can set how many threads you will use. I will use 1 thread
-  - If your CPU has enough core, you can use higher number. It will faster.
+  - If your CPU has enough core, you can use higher number. It will work faster.
 - miner.stop()
   - Stop mining
 
@@ -446,7 +462,11 @@ var (
 
 `FrontierBlockReward` is set as 5 * 10^18 and it is 5 ether. Alice generated 9 blocks and got 5 ether per generation. Therefore Alice got 45 ether.
 
-## Make a transaction for testing private network
+### 3.2 Make a transaction for testing private network
+
+In this section, we want to generate transaction and send ether
+
+- We will make a new account(Bob) and will send ether from miner(Alice) to new account(Bob)
 
 Generate new account
 
@@ -480,17 +500,6 @@ Or we can initialize these using variable
 > eth.sendTransaction({from: from, to: to, value: web3.toWei(5, "ether")})
 ```
 
-We sent ether. However, we got error message. Because ***we did not use private key of Alice yet.***
-
-```
-WARN [08-06|22:04:55.407] Served eth_sendTransaction               reqid=25 t=3.461656ms err="authentication needed: password or unlock"
-Error: authentication needed: password or unlock
-    at web3.js:3143:20
-    at web3.js:6347:15
-    at web3.js:5081:36
-    at <anonymous>:1:1
-```
-
 We have to unlock Alice's account. Let's see status of Alice's account.
 
 ```
@@ -498,7 +507,7 @@ We have to unlock Alice's account. Let's see status of Alice's account.
 "Locked"
 ```
 
-Yes... It is locked... So we have to unlock it to send ether from Alice to Bob
+Yes It is locked. So we have to unlock it to send ether from Alice to Bob
 
 ```
 > web3.personal.unlockAccount("0xb8c941069cc2b71b1a00db15e6e00a200d387039")
@@ -556,7 +565,7 @@ There is no error. Let's see a pending transactions
 }]
 ```
 
-Yeah! There is transaction.
+There is transaction.
 
 ```
 > eth.getBalance("0xb8c941069cc2b71b1a00db15e6e00a200d387039")
@@ -613,8 +622,36 @@ Let's see balance of them
 
 As we expected, Alice has 75 ether, Bob has 5 ether. We did it!
 
+### 3.3 (Appendix) Block generation time log
+
+When you want to record the log of block generation time of Eth-ECC, then follow step below
+
+> I added few lines of source code in miner/worker.go
+>
+> (For this you have to uncomment in in miner/worker.go)
+>
+> ```go
+> csvFile, _ := os.OpenFile("elapseTime.csv", os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0644)
+> 
+> wr := csv.NewWriter(csvFile)
+> wr.Write([]string{block.Number().String(), time.Since(task.createdAt).String()})
+> wr.Flush()
+> ```
+>
+> This source will make `elapseTime.csv` file in /build/bin directory(Same directory with `geth` and `puppeth`).
+> In this file, block generation time will be written by source code.
+> You can see a example below
+
+<img src="./img/elapse_time.png" alt="Elapse time" style="zoom:80%;" />
+
+- 1, 2, ... ,41 is block height
+- 2m53.376, 3m24.504... , 5m44.6046 is elapsed time(block generation time)
+
 ---
 
-If there are errors or you want to add more details, please contribute it
+If there are errors or you want to add more details, please make a issue in my github or official Eth-ECC gitbub
 
-Github : https://github.com/HyoungsungKim/Studying-ethereum/tree/master/study-in-geth/docs
+Github :
+
+- Official : https://github.com/cryptoecc/ETH-ECC
+- Writer : https://github.com/HyoungsungKim/Studying-ethereum/tree/master/study-in-geth/docs
