@@ -26,7 +26,7 @@ Agenda
 3. [Test Eth-ECC](#3-test-eth-ecc)
    1. [Basic tests](#31-basic-tests)
    2. [Make a transaction for testing private network](#32-make-a-transaction-for-testing-private-network)
-   3. [(Appendix) Block generation time log](#33-(appendix)-block-generation-time-log)
+   3. [(Appendix) Block generation time log](#33-appendix-block-generation-time-log)
 
 ---
 
