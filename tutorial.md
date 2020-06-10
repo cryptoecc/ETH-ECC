@@ -1,4 +1,6 @@
 # Build private network and test
+Project PI : Heung-No Lee
+Email : heungno@gist.ac.kr
 
 Writer : Hyoungsung Kim(김형성)
 
