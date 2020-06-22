@@ -1,4 +1,7 @@
 # Build private network and test
+Project PI : Heung-No Lee
+
+Email : heungno@gist.ac.kr
 
 Writer : Hyoungsung Kim(김형성)
 
@@ -16,17 +19,17 @@ For more information : [INFONET](https://infonet.gist.ac.kr/)
 
 Agenda
 
-1. [Environment](#1.-environment)
-   1. [Download](##1.1-download)
-   2. [Install](##1.2-install)
-2. [Run Eth-ECC in your local computer](#2.-run-eth-ecc-in-your-local-computer)
-   1. [Configuration of Eth-ECC network options using puppeth](##2.1-configuration-of-eth-ecc-network-options-using-puppeth)
-   2. [Set the directory path for block data stroage](##2.2-set-the-directory-path-for-block-data-stroage)
-   3. [Run Eth-ECC](##2.3-run-eth-ecc)
-3. [Test Eth-ECC](#3.-test-eth-ecc)
-   1. [Basic tests](##3.1-basic-tests)
-   2. [Make a transaction for testing private network](##3.2-make-a-transaction-for-testing-private-network)
-   3. [(Appendix) Block generation time log](##3.3-(appendix)-block-generation-time-log)
+1. [Environment](#1-environment)
+   1. [Download](#11-download)
+   2. [Install](#12-install)
+2. [Run Eth-ECC in your local computer](#2-run-eth-ecc-in-your-local-computer)
+   1. [Configuration of Eth-ECC network options using puppeth](#21-configuration-of-eth-ecc-network-options-using-puppeth)
+   2. [Set the directory path for block data stroage](#22-set-the-directory-path-for-block-data-stroage)
+   3. [Run Eth-ECC](#23-run-eth-ecc)
+3. [Test Eth-ECC](#3-test-eth-ecc)
+   1. [Basic tests](#31-basic-tests)
+   2. [Make a transaction for testing private network](#32-make-a-transaction-for-testing-private-network)
+   3. [(Appendix) Block generation time log](#33-appendix-block-generation-time-log)
 
 ---
 
