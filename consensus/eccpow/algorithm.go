@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"math/big"
 	"math/rand"
-	"runtime"
 
 	//"reflect"
 
@@ -148,7 +147,8 @@ outerLoop:
 		}
 
 	innerLoop:
-		for i := 0; i < runtime.NumCPU(); i++ {
+		//for i := 0; i < runtime.NumCPU(); i++ {
+		for i := 0; i < 1; i++ {
 			select {
 			// If innerLoop signal is closed, then break innerLoop and close outerLoopSignal
 			case <-innerLoopSignal:
