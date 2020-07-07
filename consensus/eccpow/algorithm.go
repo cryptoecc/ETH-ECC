@@ -2,7 +2,6 @@ package eccpow
 
 import (
 	"encoding/binary"
-	"fmt"
 	"math/big"
 	"math/rand"
 
@@ -117,7 +116,7 @@ type verifyParameters struct {
 //)
 
 //RunOptimizedConcurrencyLDPC use goroutine for mining block
-func RunOptimizedConcurrencyLDPC(header *types.Header, hash []byte) ([]int, []int, uint64, []byte) {
+func RunOptimizedConcurrencyLDPC(header *types.Header, hash []byte) (bool, []int, []int, uint64, []byte) {
 	//Need to set difficulty before running LDPC
 	// Number of goroutines : 500, Number of attempts : 50000 Not bad
 
@@ -125,93 +124,114 @@ func RunOptimizedConcurrencyLDPC(header *types.Header, hash []byte) ([]int, []in
 	var hashVector []int
 	var outputWord []int
 	var digest []byte
+	var flag bool
 
-	var wg sync.WaitGroup
-	var outerLoopSignal = make(chan struct{})
-	var innerLoopSignal = make(chan struct{})
-	var goRoutineSignal = make(chan struct{})
+	//var wg sync.WaitGroup
+	//var outerLoopSignal = make(chan struct{})
+	//var innerLoopSignal = make(chan struct{})
+	//var goRoutineSignal = make(chan struct{})
 
 	parameters, _ := setParameters(header)
 	H := generateH(parameters)
 	colInRow, rowInCol := generateQ(parameters, H)
+	/*
+	   outerLoop:
+	   	for {
+	   		select {
+	   		// If outerLoopSignal channel is closed, then break outerLoop
+	   		case <-outerLoopSignal:
+	   			break outerLoop
 
-outerLoop:
-	for {
-		select {
-		// If outerLoopSignal channel is closed, then break outerLoop
-		case <-outerLoopSignal:
-			break outerLoop
+	   		default:
+	   			// Defined default to unblock select statement
+	   		}
 
-		default:
-			// Defined default to unblock select statement
+	   	innerLoop:
+	   		//for i := 0; i < runtime.NumCPU(); i++ {
+	   		for i := 0; i < 1; i++ {
+	   			select {
+	   			// If innerLoop signal is closed, then break innerLoop and close outerLoopSignal
+	   			case <-innerLoopSignal:
+	   				close(outerLoopSignal)
+	   				break innerLoop
+
+	   			default:
+	   				// Defined default to unblock select statement
+	   			}
+
+	   			wg.Add(1)
+	   			go func(goRoutineSignal chan struct{}) {
+	   				defer wg.Done()
+	   				//goRoutineNonce := generateRandomNonce()
+	   				//fmt.Printf("Initial goroutine Nonce : %v\n", goRoutineNonce)
+
+	   				var goRoutineHashVector []int
+	   				var goRoutineOutputWord []int
+
+	   				select {
+	   				case <-goRoutineSignal:
+	   					break
+
+	   				default:
+	   				attemptLoop:
+	   					for attempt := 0; attempt < 1; attempt++ {
+	   						goRoutineNonce := generateRandomNonce()
+	   						seed := make([]byte, 40)
+	   						copy(seed, hash)
+	   						binary.LittleEndian.PutUint64(seed[32:], goRoutineNonce)
+	   						seed = crypto.Keccak512(seed)
+
+	   						goRoutineHashVector = generateHv(parameters, seed)
+	   						goRoutineHashVector, goRoutineOutputWord, _ = OptimizedDecoding(parameters, goRoutineHashVector, H, rowInCol, colInRow)
+	   						flag = MakeDecision(header, colInRow, goRoutineOutputWord)
+
+	   						select {
+	   						case <-goRoutineSignal:
+	   							// fmt.Println("goRoutineSignal channel is already closed")
+	   							break attemptLoop
+	   						default:
+	   							if flag {
+	   								close(goRoutineSignal)
+	   								close(innerLoopSignal)
+	   								hashVector = goRoutineHashVector
+	   								outputWord = goRoutineOutputWord
+	   								LDPCNonce = goRoutineNonce
+	   								digest = seed
+	   								break attemptLoop
+	   							}
+	   						}
+	   						//goRoutineNonce++
+	   					}
+	   				}
+	   			}(goRoutineSignal)
+	   		}
+	   		// Need to wait to prevent memory leak
+	   		wg.Wait()
+	   	}
+	*/
+
+	for i := 0; i < 64; i++ {
+		var goRoutineHashVector []int
+		var goRoutineOutputWord []int
+		goRoutineNonce := generateRandomNonce()
+		seed := make([]byte, 40)
+		copy(seed, hash)
+		binary.LittleEndian.PutUint64(seed[32:], goRoutineNonce)
+		seed = crypto.Keccak512(seed)
+
+		goRoutineHashVector = generateHv(parameters, seed)
+		goRoutineHashVector, goRoutineOutputWord, _ = OptimizedDecoding(parameters, goRoutineHashVector, H, rowInCol, colInRow)
+		flag = MakeDecision(header, colInRow, goRoutineOutputWord)
+
+		if flag {
+			hashVector = goRoutineHashVector
+			outputWord = goRoutineOutputWord
+			LDPCNonce = goRoutineNonce
+			digest = seed
+			break
 		}
-
-	innerLoop:
-		//for i := 0; i < runtime.NumCPU(); i++ {
-		for i := 0; i < 1; i++ {
-			select {
-			// If innerLoop signal is closed, then break innerLoop and close outerLoopSignal
-			case <-innerLoopSignal:
-				close(outerLoopSignal)
-				break innerLoop
-
-			default:
-				// Defined default to unblock select statement
-			}
-
-			wg.Add(1)
-			go func(goRoutineSignal chan struct{}) {
-				defer wg.Done()
-				//goRoutineNonce := generateRandomNonce()
-				//fmt.Printf("Initial goroutine Nonce : %v\n", goRoutineNonce)
-
-				var goRoutineHashVector []int
-				var goRoutineOutputWord []int
-
-				select {
-				case <-goRoutineSignal:
-					break
-
-				default:
-				attemptLoop:
-					for attempt := 0; attempt < 5000; attempt++ {
-						goRoutineNonce := generateRandomNonce()
-						seed := make([]byte, 40)
-						copy(seed, hash)
-						binary.LittleEndian.PutUint64(seed[32:], goRoutineNonce)
-						seed = crypto.Keccak512(seed)
-
-						goRoutineHashVector = generateHv(parameters, seed)
-						goRoutineHashVector, goRoutineOutputWord, _ = OptimizedDecoding(parameters, goRoutineHashVector, H, rowInCol, colInRow)
-						flag := MakeDecision(header, colInRow, goRoutineOutputWord)
-
-						select {
-						case <-goRoutineSignal:
-							// fmt.Println("goRoutineSignal channel is already closed")
-							break attemptLoop
-						default:
-							if flag {
-								close(goRoutineSignal)
-								close(innerLoopSignal)
-								fmt.Printf("Codeword is founded with nonce = %d\n", goRoutineNonce)
-								fmt.Printf("Codeword : %d\n", goRoutineOutputWord)
-								hashVector = goRoutineHashVector
-								outputWord = goRoutineOutputWord
-								LDPCNonce = goRoutineNonce
-								digest = seed
-								break attemptLoop
-							}
-						}
-						//goRoutineNonce++
-					}
-				}
-			}(goRoutineSignal)
-		}
-		// Need to wait to prevent memory leak
-		wg.Wait()
 	}
-
-	return hashVector, outputWord, LDPCNonce, digest
+	return flag, hashVector, outputWord, LDPCNonce, digest
 }
 
 //MakeDecision check outputWord is valid or not using colInRow

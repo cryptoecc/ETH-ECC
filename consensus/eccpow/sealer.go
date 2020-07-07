@@ -21,6 +21,7 @@ import (
 	crand "crypto/rand"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"math"
 	"math/big"
 	"math/rand"
@@ -148,38 +149,44 @@ func (ecc *ECC) mine(block *types.Block, id int, seed uint64, abort chan struct{
 	logger := log.New("miner", id)
 	logger.Trace("Started ecc search for new nonces", "seed", seed)
 search:
-
-	select {
-	case <-abort:
-		// Mining terminated, update stats and abort
-		logger.Trace("ecc nonce search aborted", "attempts", nonce-seed)
-		ecc.hashrate.Mark(attempts)
-		break search
-
-	default:
-		// We don't have to update hash rate on every nonce, so update after after 2^X nonces
-		attempts++
-		if (attempts % (1 << 15)) == 0 {
-			ecc.hashrate.Mark(attempts)
-			attempts = 0
-		}
-		// Compute the PoW value of this nonce
-
-		_, _, LDPCNonce, digest := RunOptimizedConcurrencyLDPC(header, hash)
-
-		// Correct nonce found, create a new header with it
-		header = types.CopyHeader(header)
-		header.MixDigest = common.BytesToHash(digest)
-		header.Nonce = types.EncodeNonce(LDPCNonce)
-
-		// Seal and return a block (if still needed)
+	for {
 		select {
-		case found <- block.WithSeal(header):
-			logger.Trace("ecc nonce found and reported", "LDPCNonce", LDPCNonce)
 		case <-abort:
-			logger.Trace("ecc nonce found but discarded", "LDPCNonce", LDPCNonce)
+			// Mining terminated, update stats and abort
+			logger.Trace("ecc nonce search aborted", "attempts", nonce-seed)
+			ecc.hashrate.Mark(attempts)
+			break search
+
+		default:
+			// We don't have to update hash rate on every nonce, so update after after 2^X nonces
+			attempts++
+			if (attempts % (1 << 15)) == 0 {
+				ecc.hashrate.Mark(attempts)
+				attempts = 0
+			}
+			// Compute the PoW value of this nonce
+
+			flag, _, outputWord, LDPCNonce, digest := RunOptimizedConcurrencyLDPC(header, hash)
+
+			// Correct nonce found, create a new header with it
+			if flag == true {
+				fmt.Printf("Codeword is founded with nonce = %d\n", LDPCNonce)
+				fmt.Printf("Codeword : %d\n", outputWord)
+
+				header = types.CopyHeader(header)
+				header.MixDigest = common.BytesToHash(digest)
+				header.Nonce = types.EncodeNonce(LDPCNonce)
+
+				// Seal and return a block (if still needed)
+				select {
+				case found <- block.WithSeal(header):
+					logger.Trace("ecc nonce found and reported", "LDPCNonce", LDPCNonce)
+				case <-abort:
+					logger.Trace("ecc nonce found but discarded", "LDPCNonce", LDPCNonce)
+				}
+				break search
+			}
 		}
-		break search
 	}
 }
 
