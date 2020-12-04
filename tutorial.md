@@ -17,7 +17,7 @@ For more information : [INFONET](https://infonet.gist.ac.kr/)
 
 ---
 
-Agenda
+Contents
 
 1. [Environment](#1-environment)
    1. [Download](#11-download)
