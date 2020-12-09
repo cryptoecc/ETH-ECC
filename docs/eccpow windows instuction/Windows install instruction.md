@@ -45,12 +45,15 @@ https://ubuntu.com/download/desktop
   ![step03-0](./img/step03-0.PNG)
 
 - 패키지 업데이트
+
   ![step03](./img/step03.PNG)
 
 - 고 언어 설치
+
   ![step04](./img/step04.PNG)
 
 - git 설치
+
   ![step4-1](./img/step4-1.PNG)
 
 1. 고 언어 설치 후 설치 확인
@@ -76,9 +79,11 @@ git clone https://github.com/cryptoecc/ETH-ECC.git
 ![step06](./img/step06.PNG)
 
 3. 다운로드가 끝나면 다운로드 된 ETH-ECC 폴더로 이동
+
    ![step07](./img/step07.PNG)
 
 4. ETH-ECC 폴더 안에서 터미널 실행
+
    ![step08](./img/step08.PNG)
 
 5. 터미널에서 컴파일 실행
