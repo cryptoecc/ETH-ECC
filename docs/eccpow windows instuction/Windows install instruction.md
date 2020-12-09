@@ -42,7 +42,7 @@ https://ubuntu.com/download/desktop
 
 1. 설치가 끝나면 리눅스에서 오른쪽 마우스를 클릭하여 터미널 실행 후 패키지 업데이트 및 설치	
 
-   ​		![step03-0](\img\step03-0.PNG)
+  ![step03-0](\img\step03-0.PNG)
 
 - 패키지 업데이트
   ![step03](\img\step03.PNG)
