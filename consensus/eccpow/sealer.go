@@ -170,7 +170,7 @@ search:
 
 			// Correct nonce found, create a new header with it
 			if flag == true {
-				fmt.Printf("Codeword is founded with nonce = %d\n", LDPCNonce)
+				fmt.Printf("Codeword is found with nonce = %d\n", LDPCNonce)
 				fmt.Printf("Codeword : %d\n", outputWord)
 
 				header = types.CopyHeader(header)
