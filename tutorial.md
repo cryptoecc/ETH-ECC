@@ -34,7 +34,7 @@ Contents
 ---
 
 ## 1. Environment
-
+For Windows, please visit [Windows instruciton](https://github.com/cryptoecc/ETH-ECC/blob/master/docs/eccpow%20windows%20instuction/Windows%20install%20instruction.md) before start.
 Eth-ECC package uses the follow two environment
 
 - Linux mint 19.1 or Linux manjaro 19.0.0
