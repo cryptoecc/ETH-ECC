@@ -10,7 +10,7 @@ Environment
 - Linux (Ubuntu, Mint or Manjaro)
 - Golang
 
-To install environment, please follow below link
+To install environments, please follow below link
 
 - For Linux: [Link](https://github.com/cryptoecc/ETH-ECC/blob/master/docs/eccpow%20windows%20instuction/Windows%20install%20instruction.md#4-%EB%A6%AC%EB%88%85%EC%8A%A4-%EC%83%81%EC%97%90%EC%84%9C-%EC%8B%A4%ED%96%89-%ED%99%98%EA%B2%BD-%EC%84%A4%EC%A0%95)
 - For windows: [Link](https://github.com/cryptoecc/ETH-ECC/blob/master/docs/eccpow%20windows%20instuction/Windows%20install%20instruction.md)
@@ -19,10 +19,10 @@ To install environment, please follow below link
 
 Before connecting to ECCPoW network, you must set up your own node.
 
-- For connection, you must use same genesis file and network id.
+- For connection, you must use same genesis file and network id with ECCPoW Ethereum bootnode.
 - Thus, in this chapter, we present how to set up your node with ECCPoW genesis file and network id
 
-1. Clone ECCPoW Ethereum to your any directory
+1. Clone ECCPoW Ethereum to your directory
 
 ```
 git clone https://github.com/cryptoecc/ETH-ECC.git
@@ -30,7 +30,7 @@ git clone https://github.com/cryptoecc/ETH-ECC.git
 
 If it is done, you can see `ETH-ECC` folder in your directory
 
-2. Make storage directory 
+2. Make a storage directory 
 
 - In storage directory, blocks and transactions information will be stored
 
@@ -41,7 +41,7 @@ In my case,
           |---- /storage		  
 ```
 
-Namely there exist two directory in document directory
+Namely, there exists two directory in document directory
 
 3. Initialize geth
 
