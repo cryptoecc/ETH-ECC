@@ -78,7 +78,8 @@ It is end of initialization. In next chapter, we will present how to connect to 
 Open your terminal in bin directory and type below command
 
 ```
-./geth --datadir {your_storage_directory} --networkid 4478 --bootnodes "enr:-Je4QHb0h_OAfBhOgHG5Gqb6pc3hC1wpRvoNgh6yegYTAXPaShdjrE5dXqZZxG_xdi0_j3mYy9aqF0oiLzAyH1_tUcsBg2V0aMfGhHHGzwGAgmlkgnY0gmlwhKwaEHiJc2VjcDI1NmsxoQJlB1U_j59OzT5P2wfFX-9-XV6GYgxO08AmXNUc62C5yoN0Y3CCdmGDdWRwgnZh" console
+./geth --datadir {your_storage_directory} --networkid 4478 --bootnodes "enr:-Je4QGXqiha8DqxL-LKfJSq3GJgbQXuBETwjXolBp1l8-fVMJk6-d1YoRDF_-e1I1TN_WyRBIXlwun03cAx3ZtN2mXMBg2V0aMfGhHHGzwGAgmlkgnY0gmlwhKwaEHiJc2VjcDI1NmsxoQKfKmvfpZ9rz1fcFKrriXRFLVI2WeWbNwFRvWYzAjXo24N0Y3CCdmGDdWRwgnZh"
+ console
 ```
 
 - 4478 is network id of ECCPoW Ethereum
@@ -86,7 +87,8 @@ Open your terminal in bin directory and type below command
 In my case
 
 ```
-./geth --datadir ../../../storage --networkid 4478 --bootnodes "enr:-Je4QHb0h_OAfBhOgHG5Gqb6pc3hC1wpRvoNgh6yegYTAXPaShdjrE5dXqZZxG_xdi0_j3mYy9aqF0oiLzAyH1_tUcsBg2V0aMfGhHHGzwGAgmlkgnY0gmlwhKwaEHiJc2VjcDI1NmsxoQJlB1U_j59OzT5P2wfFX-9-XV6GYgxO08AmXNUc62C5yoN0Y3CCdmGDdWRwgnZh" console
+./geth --datadir ../../../storage --networkid 4478 --bootnodes "enr:-Je4QGXqiha8DqxL-LKfJSq3GJgbQXuBETwjXolBp1l8-fVMJk6-d1YoRDF_-e1I1TN_WyRBIXlwun03cAx3ZtN2mXMBg2V0aMfGhHHGzwGAgmlkgnY0gmlwhKwaEHiJc2VjcDI1NmsxoQKfKmvfpZ9rz1fcFKrriXRFLVI2WeWbNwFRvWYzAjXo24N0Y3CCdmGDdWRwgnZh"
+ console
 ```
 
 After few seconds, type below command in geth to watch a connected node
