@@ -97,7 +97,7 @@ admin.peers
 
 Then, you can see a node such as below figure
 
-![connecntion](.\img\connecntion.png)
+![connecntion](./img/connecntion.png)
 
 ---
 
