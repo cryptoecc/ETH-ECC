@@ -93,7 +93,7 @@ In my case
  console
 ```
 
->> Bootnode 2 :"enr:-J-4QJl4bBe48b4gpctJj10kso6U9czjol6Uhvuw4H6fFUW2GUXLDpO_mMyBmPLrsT1mD42xE3ycU2sUBHcqXbviF7gCg2V0aMfGhHHGzwGAgmlkgnY0gmlwhNJruhGJc2VjcDI1NmsxoQPXzBOTV2LiZiOCahHv8nrIrT_cKv8fMY8QOTaKkXR-lIN0Y3CCdl-DdWRwgrWjhHVkcDaCdl8"
+> Bootnode 2 :"enr:-J-4QJl4bBe48b4gpctJj10kso6U9czjol6Uhvuw4H6fFUW2GUXLDpO_mMyBmPLrsT1mD42xE3ycU2sUBHcqXbviF7gCg2V0aMfGhHHGzwGAgmlkgnY0gmlwhNJruhGJc2VjcDI1NmsxoQPXzBOTV2LiZiOCahHv8nrIrT_cKv8fMY8QOTaKkXR-lIN0Y3CCdl-DdWRwgrWjhHVkcDaCdl8"
 
 
 After few seconds, type below command in geth to watch a connected node
