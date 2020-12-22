@@ -78,7 +78,8 @@ It is end of initialization. In next chapter, we will present how to connect to 
 Open your terminal in bin directory and type below command
 
 ```
-./geth --datadir {your_storage_directory} --networkid 4478 --bootnodes "enr:-Je4QIe3Ysj0LgoWxCB53l6hIl7rc2varIWKiHr__XH8U-ByBbOfg7-iIlvNdczI2ZKEqifLpPcq5aEMxmtkNMyyZfwBg2V0aMfGhHHGzwGAgmlkgnY0gmlwhKwaEHiJc2VjcDI1NmsxoQM7B5cZBhZyRXChiyqK6vCodk52OAUjdSexXr2Twv8DsYN0Y3CCdmGDdWRwgnZh"
+./geth --datadir {your_storage_directory} --networkid 4478 --bootnodes "enr:-J-4QBi1ddekLufbQDZR_zuEF85CTqG2zruZNjsUvET1-NdsVdgEvWP-LF2shXhwY6MjIoE91MKBrrKYbYflNx7weJsCg2V0aMfGhEF4tbCAgmlkgnY0gmlwhNJruhGJc2VjcDI1NmsxoQO_0KClP6S15b9O8NUOPs5bIdjCEFnWUH6afD9qjV3I4oN0Y3CCdmGDdWRwgn46hHVkcDaCdmE"
+
 
  console
 ```
@@ -88,7 +89,8 @@ Open your terminal in bin directory and type below command
 In my case
 
 ```
-./geth --datadir ../../../storage --networkid 4478 --bootnodes"enr:-Je4QIe3Ysj0LgoWxCB53l6hIl7rc2varIWKiHr__XH8U-ByBbOfg7-iIlvNdczI2ZKEqifLpPcq5aEMxmtkNMyyZfwBg2V0aMfGhHHGzwGAgmlkgnY0gmlwhKwaEHiJc2VjcDI1NmsxoQM7B5cZBhZyRXChiyqK6vCodk52OAUjdSexXr2Twv8DsYN0Y3CCdmGDdWRwgnZh"
+./geth --datadir ../../../storage --networkid 4478 --bootnodes "enr:-J-4QBi1ddekLufbQDZR_zuEF85CTqG2zruZNjsUvET1-NdsVdgEvWP-LF2shXhwY6MjIoE91MKBrrKYbYflNx7weJsCg2V0aMfGhEF4tbCAgmlkgnY0gmlwhNJruhGJc2VjcDI1NmsxoQO_0KClP6S15b9O8NUOPs5bIdjCEFnWUH6afD9qjV3I4oN0Y3CCdmGDdWRwgn46hHVkcDaCdmE"
+
 
  console
 ```
