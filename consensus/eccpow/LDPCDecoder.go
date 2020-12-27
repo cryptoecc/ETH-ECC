@@ -8,8 +8,7 @@ import (
 	"github.com/Onther-Tech/go-ethereum/crypto"
 )
 
-//OptimizedDecoding return hashVector, outputWord, LRrtl and It is 20% faster than previous decoding function when they use same nonce
-//percentage can be changed because of random nonce
+//OptimizedDecoding return hashVector, outputWord, LRrtl
 func OptimizedDecoding(parameters Parameters, hashVector []int, H, rowInCol, colInRow [][]int) ([]int, []int, [][]float64) {
 	outputWord := make([]int, parameters.n)
 	LRqtl := make([][]float64, parameters.n)
