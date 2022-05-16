@@ -107,9 +107,11 @@ func generateH(parameters Parameters) [][]int {
 			colOrder = append(colOrder, j)
 		}
 
-		rand.Seed(hSeed)
-		rand.Shuffle(len(colOrder), func(i, j int) {
-			colOrder[i], colOrder[j] = colOrder[j], colOrder[i]
+		src := rand.NewSource(hSeed)
+		rnd := rand.New(src)
+		rnd.Seed(hSeed)
+		rnd.Shuffle(len(colOrder), func(i, j int) {
+			colOrder[i],colOrder[j] = colOrder[j], colOrder[i]
 		})
 		hSeed--
 
