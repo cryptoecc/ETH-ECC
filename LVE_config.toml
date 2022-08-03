@@ -1,0 +1,21 @@
+[Eth]
+SyncMode = "fast"
+
+[Node]
+DataDir = "/home/lvminer3/ETHEREUM/SMIN/LVE" 
+IPCPath = "geth.ipc"
+HTTPPort = 8545
+HTTPVirtualHosts = ["localhost"]
+HTTPModules = ["net", "web3", "eth", "shh"]
+WSPort = 8546
+WSModules = ["net", "web3", "eth", "shh"]
+NoUSB = true
+
+[Node.P2P]
+MaxPeers = 25
+NoDiscovery = false
+StaticNodes = []
+TrustedNodes = []
+ListenAddr = "172.26.16.141:30303"
+EnableMsgEvents = false
+
