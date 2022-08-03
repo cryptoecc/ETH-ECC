@@ -789,7 +789,7 @@ func MakeDataDir(ctx *cli.Context) string {
 		if ctx.GlobalBool(LveFlag.Name) {
 			return filepath.Join(path, "lve")
 		}
-		if ctx.GlobalBool(LveTestFlag.Name) {
+		if ctx.GlobalBool(LvetestFlag.Name) {
 			return filepath.Join(path, "lvetest")
 		}
 		return path
