@@ -49,7 +49,7 @@
 
 #include "hidapi.h"
 
-#ifdef __ANDROID__
+#if defined(__ANDROID__) && __ANDROID_API__ < __ANDROID_API_N__
 
 /* Barrier implementation because Android/Bionic don't have pthread_barrier.
    This implementation came from Brent Priddy and was posted on
@@ -395,11 +395,7 @@ static wchar_t *get_usb_string(libusb_device_handle *dev, uint8_t idx)
 	size_t inbytes;
 	size_t outbytes;
 	size_t res;
-#ifdef __FreeBSD__
-	const char *inptr;
-#else
 	char *inptr;
-#endif
 	char *outptr;
 #endif
 
