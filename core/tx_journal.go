@@ -21,10 +21,10 @@ import (
 	"io"
 	"os"
 
-	"github.com/Onther-Tech/go-ethereum/common"
-	"github.com/Onther-Tech/go-ethereum/core/types"
-	"github.com/Onther-Tech/go-ethereum/log"
-	"github.com/Onther-Tech/go-ethereum/rlp"
+	"github.com/cryptoecc/ETH-ECC/common"
+	"github.com/cryptoecc/ETH-ECC/core/types"
+	"github.com/cryptoecc/ETH-ECC/log"
+	"github.com/cryptoecc/ETH-ECC/rlp"
 )
 
 // errNoActiveJournal is returned if a transaction is attempted to be inserted

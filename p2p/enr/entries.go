@@ -21,7 +21,7 @@ import (
 	"io"
 	"net"
 
-	"github.com/Onther-Tech/go-ethereum/rlp"
+	"github.com/cryptoecc/ETH-ECC/rlp"
 )
 
 // Entry is implemented by known node record entry types.

@@ -5,7 +5,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/Onther-Tech/go-ethereum/core/types"
+	"github.com/cryptoecc/ETH-ECC/core/types"
 )
 
 func TestNonceDecoding(t *testing.T) {

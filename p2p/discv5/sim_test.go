@@ -28,7 +28,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Onther-Tech/go-ethereum/common"
+	"github.com/cryptoecc/ETH-ECC/common"
 )
 
 // In this test, nodes try to randomly resolve each other.

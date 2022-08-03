@@ -22,12 +22,12 @@ import (
 	"errors"
 	"math/big"
 
-	"github.com/Onther-Tech/go-ethereum/common"
-	"github.com/Onther-Tech/go-ethereum/common/math"
-	"github.com/Onther-Tech/go-ethereum/crypto"
-	"github.com/Onther-Tech/go-ethereum/crypto/blake2b"
-	"github.com/Onther-Tech/go-ethereum/crypto/bn256"
-	"github.com/Onther-Tech/go-ethereum/params"
+	"github.com/cryptoecc/ETH-ECC/common"
+	"github.com/cryptoecc/ETH-ECC/common/math"
+	"github.com/cryptoecc/ETH-ECC/crypto"
+	"github.com/cryptoecc/ETH-ECC/crypto/blake2b"
+	"github.com/cryptoecc/ETH-ECC/crypto/bn256"
+	"github.com/cryptoecc/ETH-ECC/params"
 	"golang.org/x/crypto/ripemd160"
 )
 

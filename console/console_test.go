@@ -26,13 +26,13 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Onther-Tech/go-ethereum/common"
-	"github.com/Onther-Tech/go-ethereum/consensus/ethash"
-	"github.com/Onther-Tech/go-ethereum/core"
-	"github.com/Onther-Tech/go-ethereum/eth"
-	"github.com/Onther-Tech/go-ethereum/internal/jsre"
-	"github.com/Onther-Tech/go-ethereum/miner"
-	"github.com/Onther-Tech/go-ethereum/node"
+	"github.com/cryptoecc/ETH-ECC/common"
+	"github.com/cryptoecc/ETH-ECC/consensus/ethash"
+	"github.com/cryptoecc/ETH-ECC/core"
+	"github.com/cryptoecc/ETH-ECC/eth"
+	"github.com/cryptoecc/ETH-ECC/internal/jsre"
+	"github.com/cryptoecc/ETH-ECC/miner"
+	"github.com/cryptoecc/ETH-ECC/node"
 )
 
 const (

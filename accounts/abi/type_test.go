@@ -21,7 +21,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/Onther-Tech/go-ethereum/common"
+	"github.com/cryptoecc/ETH-ECC/common"
 	"github.com/davecgh/go-spew/spew"
 )
 

@@ -21,9 +21,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Onther-Tech/go-ethereum/eth/downloader"
-	"github.com/Onther-Tech/go-ethereum/p2p"
-	"github.com/Onther-Tech/go-ethereum/p2p/enode"
+	"github.com/cryptoecc/ETH-ECC/eth/downloader"
+	"github.com/cryptoecc/ETH-ECC/p2p"
+	"github.com/cryptoecc/ETH-ECC/p2p/enode"
 )
 
 // Tests that fast sync gets disabled as soon as a real block is successfully

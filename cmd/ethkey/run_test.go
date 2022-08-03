@@ -21,7 +21,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/Onther-Tech/go-ethereum/internal/cmdtest"
+	"github.com/cryptoecc/ETH-ECC/internal/cmdtest"
 	"github.com/docker/docker/pkg/reexec"
 )
 

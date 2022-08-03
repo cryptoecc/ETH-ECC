@@ -20,8 +20,8 @@ import (
 	"hash"
 	"sync"
 
-	"github.com/Onther-Tech/go-ethereum/common"
-	"github.com/Onther-Tech/go-ethereum/rlp"
+	"github.com/cryptoecc/ETH-ECC/common"
+	"github.com/cryptoecc/ETH-ECC/rlp"
 	"golang.org/x/crypto/sha3"
 )
 

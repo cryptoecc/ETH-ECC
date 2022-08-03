@@ -25,12 +25,12 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/Onther-Tech/go-ethereum/accounts/keystore"
-	"github.com/Onther-Tech/go-ethereum/common"
-	"github.com/Onther-Tech/go-ethereum/common/hexutil"
-	"github.com/Onther-Tech/go-ethereum/common/math"
-	"github.com/Onther-Tech/go-ethereum/crypto"
-	"github.com/Onther-Tech/go-ethereum/signer/core"
+	"github.com/cryptoecc/ETH-ECC/accounts/keystore"
+	"github.com/cryptoecc/ETH-ECC/common"
+	"github.com/cryptoecc/ETH-ECC/common/hexutil"
+	"github.com/cryptoecc/ETH-ECC/common/math"
+	"github.com/cryptoecc/ETH-ECC/crypto"
+	"github.com/cryptoecc/ETH-ECC/signer/core"
 )
 
 var typesStandard = core.Types{

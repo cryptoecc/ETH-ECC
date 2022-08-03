@@ -41,23 +41,23 @@ import (
 	"sync"
 	"time"
 
-	"github.com/Onther-Tech/go-ethereum/accounts"
-	"github.com/Onther-Tech/go-ethereum/accounts/keystore"
-	"github.com/Onther-Tech/go-ethereum/common"
-	"github.com/Onther-Tech/go-ethereum/core"
-	"github.com/Onther-Tech/go-ethereum/core/types"
-	"github.com/Onther-Tech/go-ethereum/eth"
-	"github.com/Onther-Tech/go-ethereum/eth/downloader"
-	"github.com/Onther-Tech/go-ethereum/ethclient"
-	"github.com/Onther-Tech/go-ethereum/ethstats"
-	"github.com/Onther-Tech/go-ethereum/les"
-	"github.com/Onther-Tech/go-ethereum/log"
-	"github.com/Onther-Tech/go-ethereum/node"
-	"github.com/Onther-Tech/go-ethereum/p2p"
-	"github.com/Onther-Tech/go-ethereum/p2p/discv5"
-	"github.com/Onther-Tech/go-ethereum/p2p/enode"
-	"github.com/Onther-Tech/go-ethereum/p2p/nat"
-	"github.com/Onther-Tech/go-ethereum/params"
+	"github.com/cryptoecc/ETH-ECC/accounts"
+	"github.com/cryptoecc/ETH-ECC/accounts/keystore"
+	"github.com/cryptoecc/ETH-ECC/common"
+	"github.com/cryptoecc/ETH-ECC/core"
+	"github.com/cryptoecc/ETH-ECC/core/types"
+	"github.com/cryptoecc/ETH-ECC/eth"
+	"github.com/cryptoecc/ETH-ECC/eth/downloader"
+	"github.com/cryptoecc/ETH-ECC/ethclient"
+	"github.com/cryptoecc/ETH-ECC/ethstats"
+	"github.com/cryptoecc/ETH-ECC/les"
+	"github.com/cryptoecc/ETH-ECC/log"
+	"github.com/cryptoecc/ETH-ECC/node"
+	"github.com/cryptoecc/ETH-ECC/p2p"
+	"github.com/cryptoecc/ETH-ECC/p2p/discv5"
+	"github.com/cryptoecc/ETH-ECC/p2p/enode"
+	"github.com/cryptoecc/ETH-ECC/p2p/nat"
+	"github.com/cryptoecc/ETH-ECC/params"
 	"golang.org/x/net/websocket"
 )
 
@@ -458,7 +458,7 @@ func (f *faucet) apiHandler(conn *websocket.Conn) {
 		case *noauthFlag:
 			username, avatar, address, err = authNoAuth(msg.URL)
 		default:
-			err = errors.New("Something funky happened, please open an issue at https://github.com/Onther-Tech/go-ethereum/issues")
+			err = errors.New("Something funky happened, please open an issue at https://github.com/cryptoecc/ETH-ECC/issues")
 		}
 		if err != nil {
 			if err = sendError(conn, err); err != nil {

@@ -32,38 +32,38 @@ import (
 	"text/template"
 	"time"
 
-	"github.com/Onther-Tech/go-ethereum/accounts"
-	"github.com/Onther-Tech/go-ethereum/accounts/keystore"
-	"github.com/Onther-Tech/go-ethereum/common"
-	"github.com/Onther-Tech/go-ethereum/common/fdlimit"
-	"github.com/Onther-Tech/go-ethereum/consensus"
-	"github.com/Onther-Tech/go-ethereum/consensus/clique"
-	"github.com/Onther-Tech/go-ethereum/consensus/eccpow"
-	"github.com/Onther-Tech/go-ethereum/consensus/ethash"
-	"github.com/Onther-Tech/go-ethereum/core"
-	"github.com/Onther-Tech/go-ethereum/core/vm"
-	"github.com/Onther-Tech/go-ethereum/crypto"
-	"github.com/Onther-Tech/go-ethereum/dashboard"
-	"github.com/Onther-Tech/go-ethereum/eth"
-	"github.com/Onther-Tech/go-ethereum/eth/downloader"
-	"github.com/Onther-Tech/go-ethereum/eth/gasprice"
-	"github.com/Onther-Tech/go-ethereum/ethdb"
-	"github.com/Onther-Tech/go-ethereum/ethstats"
-	"github.com/Onther-Tech/go-ethereum/graphql"
-	"github.com/Onther-Tech/go-ethereum/les"
-	"github.com/Onther-Tech/go-ethereum/log"
-	"github.com/Onther-Tech/go-ethereum/metrics"
-	"github.com/Onther-Tech/go-ethereum/metrics/influxdb"
-	"github.com/Onther-Tech/go-ethereum/miner"
-	"github.com/Onther-Tech/go-ethereum/node"
-	"github.com/Onther-Tech/go-ethereum/p2p"
-	"github.com/Onther-Tech/go-ethereum/p2p/discv5"
-	"github.com/Onther-Tech/go-ethereum/p2p/enode"
-	"github.com/Onther-Tech/go-ethereum/p2p/nat"
-	"github.com/Onther-Tech/go-ethereum/p2p/netutil"
-	"github.com/Onther-Tech/go-ethereum/params"
-	"github.com/Onther-Tech/go-ethereum/rpc"
-	whisper "github.com/Onther-Tech/go-ethereum/whisper/whisperv6"
+	"github.com/cryptoecc/ETH-ECC/accounts"
+	"github.com/cryptoecc/ETH-ECC/accounts/keystore"
+	"github.com/cryptoecc/ETH-ECC/common"
+	"github.com/cryptoecc/ETH-ECC/common/fdlimit"
+	"github.com/cryptoecc/ETH-ECC/consensus"
+	"github.com/cryptoecc/ETH-ECC/consensus/clique"
+	"github.com/cryptoecc/ETH-ECC/consensus/eccpow"
+	"github.com/cryptoecc/ETH-ECC/consensus/ethash"
+	"github.com/cryptoecc/ETH-ECC/core"
+	"github.com/cryptoecc/ETH-ECC/core/vm"
+	"github.com/cryptoecc/ETH-ECC/crypto"
+	"github.com/cryptoecc/ETH-ECC/dashboard"
+	"github.com/cryptoecc/ETH-ECC/eth"
+	"github.com/cryptoecc/ETH-ECC/eth/downloader"
+	"github.com/cryptoecc/ETH-ECC/eth/gasprice"
+	"github.com/cryptoecc/ETH-ECC/ethdb"
+	"github.com/cryptoecc/ETH-ECC/ethstats"
+	"github.com/cryptoecc/ETH-ECC/graphql"
+	"github.com/cryptoecc/ETH-ECC/les"
+	"github.com/cryptoecc/ETH-ECC/log"
+	"github.com/cryptoecc/ETH-ECC/metrics"
+	"github.com/cryptoecc/ETH-ECC/metrics/influxdb"
+	"github.com/cryptoecc/ETH-ECC/miner"
+	"github.com/cryptoecc/ETH-ECC/node"
+	"github.com/cryptoecc/ETH-ECC/p2p"
+	"github.com/cryptoecc/ETH-ECC/p2p/discv5"
+	"github.com/cryptoecc/ETH-ECC/p2p/enode"
+	"github.com/cryptoecc/ETH-ECC/p2p/nat"
+	"github.com/cryptoecc/ETH-ECC/p2p/netutil"
+	"github.com/cryptoecc/ETH-ECC/params"
+	"github.com/cryptoecc/ETH-ECC/rpc"
+	whisper "github.com/cryptoecc/ETH-ECC/whisper/whisperv6"
 	pcsclite "github.com/gballet/go-libpcsclite"
 	cli "gopkg.in/urfave/cli.v1"
 )
@@ -167,6 +167,15 @@ var (
 	GoerliFlag = cli.BoolFlag{
 		Name:  "goerli",
 		Usage: "Görli network: pre-configured proof-of-authority test network",
+	}
+	// EccPoW settings
+	LveFlag = cli.BoolFlag{
+		Name:  "lve",
+		Usage: "LVE Network: Error-Correction Codes Proof-of-Work Main Network",
+	}
+	LvetestFlag = cli.BoolFlag{
+		Name:  "lvetest",
+		Usage: "LVE test network: Error-Correction Codes Proof-of-Work Test Network",
 	}
 	DeveloperFlag = cli.BoolFlag{
 		Name:  "dev",
@@ -777,6 +786,12 @@ func MakeDataDir(ctx *cli.Context) string {
 		if ctx.GlobalBool(GoerliFlag.Name) {
 			return filepath.Join(path, "goerli")
 		}
+		if ctx.GlobalBool(LveFlag.Name) {
+			return filepath.Join(path, "lve")
+		}
+		if ctx.GlobalBool(LveTestFlag.Name) {
+			return filepath.Join(path, "lvetest")
+		}
 		return path
 	}
 	Fatalf("Cannot determine default data directory, please set manually (--datadir)")
@@ -833,6 +848,10 @@ func setBootstrapNodes(ctx *cli.Context, cfg *p2p.Config) {
 		urls = params.RinkebyBootnodes
 	case ctx.GlobalBool(GoerliFlag.Name):
 		urls = params.GoerliBootnodes
+	case ctx.GlobalBool(LveFlag.Name):
+		urls = params.LveBootnodes
+	case ctx.GlobalBool(LvetestFlag.Name):
+		urls = params.LvetestBootnodes
 	case cfg.BootstrapNodes != nil:
 		return // already set, don't apply defaults.
 	}
@@ -865,6 +884,10 @@ func setBootstrapNodesV5(ctx *cli.Context, cfg *p2p.Config) {
 		urls = params.RinkebyBootnodes
 	case ctx.GlobalBool(GoerliFlag.Name):
 		urls = params.GoerliBootnodes
+	case ctx.GlobalBool(LveFlag.Name):
+		urls = params.LveBootnodes
+	case ctx.GlobalBool(LvetestFlag.Name):
+		urls = params.LvetestBootnodes
 	case cfg.BootstrapNodesV5 != nil:
 		return // already set, don't apply defaults.
 	}
@@ -1232,6 +1255,10 @@ func setDataDir(ctx *cli.Context, cfg *node.Config) {
 		cfg.DataDir = filepath.Join(node.DefaultDataDir(), "rinkeby")
 	case ctx.GlobalBool(GoerliFlag.Name) && cfg.DataDir == node.DefaultDataDir():
 		cfg.DataDir = filepath.Join(node.DefaultDataDir(), "goerli")
+	case ctx.GlobalBool(LveFlag.Name) && cfg.DataDir == node.DefaultDataDir():
+		cfg.DataDir = filepath.Join(node.DefaultDataDir(), "lve")
+	case ctx.GlobalBool(LvetestFlag.Name) && cfg.DataDir == node.DefaultDataDir():
+		cfg.DataDir = filepath.Join(node.DefaultDataDir(), "lvetest")
 	}
 }
 
@@ -1421,7 +1448,7 @@ func SetShhConfig(ctx *cli.Context, stack *node.Node, cfg *whisper.Config) {
 // SetEthConfig applies eth-related command line flags to the config.
 func SetEthConfig(ctx *cli.Context, stack *node.Node, cfg *eth.Config) {
 	// Avoid conflicting network flags
-	CheckExclusive(ctx, DeveloperFlag, TestnetFlag, RinkebyFlag, GoerliFlag)
+	CheckExclusive(ctx, DeveloperFlag, TestnetFlag, RinkebyFlag, GoerliFlag, LveFlag, LvetestFlag)
 	CheckExclusive(ctx, LightLegacyServFlag, LightServeFlag, SyncModeFlag, "light")
 	CheckExclusive(ctx, DeveloperFlag, ExternalSignerFlag) // Can't use both ephemeral unlocked and external signer
 
@@ -1499,11 +1526,16 @@ func SetEthConfig(ctx *cli.Context, stack *node.Node, cfg *eth.Config) {
 			cfg.NetworkId = 5
 		}
 		cfg.Genesis = core.DefaultGoerliGenesisBlock()
-	case ctx.GlobalBool(EccPoWFlag.Name):
+	case ctx.GlobalBool(LveFlag.Name):
 		if !ctx.GlobalIsSet(NetworkIdFlag.Name) {
-			cfg.NetworkId = 7337
+			cfg.NetworkId = 12345
 		}
-		cfg.Genesis = core.EccGenesisBlock()
+		cfg.Genesis = core.DefaultLveGenesisBlock()
+	case ctx.GlobalBool(LvetestFlag.Name):
+		if !ctx.GlobalIsSet(NetworkIdFlag.Name) {
+			cfg.NetworkId = 12346
+		}
+		cfg.Genesis = core.DefaultLvetestGenesisBlock()
 	case ctx.GlobalBool(DeveloperFlag.Name):
 		if !ctx.GlobalIsSet(NetworkIdFlag.Name) {
 			cfg.NetworkId = 1337
@@ -1680,6 +1712,10 @@ func MakeGenesis(ctx *cli.Context) *core.Genesis {
 		genesis = core.DefaultRinkebyGenesisBlock()
 	case ctx.GlobalBool(GoerliFlag.Name):
 		genesis = core.DefaultGoerliGenesisBlock()
+	case ctx.GlobalBool(LveFlag.Name):
+		genesis = core.DefaultLveGenesisBlock()
+	case ctx.GlobalBool(LvetestFlag.Name):
+		genesis = core.DefaultLvetestGenesisBlock()
 	case ctx.GlobalBool(DeveloperFlag.Name):
 		Fatalf("Developer chains are ephemeral")
 	}

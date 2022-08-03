@@ -71,6 +71,19 @@ var GoerliBootnodes = []string{
 	"enode://573b6607cd59f241e30e4c4943fd50e99e2b6f42f9bd5ca111659d309c06741247f4f1e93843ad3e8c8c18b6e2d94c161b7ef67479b3938780a97134b618b5ce@52.56.136.200:30303",
 }
 
+// LveBootnodes are the enode URLs of the P2P bootstrap nodes running on the
+// Lve network.
+var LveBootnodes = []string{
+
+}
+
+// LvetestBootnodes are the enode URLs of the P2P bootstrap nodes running on the
+// Lve test network.
+var LvetestBootnodes = []string{
+
+}
+
+
 // DiscoveryV5Bootnodes are the enode URLs of the P2P bootstrap nodes for the
 // experimental RLPx v5 topic-discovery network.
 var DiscoveryV5Bootnodes = []string{

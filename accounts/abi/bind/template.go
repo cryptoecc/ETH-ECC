@@ -16,7 +16,7 @@
 
 package bind
 
-import "github.com/Onther-Tech/go-ethereum/accounts/abi"
+import "github.com/cryptoecc/ETH-ECC/accounts/abi"
 
 // tmplData is the data structure required to fill the binding template.
 type tmplData struct {
@@ -88,12 +88,12 @@ import (
 	"math/big"
 	"strings"
 
-	ethereum "github.com/Onther-Tech/go-ethereum"
-	"github.com/Onther-Tech/go-ethereum/accounts/abi"
-	"github.com/Onther-Tech/go-ethereum/accounts/abi/bind"
-	"github.com/Onther-Tech/go-ethereum/common"
-	"github.com/Onther-Tech/go-ethereum/core/types"
-	"github.com/Onther-Tech/go-ethereum/event"
+	ethereum "github.com/cryptoecc/ETH-ECC"
+	"github.com/cryptoecc/ETH-ECC/accounts/abi"
+	"github.com/cryptoecc/ETH-ECC/accounts/abi/bind"
+	"github.com/cryptoecc/ETH-ECC/common"
+	"github.com/cryptoecc/ETH-ECC/core/types"
+	"github.com/cryptoecc/ETH-ECC/event"
 )
 
 // Reference imports to suppress errors if they are not otherwise used.

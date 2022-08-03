@@ -24,10 +24,10 @@ import (
 	"strings"
 	"syscall"
 
-	"github.com/Onther-Tech/go-ethereum/cmd/utils"
-	"github.com/Onther-Tech/go-ethereum/console"
-	"github.com/Onther-Tech/go-ethereum/node"
-	"github.com/Onther-Tech/go-ethereum/rpc"
+	"github.com/cryptoecc/ETH-ECC/cmd/utils"
+	"github.com/cryptoecc/ETH-ECC/console"
+	"github.com/cryptoecc/ETH-ECC/node"
+	"github.com/cryptoecc/ETH-ECC/rpc"
 	"gopkg.in/urfave/cli.v1"
 )
 
@@ -43,7 +43,7 @@ var (
 		Description: `
 The Geth console is an interactive shell for the JavaScript runtime environment
 which exposes a node admin interface as well as the Ðapp JavaScript API.
-See https://github.com/Onther-Tech/go-ethereum/wiki/JavaScript-Console.`,
+See https://github.com/cryptoecc/ETH-ECC/wiki/JavaScript-Console.`,
 	}
 
 	attachCommand = cli.Command{
@@ -56,7 +56,7 @@ See https://github.com/Onther-Tech/go-ethereum/wiki/JavaScript-Console.`,
 		Description: `
 The Geth console is an interactive shell for the JavaScript runtime environment
 which exposes a node admin interface as well as the Ðapp JavaScript API.
-See https://github.com/Onther-Tech/go-ethereum/wiki/JavaScript-Console.
+See https://github.com/cryptoecc/ETH-ECC/wiki/JavaScript-Console.
 This command allows to open a console on a running geth node.`,
 	}
 
@@ -69,7 +69,7 @@ This command allows to open a console on a running geth node.`,
 		Category:  "CONSOLE COMMANDS",
 		Description: `
 The JavaScript VM exposes a node admin interface as well as the Ðapp
-JavaScript API. See https://github.com/Onther-Tech/go-ethereum/wiki/JavaScript-Console`,
+JavaScript API. See https://github.com/cryptoecc/ETH-ECC/wiki/JavaScript-Console`,
 	}
 )
 

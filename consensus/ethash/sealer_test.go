@@ -25,8 +25,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Onther-Tech/go-ethereum/common"
-	"github.com/Onther-Tech/go-ethereum/core/types"
+	"github.com/cryptoecc/ETH-ECC/common"
+	"github.com/cryptoecc/ETH-ECC/core/types"
 )
 
 // Tests whether remote HTTP servers are correctly notified of new work.

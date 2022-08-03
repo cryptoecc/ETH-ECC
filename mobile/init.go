@@ -22,7 +22,7 @@ import (
 	"os"
 	"runtime"
 
-	"github.com/Onther-Tech/go-ethereum/log"
+	"github.com/cryptoecc/ETH-ECC/log"
 )
 
 func init() {

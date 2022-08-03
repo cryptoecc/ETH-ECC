@@ -25,7 +25,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/Onther-Tech/go-ethereum/log"
+	"github.com/cryptoecc/ETH-ECC/log"
 )
 
 // handler handles JSON-RPC messages. There is one handler per connection. Note that

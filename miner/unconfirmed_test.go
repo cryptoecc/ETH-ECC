@@ -19,8 +19,8 @@ package miner
 import (
 	"testing"
 
-	"github.com/Onther-Tech/go-ethereum/common"
-	"github.com/Onther-Tech/go-ethereum/core/types"
+	"github.com/cryptoecc/ETH-ECC/common"
+	"github.com/cryptoecc/ETH-ECC/core/types"
 )
 
 // noopChainRetriever is an implementation of headerRetriever that always

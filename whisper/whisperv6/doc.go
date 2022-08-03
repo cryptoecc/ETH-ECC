@@ -35,7 +35,7 @@ package whisperv6
 import (
 	"time"
 
-	"github.com/Onther-Tech/go-ethereum/crypto"
+	"github.com/cryptoecc/ETH-ECC/crypto"
 )
 
 // Whisper protocol parameters

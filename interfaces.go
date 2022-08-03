@@ -22,8 +22,8 @@ import (
 	"errors"
 	"math/big"
 
-	"github.com/Onther-Tech/go-ethereum/common"
-	"github.com/Onther-Tech/go-ethereum/core/types"
+	"github.com/cryptoecc/ETH-ECC/common"
+	"github.com/cryptoecc/ETH-ECC/core/types"
 )
 
 // NotFound is returned by API methods if the requested item does not exist.

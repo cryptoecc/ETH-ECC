@@ -21,7 +21,7 @@ import (
 	"io"
 	"sync/atomic"
 
-	"github.com/Onther-Tech/go-ethereum/log"
+	"github.com/cryptoecc/ETH-ECC/log"
 	mapset "github.com/deckarep/golang-set"
 )
 

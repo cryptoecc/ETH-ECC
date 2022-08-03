@@ -22,13 +22,13 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/Onther-Tech/go-ethereum/consensus/ethash"
-	"github.com/Onther-Tech/go-ethereum/core"
-	"github.com/Onther-Tech/go-ethereum/core/rawdb"
-	"github.com/Onther-Tech/go-ethereum/core/state"
-	"github.com/Onther-Tech/go-ethereum/core/vm"
-	"github.com/Onther-Tech/go-ethereum/params"
-	"github.com/Onther-Tech/go-ethereum/trie"
+	"github.com/cryptoecc/ETH-ECC/consensus/ethash"
+	"github.com/cryptoecc/ETH-ECC/core"
+	"github.com/cryptoecc/ETH-ECC/core/rawdb"
+	"github.com/cryptoecc/ETH-ECC/core/state"
+	"github.com/cryptoecc/ETH-ECC/core/vm"
+	"github.com/cryptoecc/ETH-ECC/params"
+	"github.com/cryptoecc/ETH-ECC/trie"
 	"github.com/davecgh/go-spew/spew"
 )
 

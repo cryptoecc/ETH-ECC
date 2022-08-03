@@ -24,13 +24,13 @@ import (
 	"runtime"
 	"time"
 
-	"github.com/Onther-Tech/go-ethereum/common"
-	"github.com/Onther-Tech/go-ethereum/consensus/ethash"
-	"github.com/Onther-Tech/go-ethereum/core"
-	"github.com/Onther-Tech/go-ethereum/eth/downloader"
-	"github.com/Onther-Tech/go-ethereum/eth/gasprice"
-	"github.com/Onther-Tech/go-ethereum/miner"
-	"github.com/Onther-Tech/go-ethereum/params"
+	"github.com/cryptoecc/ETH-ECC/common"
+	"github.com/cryptoecc/ETH-ECC/consensus/ethash"
+	"github.com/cryptoecc/ETH-ECC/core"
+	"github.com/cryptoecc/ETH-ECC/eth/downloader"
+	"github.com/cryptoecc/ETH-ECC/eth/gasprice"
+	"github.com/cryptoecc/ETH-ECC/miner"
+	"github.com/cryptoecc/ETH-ECC/params"
 )
 
 // DefaultConfig contains default settings for use on the Ethereum main net.

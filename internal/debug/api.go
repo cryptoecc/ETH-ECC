@@ -34,7 +34,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/Onther-Tech/go-ethereum/log"
+	"github.com/cryptoecc/ETH-ECC/log"
 )
 
 // Handler is the global debugging handler.

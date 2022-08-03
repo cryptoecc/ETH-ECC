@@ -24,8 +24,8 @@ import (
 
 	"strings"
 
-	"github.com/Onther-Tech/go-ethereum/cmd/utils"
-	"github.com/Onther-Tech/go-ethereum/internal/debug"
+	"github.com/cryptoecc/ETH-ECC/cmd/utils"
+	"github.com/cryptoecc/ETH-ECC/internal/debug"
 	cli "gopkg.in/urfave/cli.v1"
 )
 
@@ -77,6 +77,8 @@ var AppHelpFlagGroups = []flagGroup{
 			utils.TestnetFlag,
 			utils.RinkebyFlag,
 			utils.GoerliFlag,
+			utils.LveFlag,
+			utils.LvetestFlag,
 			utils.SyncModeFlag,
 			utils.ExitWhenSyncedFlag,
 			utils.GCModeFlag,

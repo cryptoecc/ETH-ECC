@@ -24,8 +24,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/Onther-Tech/go-ethereum/common/mclock"
-	"github.com/Onther-Tech/go-ethereum/light"
+	"github.com/cryptoecc/ETH-ECC/common/mclock"
+	"github.com/cryptoecc/ETH-ECC/light"
 )
 
 var (

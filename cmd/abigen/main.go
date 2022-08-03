@@ -23,11 +23,11 @@ import (
 	"os"
 	"strings"
 
-	"github.com/Onther-Tech/go-ethereum/accounts/abi/bind"
-	"github.com/Onther-Tech/go-ethereum/cmd/utils"
-	"github.com/Onther-Tech/go-ethereum/common/compiler"
-	"github.com/Onther-Tech/go-ethereum/crypto"
-	"github.com/Onther-Tech/go-ethereum/log"
+	"github.com/cryptoecc/ETH-ECC/accounts/abi/bind"
+	"github.com/cryptoecc/ETH-ECC/cmd/utils"
+	"github.com/cryptoecc/ETH-ECC/common/compiler"
+	"github.com/cryptoecc/ETH-ECC/crypto"
+	"github.com/cryptoecc/ETH-ECC/log"
 	"gopkg.in/urfave/cli.v1"
 )
 

@@ -17,8 +17,8 @@
 package core
 
 import (
-	"github.com/Onther-Tech/go-ethereum/common"
-	"github.com/Onther-Tech/go-ethereum/core/types"
+	"github.com/cryptoecc/ETH-ECC/common"
+	"github.com/cryptoecc/ETH-ECC/core/types"
 )
 
 // NewTxsEvent is posted when a batch of transactions enter the transaction pool.

@@ -19,10 +19,10 @@ package core
 import (
 	"container/list"
 
-	"github.com/Onther-Tech/go-ethereum/core/rawdb"
-	"github.com/Onther-Tech/go-ethereum/core/types"
-	"github.com/Onther-Tech/go-ethereum/ethdb"
-	"github.com/Onther-Tech/go-ethereum/event"
+	"github.com/cryptoecc/ETH-ECC/core/rawdb"
+	"github.com/cryptoecc/ETH-ECC/core/types"
+	"github.com/cryptoecc/ETH-ECC/ethdb"
+	"github.com/cryptoecc/ETH-ECC/event"
 )
 
 // Implement our EthTest Manager

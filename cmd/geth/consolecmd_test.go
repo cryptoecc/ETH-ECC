@@ -27,7 +27,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Onther-Tech/go-ethereum/params"
+	"github.com/cryptoecc/ETH-ECC/params"
 )
 
 const (

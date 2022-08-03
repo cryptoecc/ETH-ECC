@@ -28,12 +28,12 @@ import (
 	"testing"
 	"testing/quick"
 
-	"github.com/Onther-Tech/go-ethereum/common"
-	"github.com/Onther-Tech/go-ethereum/crypto"
-	"github.com/Onther-Tech/go-ethereum/ethdb"
-	"github.com/Onther-Tech/go-ethereum/ethdb/leveldb"
-	"github.com/Onther-Tech/go-ethereum/ethdb/memorydb"
-	"github.com/Onther-Tech/go-ethereum/rlp"
+	"github.com/cryptoecc/ETH-ECC/common"
+	"github.com/cryptoecc/ETH-ECC/crypto"
+	"github.com/cryptoecc/ETH-ECC/ethdb"
+	"github.com/cryptoecc/ETH-ECC/ethdb/leveldb"
+	"github.com/cryptoecc/ETH-ECC/ethdb/memorydb"
+	"github.com/cryptoecc/ETH-ECC/rlp"
 	"github.com/davecgh/go-spew/spew"
 )
 

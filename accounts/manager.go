@@ -21,8 +21,8 @@ import (
 	"sort"
 	"sync"
 
-	"github.com/Onther-Tech/go-ethereum/common"
-	"github.com/Onther-Tech/go-ethereum/event"
+	"github.com/cryptoecc/ETH-ECC/common"
+	"github.com/cryptoecc/ETH-ECC/event"
 )
 
 // Config contains the settings of the global account manager.

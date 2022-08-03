@@ -19,8 +19,8 @@ package core
 import (
 	"sync"
 
-	"github.com/Onther-Tech/go-ethereum/common"
-	"github.com/Onther-Tech/go-ethereum/core/state"
+	"github.com/cryptoecc/ETH-ECC/common"
+	"github.com/cryptoecc/ETH-ECC/core/state"
 )
 
 // txNoncer is a tiny virtual state database to manage the executable nonces of

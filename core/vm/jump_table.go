@@ -19,7 +19,7 @@ package vm
 import (
 	"errors"
 
-	"github.com/Onther-Tech/go-ethereum/params"
+	"github.com/cryptoecc/ETH-ECC/params"
 )
 
 type (

@@ -24,8 +24,8 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/Onther-Tech/go-ethereum/cmd/utils"
-	"github.com/Onther-Tech/go-ethereum/core/vm"
+	"github.com/cryptoecc/ETH-ECC/cmd/utils"
+	"github.com/cryptoecc/ETH-ECC/core/vm"
 )
 
 func TestState(t *testing.T) {

@@ -22,13 +22,13 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/Onther-Tech/go-ethereum/accounts"
-	"github.com/Onther-Tech/go-ethereum/common"
-	"github.com/Onther-Tech/go-ethereum/common/hexutil"
-	"github.com/Onther-Tech/go-ethereum/core/types"
-	"github.com/Onther-Tech/go-ethereum/internal/ethapi"
-	"github.com/Onther-Tech/go-ethereum/signer/core"
-	"github.com/Onther-Tech/go-ethereum/signer/storage"
+	"github.com/cryptoecc/ETH-ECC/accounts"
+	"github.com/cryptoecc/ETH-ECC/common"
+	"github.com/cryptoecc/ETH-ECC/common/hexutil"
+	"github.com/cryptoecc/ETH-ECC/core/types"
+	"github.com/cryptoecc/ETH-ECC/internal/ethapi"
+	"github.com/cryptoecc/ETH-ECC/signer/core"
+	"github.com/cryptoecc/ETH-ECC/signer/storage"
 )
 
 const JS = `

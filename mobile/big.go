@@ -22,7 +22,7 @@ import (
 	"errors"
 	"math/big"
 
-	"github.com/Onther-Tech/go-ethereum/common"
+	"github.com/cryptoecc/ETH-ECC/common"
 )
 
 // A BigInt represents a signed multi-precision integer.

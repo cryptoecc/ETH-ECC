@@ -20,7 +20,7 @@ package testlog
 import (
 	"testing"
 
-	"github.com/Onther-Tech/go-ethereum/log"
+	"github.com/cryptoecc/ETH-ECC/log"
 )
 
 // Logger returns a logger which logs to the unit test log of t.

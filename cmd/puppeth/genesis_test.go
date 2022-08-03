@@ -23,7 +23,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/Onther-Tech/go-ethereum/core"
+	"github.com/cryptoecc/ETH-ECC/core"
 	"github.com/davecgh/go-spew/spew"
 )
 

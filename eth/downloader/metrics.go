@@ -19,7 +19,7 @@
 package downloader
 
 import (
-	"github.com/Onther-Tech/go-ethereum/metrics"
+	"github.com/cryptoecc/ETH-ECC/metrics"
 )
 
 var (

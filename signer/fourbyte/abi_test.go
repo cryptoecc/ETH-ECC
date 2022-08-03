@@ -22,8 +22,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/Onther-Tech/go-ethereum/accounts/abi"
-	"github.com/Onther-Tech/go-ethereum/common"
+	"github.com/cryptoecc/ETH-ECC/accounts/abi"
+	"github.com/cryptoecc/ETH-ECC/common"
 )
 
 func verify(t *testing.T, jsondata, calldata string, exp []interface{}) {

@@ -22,11 +22,11 @@ import (
 	"os"
 	"strings"
 
-	"github.com/Onther-Tech/go-ethereum/internal/ethapi"
-	"github.com/Onther-Tech/go-ethereum/log"
-	"github.com/Onther-Tech/go-ethereum/signer/core"
-	"github.com/Onther-Tech/go-ethereum/signer/rules/deps"
-	"github.com/Onther-Tech/go-ethereum/signer/storage"
+	"github.com/cryptoecc/ETH-ECC/internal/ethapi"
+	"github.com/cryptoecc/ETH-ECC/log"
+	"github.com/cryptoecc/ETH-ECC/signer/core"
+	"github.com/cryptoecc/ETH-ECC/signer/rules/deps"
+	"github.com/cryptoecc/ETH-ECC/signer/storage"
 	"github.com/robertkrimen/otto"
 )
 

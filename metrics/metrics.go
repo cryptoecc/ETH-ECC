@@ -11,7 +11,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Onther-Tech/go-ethereum/log"
+	"github.com/cryptoecc/ETH-ECC/log"
 )
 
 // Enabled is checked by the constructor functions for all of the

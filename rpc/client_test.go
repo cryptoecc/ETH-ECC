@@ -30,7 +30,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Onther-Tech/go-ethereum/log"
+	"github.com/cryptoecc/ETH-ECC/log"
 	"github.com/davecgh/go-spew/spew"
 )
 
@@ -306,7 +306,7 @@ func TestClientSubscribeClose(t *testing.T) {
 	}
 }
 
-// This test reproduces https://github.com/Onther-Tech/go-ethereum/issues/17837 where the
+// This test reproduces https://github.com/cryptoecc/ETH-ECC/issues/17837 where the
 // client hangs during shutdown when Unsubscribe races with Client.Close.
 func TestClientCloseUnsubscribeRace(t *testing.T) {
 	server := newTestServer()

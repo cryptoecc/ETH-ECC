@@ -21,8 +21,8 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/Onther-Tech/go-ethereum/internal/debug"
-	"github.com/Onther-Tech/go-ethereum/params"
+	"github.com/cryptoecc/ETH-ECC/internal/debug"
+	"github.com/cryptoecc/ETH-ECC/params"
 	"gopkg.in/urfave/cli.v1"
 )
 

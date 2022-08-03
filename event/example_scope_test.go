@@ -20,7 +20,7 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/Onther-Tech/go-ethereum/event"
+	"github.com/cryptoecc/ETH-ECC/event"
 )
 
 // This example demonstrates how SubscriptionScope can be used to control the lifetime of

@@ -19,7 +19,7 @@ package downloader
 import (
 	"fmt"
 
-	"github.com/Onther-Tech/go-ethereum/core/types"
+	"github.com/cryptoecc/ETH-ECC/core/types"
 )
 
 // peerDropFn is a callback type for dropping a peer detected as malicious.
