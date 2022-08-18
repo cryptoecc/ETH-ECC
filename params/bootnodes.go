@@ -74,7 +74,7 @@ var GoerliBootnodes = []string{
 // LveBootnodes are the enode URLs of the P2P bootstrap nodes running on the
 // Lve network.
 var LveBootnodes = []string{
-	"enode://cf4760feb2d6bc0f5622b301a7917b9ccae2aa46c20b03af4da20190c988a76557a7d6bfdcebd0361463019bd39a4fc9b017a974e0d7384ee23f76ddc25fe329@3.1.96.244:30301"
+	"enode://cf4760feb2d6bc0f5622b301a7917b9ccae2aa46c20b03af4da20190c988a76557a7d6bfdcebd0361463019bd39a4fc9b017a974e0d7384ee23f76ddc25fe329@3.1.96.244:30301",
 }
 
 // LvetestBootnodes are the enode URLs of the P2P bootstrap nodes running on the
