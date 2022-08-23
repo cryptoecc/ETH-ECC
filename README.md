@@ -21,6 +21,10 @@
 
 [Go to PDF guide](https://drive.google.com/file/d/1bCmuQf9TRn3uccVyYzlnPIfJfMSn0KBJ/view?usp=sharing)
 
+### How to check NFT smart contract in ETH-ECC
+
+[Go to PDF guide](https://drive.google.com/file/d/1fHLjr5VJfe_HaSFClLPb-psawsxb0SAo/view?usp=sharing)
+
 ## Lecture
 ### 2019 Blockchain Special Lecture
 1. [Blockchain Economy, 이흥노](https://youtu.be/1_xI0SibZAE)
