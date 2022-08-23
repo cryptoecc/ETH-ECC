@@ -17,6 +17,9 @@
 
 [Go to Build private network and test](https://github.com/cryptoecc/ETH-ECC/blob/master/tutorial.md)
 
+### How to deploy smart contract in ETH-ECC
+
+[Go to PDF guide](https://drive.google.com/file/d/1bCmuQf9TRn3uccVyYzlnPIfJfMSn0KBJ/view?usp=sharing)
 
 ## Lecture
 ### 2019 Blockchain Special Lecture
