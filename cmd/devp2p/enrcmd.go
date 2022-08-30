@@ -30,7 +30,7 @@ import (
 	"github.com/cryptoecc/ETH-ECC/p2p/enode"
 	"github.com/cryptoecc/ETH-ECC/p2p/enr"
 	"github.com/cryptoecc/ETH-ECC/rlp"
-	"gopkg.in/urfave/cli.v1"
+	"github.com/urfave/cli"
 )
 
 var enrdumpCommand = cli.Command{

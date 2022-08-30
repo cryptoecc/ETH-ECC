@@ -23,7 +23,7 @@ import (
 
 	"github.com/cryptoecc/ETH-ECC/accounts/keystore"
 	"github.com/cryptoecc/ETH-ECC/cmd/utils"
-	"gopkg.in/urfave/cli.v1"
+	"github.com/urfave/cli"
 )
 
 var newPassphraseFlag = cli.StringFlag{

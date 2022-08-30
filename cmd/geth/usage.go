@@ -26,7 +26,7 @@ import (
 
 	"github.com/cryptoecc/ETH-ECC/cmd/utils"
 	"github.com/cryptoecc/ETH-ECC/internal/debug"
-	cli "gopkg.in/urfave/cli.v1"
+	cli "github.com/urfave/cli"
 )
 
 // AppHelpTemplate is the test template for the default, global app help topic.

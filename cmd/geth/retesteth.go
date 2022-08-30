@@ -47,7 +47,7 @@ import (
 	"github.com/cryptoecc/ETH-ECC/rpc"
 	"github.com/cryptoecc/ETH-ECC/trie"
 
-	cli "gopkg.in/urfave/cli.v1"
+	cli "github.com/urfave/cli"
 )
 
 var (

@@ -23,7 +23,7 @@ import (
 	"strings"
 
 	"github.com/cryptoecc/ETH-ECC/core/asm"
-	cli "gopkg.in/urfave/cli.v1"
+	cli "github.com/urfave/cli"
 )
 
 var disasmCommand = cli.Command{

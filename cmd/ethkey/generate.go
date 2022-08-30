@@ -27,7 +27,7 @@ import (
 	"github.com/cryptoecc/ETH-ECC/cmd/utils"
 	"github.com/cryptoecc/ETH-ECC/crypto"
 	"github.com/pborman/uuid"
-	"gopkg.in/urfave/cli.v1"
+	"github.com/urfave/cli"
 )
 
 type outputGenerate struct {

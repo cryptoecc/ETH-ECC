@@ -42,7 +42,7 @@ import (
 	"github.com/cryptoecc/ETH-ECC/metrics"
 	"github.com/cryptoecc/ETH-ECC/node"
 	"github.com/elastic/gosigar"
-	cli "gopkg.in/urfave/cli.v1"
+	cli "github.com/urfave/cli"
 )
 
 const (

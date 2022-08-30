@@ -25,7 +25,7 @@ import (
 	"github.com/cryptoecc/ETH-ECC/cmd/utils"
 	"github.com/cryptoecc/ETH-ECC/common/fdlimit"
 	"github.com/cryptoecc/ETH-ECC/log"
-	"gopkg.in/urfave/cli.v1"
+	"github.com/urfave/cli"
 )
 
 const (

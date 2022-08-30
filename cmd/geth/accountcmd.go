@@ -26,7 +26,7 @@ import (
 	"github.com/cryptoecc/ETH-ECC/console"
 	"github.com/cryptoecc/ETH-ECC/crypto"
 	"github.com/cryptoecc/ETH-ECC/log"
-	"gopkg.in/urfave/cli.v1"
+	"github.com/urfave/cli"
 )
 
 var (

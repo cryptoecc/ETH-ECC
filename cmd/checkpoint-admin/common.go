@@ -28,7 +28,7 @@ import (
 	"github.com/cryptoecc/ETH-ECC/ethclient"
 	"github.com/cryptoecc/ETH-ECC/params"
 	"github.com/cryptoecc/ETH-ECC/rpc"
-	"gopkg.in/urfave/cli.v1"
+	"github.com/urfave/cli"
 )
 
 // newClient creates a client with specified remote URL.

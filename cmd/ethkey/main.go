@@ -21,7 +21,7 @@ import (
 	"os"
 
 	"github.com/cryptoecc/ETH-ECC/cmd/utils"
-	"gopkg.in/urfave/cli.v1"
+	"github.com/urfave/cli"
 )
 
 const (

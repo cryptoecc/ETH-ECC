@@ -24,7 +24,7 @@ import (
 	"github.com/cryptoecc/ETH-ECC/accounts/keystore"
 	"github.com/cryptoecc/ETH-ECC/cmd/utils"
 	"github.com/cryptoecc/ETH-ECC/crypto"
-	"gopkg.in/urfave/cli.v1"
+	"github.com/urfave/cli"
 )
 
 type outputInspect struct {

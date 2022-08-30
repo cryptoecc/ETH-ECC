@@ -28,7 +28,7 @@ import (
 	"github.com/cryptoecc/ETH-ECC/common/compiler"
 	"github.com/cryptoecc/ETH-ECC/crypto"
 	"github.com/cryptoecc/ETH-ECC/log"
-	"gopkg.in/urfave/cli.v1"
+	"github.com/urfave/cli"
 )
 
 const (

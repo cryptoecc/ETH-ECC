@@ -36,7 +36,7 @@ import (
 	"github.com/cryptoecc/ETH-ECC/core/vm/runtime"
 	"github.com/cryptoecc/ETH-ECC/log"
 	"github.com/cryptoecc/ETH-ECC/params"
-	cli "gopkg.in/urfave/cli.v1"
+	cli "github.com/urfave/cli"
 )
 
 var runCommand = cli.Command{

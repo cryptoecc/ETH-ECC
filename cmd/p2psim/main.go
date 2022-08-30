@@ -51,7 +51,7 @@ import (
 	"github.com/cryptoecc/ETH-ECC/p2p/simulations"
 	"github.com/cryptoecc/ETH-ECC/p2p/simulations/adapters"
 	"github.com/cryptoecc/ETH-ECC/rpc"
-	"gopkg.in/urfave/cli.v1"
+	"github.com/urfave/cli"
 )
 
 var client *simulations.Client

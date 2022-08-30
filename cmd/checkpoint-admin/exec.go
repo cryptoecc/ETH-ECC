@@ -36,7 +36,7 @@ import (
 	"github.com/cryptoecc/ETH-ECC/log"
 	"github.com/cryptoecc/ETH-ECC/params"
 	"github.com/cryptoecc/ETH-ECC/rpc"
-	"gopkg.in/urfave/cli.v1"
+	"github.com/urfave/cli"
 )
 
 var commandDeploy = cli.Command{

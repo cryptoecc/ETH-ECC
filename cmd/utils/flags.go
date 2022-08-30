@@ -65,7 +65,7 @@ import (
 	"github.com/cryptoecc/ETH-ECC/rpc"
 	whisper "github.com/cryptoecc/ETH-ECC/whisper/whisperv6"
 	pcsclite "github.com/gballet/go-libpcsclite"
-	cli "gopkg.in/urfave/cli.v1"
+	cli "github.com/urfave/cli"
 )
 
 var (

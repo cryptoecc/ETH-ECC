@@ -25,7 +25,7 @@ import (
 	"github.com/cryptoecc/ETH-ECC/cmd/utils"
 	"github.com/cryptoecc/ETH-ECC/console"
 	"github.com/cryptoecc/ETH-ECC/crypto"
-	"gopkg.in/urfave/cli.v1"
+	"github.com/urfave/cli"
 )
 
 // promptPassphrase prompts the user for a passphrase.  Set confirmation to true

@@ -55,7 +55,7 @@ import (
 	"github.com/cryptoecc/ETH-ECC/signer/storage"
 	colorable "github.com/mattn/go-colorable"
 	"github.com/mattn/go-isatty"
-	"gopkg.in/urfave/cli.v1"
+	"github.com/urfave/cli"
 )
 
 const legalWarning = `

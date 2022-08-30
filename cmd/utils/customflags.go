@@ -27,7 +27,7 @@ import (
 	"strings"
 
 	"github.com/cryptoecc/ETH-ECC/common/math"
-	"gopkg.in/urfave/cli.v1"
+	"github.com/urfave/cli"
 )
 
 // Custom type which is registered in the flags library which cli uses for
