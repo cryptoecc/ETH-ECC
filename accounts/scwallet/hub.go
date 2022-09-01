@@ -34,17 +34,17 @@ package scwallet
 
 import (
 	"encoding/json"
-	"io/ioutil"
+	"io"
 	"os"
 	"path/filepath"
 	"sort"
 	"sync"
 	"time"
 
-	"github.com/cryptoecc/ETH-ECC/accounts"
-	"github.com/cryptoecc/ETH-ECC/common"
-	"github.com/cryptoecc/ETH-ECC/event"
-	"github.com/cryptoecc/ETH-ECC/log"
+	"github.com/ethereum/go-ethereum/accounts"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/event"
+	"github.com/ethereum/go-ethereum/log"
 	pcsc "github.com/gballet/go-libpcsclite"
 )
 
@@ -96,7 +96,7 @@ func (hub *Hub) readPairings() error {
 		return err
 	}
 
-	pairingData, err := ioutil.ReadAll(pairingFile)
+	pairingData, err := io.ReadAll(pairingFile)
 	if err != nil {
 		return err
 	}
@@ -220,7 +220,7 @@ func (hub *Hub) refreshWallets() {
 		// Mark the reader as present
 		seen[reader] = struct{}{}
 
-		// If we alreay know about this card, skip to the next reader, otherwise clean up
+		// If we already know about this card, skip to the next reader, otherwise clean up
 		if wallet, ok := hub.wallets[reader]; ok {
 			if err := wallet.ping(); err == nil {
 				continue

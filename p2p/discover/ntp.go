@@ -25,7 +25,7 @@ import (
 	"sort"
 	"time"
 
-	"github.com/cryptoecc/ETH-ECC/log"
+	"github.com/ethereum/go-ethereum/log"
 )
 
 const (
@@ -108,7 +108,7 @@ func sntpDrift(measurements int) (time.Duration, error) {
 		// Calculate the drift based on an assumed answer time of RRT/2
 		drifts = append(drifts, sent.Sub(t)+elapsed/2)
 	}
-	// Calculate average drif (drop two extremities to avoid outliers)
+	// Calculate average drift (drop two extremities to avoid outliers)
 	sort.Sort(durationSlice(drifts))
 
 	drift := time.Duration(0)

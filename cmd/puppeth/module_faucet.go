@@ -26,14 +26,14 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/cryptoecc/ETH-ECC/common"
-	"github.com/cryptoecc/ETH-ECC/log"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/log"
 )
 
 // faucetDockerfile is the Dockerfile required to build a faucet container to
 // grant crypto tokens based on GitHub authentications.
 var faucetDockerfile = `
-FROM cd4761/eth-ecc:alltools-latest
+FROM ethereum/client-go:alltools-latest
 
 ADD genesis.json /genesis.json
 ADD account.json /account.json
@@ -46,6 +46,7 @@ ENTRYPOINT [ \
 	"--faucet.name", "{{.FaucetName}}", "--faucet.amount", "{{.FaucetAmount}}", "--faucet.minutes", "{{.FaucetMinutes}}", "--faucet.tiers", "{{.FaucetTiers}}",             \
 	"--account.json", "/account.json", "--account.pass", "/account.pass"                                                                                                    \
 	{{if .CaptchaToken}}, "--captcha.token", "{{.CaptchaToken}}", "--captcha.secret", "{{.CaptchaSecret}}"{{end}}{{if .NoAuth}}, "--noauth"{{end}}                          \
+	{{if .TwitterToken}}, "--twitter.token.v1", "{{.TwitterToken}}"{{end}}                                                                                                  \
 ]`
 
 // faucetComposefile is the docker-compose.yml file required to deploy and maintain
@@ -71,6 +72,7 @@ services:
       - FAUCET_TIERS={{.FaucetTiers}}
       - CAPTCHA_TOKEN={{.CaptchaToken}}
       - CAPTCHA_SECRET={{.CaptchaSecret}}
+      - TWITTER_TOKEN={{.TwitterToken}}
       - NO_AUTH={{.NoAuth}}{{if .VHost}}
       - VIRTUAL_HOST={{.VHost}}
       - VIRTUAL_PORT=8080{{end}}
@@ -103,6 +105,7 @@ func deployFaucet(client *sshClient, network string, bootnodes []string, config 
 		"FaucetMinutes": config.minutes,
 		"FaucetTiers":   config.tiers,
 		"NoAuth":        config.noauth,
+		"TwitterToken":  config.twitterToken,
 	})
 	files[filepath.Join(workdir, "Dockerfile")] = dockerfile.Bytes()
 
@@ -113,13 +116,14 @@ func deployFaucet(client *sshClient, network string, bootnodes []string, config 
 		"VHost":         config.host,
 		"ApiPort":       config.port,
 		"EthPort":       config.node.port,
-		"EthName":       config.node.ethstats[:strings.Index(config.node.ethstats, ":")],
+		"EthName":       getEthName(config.node.ethstats),
 		"CaptchaToken":  config.captchaToken,
 		"CaptchaSecret": config.captchaSecret,
 		"FaucetAmount":  config.amount,
 		"FaucetMinutes": config.minutes,
 		"FaucetTiers":   config.tiers,
 		"NoAuth":        config.noauth,
+		"TwitterToken":  config.twitterToken,
 	})
 	files[filepath.Join(workdir, "docker-compose.yaml")] = composefile.Bytes()
 
@@ -152,6 +156,7 @@ type faucetInfos struct {
 	noauth        bool
 	captchaToken  string
 	captchaSecret string
+	twitterToken  string
 }
 
 // Report converts the typed struct into a plain string->string map, containing
@@ -165,6 +170,7 @@ func (info *faucetInfos) Report() map[string]string {
 		"Funding cooldown (base tier)": fmt.Sprintf("%d mins", info.minutes),
 		"Funding tiers":                strconv.Itoa(info.tiers),
 		"Captha protection":            fmt.Sprintf("%v", info.captchaToken != ""),
+		"Using Twitter API":            fmt.Sprintf("%v", info.twitterToken != ""),
 		"Ethstats username":            info.node.ethstats,
 	}
 	if info.noauth {
@@ -213,7 +219,7 @@ func checkFaucet(client *sshClient, network string) (*faucetInfos, error) {
 	minutes, _ := strconv.Atoi(infos.envvars["FAUCET_MINUTES"])
 	tiers, _ := strconv.Atoi(infos.envvars["FAUCET_TIERS"])
 
-	// Retrieve the funding account informations
+	// Retrieve the funding account information
 	var out []byte
 	keyJSON, keyPass := "", ""
 	if out, err = client.Run(fmt.Sprintf("docker exec %s_faucet_1 cat /account.json", network)); err == nil {
@@ -243,5 +249,6 @@ func checkFaucet(client *sshClient, network string) (*faucetInfos, error) {
 		captchaToken:  infos.envvars["CAPTCHA_TOKEN"],
 		captchaSecret: infos.envvars["CAPTCHA_SECRET"],
 		noauth:        infos.envvars["NO_AUTH"] == "true",
+		twitterToken:  infos.envvars["TWITTER_TOKEN"],
 	}, nil
 }

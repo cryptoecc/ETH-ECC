@@ -17,11 +17,12 @@
 package enr
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"net"
 
-	"github.com/cryptoecc/ETH-ECC/rlp"
+	"github.com/ethereum/go-ethereum/rlp"
 )
 
 // Entry is implemented by known node record entry types.
@@ -180,9 +181,16 @@ func (err *KeyError) Error() string {
 	return fmt.Sprintf("ENR key %q: %v", err.Key, err.Err)
 }
 
+func (err *KeyError) Unwrap() error {
+	return err.Err
+}
+
 // IsNotFound reports whether the given error means that a key/value pair is
 // missing from a record.
 func IsNotFound(err error) bool {
-	kerr, ok := err.(*KeyError)
-	return ok && kerr.Err == errNotFound
+	var ke *KeyError
+	if errors.As(err, &ke) {
+		return ke.Err == errNotFound
+	}
+	return false
 }

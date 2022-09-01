@@ -21,9 +21,9 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/cryptoecc/ETH-ECC/accounts/keystore"
-	"github.com/cryptoecc/ETH-ECC/common"
-	"github.com/cryptoecc/ETH-ECC/log"
+	"github.com/ethereum/go-ethereum/accounts/keystore"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/log"
 )
 
 // deployNode creates a new node configuration based on some user input.
@@ -145,21 +145,6 @@ func (w *wizard) deployNode(boot bool) {
 					log.Error("Failed to decrypt key with given password")
 					return
 				}
-			}
-		} else if w.conf.Genesis.Config.EccPoW != nil {
-			// Ethash based miners only need an etherbase to mine against
-			fmt.Println()
-			if infos.etherbase == "" {
-				fmt.Printf("What address should the miner use?\n")
-				for {
-					if address := w.readAddress(); address != nil {
-						infos.etherbase = address.Hex()
-						break
-					}
-				}
-			} else {
-				fmt.Printf("What address should the miner use? (default = %s)\n", infos.etherbase)
-				infos.etherbase = w.readDefaultAddress(common.HexToAddress(infos.etherbase)).Hex()
 			}
 		}
 		// Establish the gas dynamics to be enforced by the signer

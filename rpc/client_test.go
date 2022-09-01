@@ -18,6 +18,7 @@ package rpc
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"math/rand"
 	"net"
@@ -26,12 +27,13 @@ import (
 	"os"
 	"reflect"
 	"runtime"
+	"strings"
 	"sync"
 	"testing"
 	"time"
 
-	"github.com/cryptoecc/ETH-ECC/log"
 	"github.com/davecgh/go-spew/spew"
+	"github.com/ethereum/go-ethereum/log"
 )
 
 func TestClientRequest(t *testing.T) {
@@ -40,12 +42,56 @@ func TestClientRequest(t *testing.T) {
 	client := DialInProc(server)
 	defer client.Close()
 
-	var resp Result
-	if err := client.Call(&resp, "test_echo", "hello", 10, &Args{"world"}); err != nil {
+	var resp echoResult
+	if err := client.Call(&resp, "test_echo", "hello", 10, &echoArgs{"world"}); err != nil {
 		t.Fatal(err)
 	}
-	if !reflect.DeepEqual(resp, Result{"hello", 10, &Args{"world"}}) {
+	if !reflect.DeepEqual(resp, echoResult{"hello", 10, &echoArgs{"world"}}) {
 		t.Errorf("incorrect result %#v", resp)
+	}
+}
+
+func TestClientResponseType(t *testing.T) {
+	server := newTestServer()
+	defer server.Stop()
+	client := DialInProc(server)
+	defer client.Close()
+
+	if err := client.Call(nil, "test_echo", "hello", 10, &echoArgs{"world"}); err != nil {
+		t.Errorf("Passing nil as result should be fine, but got an error: %v", err)
+	}
+	var resultVar echoResult
+	// Note: passing the var, not a ref
+	err := client.Call(resultVar, "test_echo", "hello", 10, &echoArgs{"world"})
+	if err == nil {
+		t.Error("Passing a var as result should be an error")
+	}
+}
+
+// This test checks that server-returned errors with code and data come out of Client.Call.
+func TestClientErrorData(t *testing.T) {
+	server := newTestServer()
+	defer server.Stop()
+	client := DialInProc(server)
+	defer client.Close()
+
+	var resp interface{}
+	err := client.Call(&resp, "test_returnError")
+	if err == nil {
+		t.Fatal("expected error")
+	}
+
+	// Check code.
+	if e, ok := err.(Error); !ok {
+		t.Fatalf("client did not return rpc.Error, got %#v", e)
+	} else if e.ErrorCode() != (testError{}.ErrorCode()) {
+		t.Fatalf("wrong error code %d, want %d", e.ErrorCode(), testError{}.ErrorCode())
+	}
+	// Check data.
+	if e, ok := err.(DataError); !ok {
+		t.Fatalf("client did not return rpc.DataError, got %#v", e)
+	} else if e.ErrorData() != (testError{}.ErrorData()) {
+		t.Fatalf("wrong error data %#v, want %#v", e.ErrorData(), testError{}.ErrorData())
 	}
 }
 
@@ -58,13 +104,13 @@ func TestClientBatchRequest(t *testing.T) {
 	batch := []BatchElem{
 		{
 			Method: "test_echo",
-			Args:   []interface{}{"hello", 10, &Args{"world"}},
-			Result: new(Result),
+			Args:   []interface{}{"hello", 10, &echoArgs{"world"}},
+			Result: new(echoResult),
 		},
 		{
 			Method: "test_echo",
-			Args:   []interface{}{"hello2", 11, &Args{"world"}},
-			Result: new(Result),
+			Args:   []interface{}{"hello2", 11, &echoArgs{"world"}},
+			Result: new(echoResult),
 		},
 		{
 			Method: "no_such_method",
@@ -78,13 +124,13 @@ func TestClientBatchRequest(t *testing.T) {
 	wantResult := []BatchElem{
 		{
 			Method: "test_echo",
-			Args:   []interface{}{"hello", 10, &Args{"world"}},
-			Result: &Result{"hello", 10, &Args{"world"}},
+			Args:   []interface{}{"hello", 10, &echoArgs{"world"}},
+			Result: &echoResult{"hello", 10, &echoArgs{"world"}},
 		},
 		{
 			Method: "test_echo",
-			Args:   []interface{}{"hello2", 11, &Args{"world"}},
-			Result: &Result{"hello2", 11, &Args{"world"}},
+			Args:   []interface{}{"hello2", 11, &echoArgs{"world"}},
+			Result: &echoResult{"hello2", 11, &echoArgs{"world"}},
 		},
 		{
 			Method: "no_such_method",
@@ -104,7 +150,7 @@ func TestClientNotify(t *testing.T) {
 	client := DialInProc(server)
 	defer client.Close()
 
-	if err := client.Notify(context.Background(), "test_echo", "hello", 10, &Args{"world"}); err != nil {
+	if err := client.Notify(context.Background(), "test_echo", "hello", 10, &echoArgs{"world"}); err != nil {
 		t.Fatal(err)
 	}
 }
@@ -162,7 +208,7 @@ func testClientCancel(transport string, t *testing.T) {
 	var (
 		wg       sync.WaitGroup
 		nreqs    = 10
-		ncallers = 6
+		ncallers = 10
 	)
 	caller := func(index int) {
 		defer wg.Done()
@@ -183,14 +229,16 @@ func testClientCancel(transport string, t *testing.T) {
 				// deadline.
 				ctx, cancel = context.WithTimeout(context.Background(), timeout)
 			}
+
 			// Now perform a call with the context.
 			// The key thing here is that no call will ever complete successfully.
-			sleepTime := maxContextCancelTimeout + 20*time.Millisecond
-			err := client.CallContext(ctx, nil, "test_sleep", sleepTime)
-			if err != nil {
-				log.Debug(fmt.Sprint("got expected error:", err))
-			} else {
-				t.Errorf("no error for call with %v wait time", timeout)
+			err := client.CallContext(ctx, nil, "test_block")
+			switch {
+			case err == nil:
+				_, hasDeadline := ctx.Deadline()
+				t.Errorf("no error for call with %v wait time (deadline: %v)", timeout, hasDeadline)
+				// default:
+				// 	t.Logf("got expected error with %v wait time: %v", timeout, err)
 			}
 			cancel()
 		}
@@ -280,7 +328,7 @@ func TestClientSubscribeClose(t *testing.T) {
 
 	var (
 		nc   = make(chan int)
-		errc = make(chan error)
+		errc = make(chan error, 1)
 		sub  *ClientSubscription
 		err  error
 	)
@@ -306,7 +354,7 @@ func TestClientSubscribeClose(t *testing.T) {
 	}
 }
 
-// This test reproduces https://github.com/cryptoecc/ETH-ECC/issues/17837 where the
+// This test reproduces https://github.com/ethereum/go-ethereum/issues/17837 where the
 // client hangs during shutdown when Unsubscribe races with Client.Close.
 func TestClientCloseUnsubscribeRace(t *testing.T) {
 	server := newTestServer()
@@ -326,6 +374,93 @@ func TestClientCloseUnsubscribeRace(t *testing.T) {
 		case <-time.After(5 * time.Second):
 			t.Fatal("subscription not closed within timeout")
 		}
+	}
+}
+
+// unsubscribeRecorder collects the subscription IDs of *_unsubscribe calls.
+type unsubscribeRecorder struct {
+	ServerCodec
+	unsubscribes map[string]bool
+}
+
+func (r *unsubscribeRecorder) readBatch() ([]*jsonrpcMessage, bool, error) {
+	if r.unsubscribes == nil {
+		r.unsubscribes = make(map[string]bool)
+	}
+
+	msgs, batch, err := r.ServerCodec.readBatch()
+	for _, msg := range msgs {
+		if msg.isUnsubscribe() {
+			var params []string
+			if err := json.Unmarshal(msg.Params, &params); err != nil {
+				panic("unsubscribe decode error: " + err.Error())
+			}
+			r.unsubscribes[params[0]] = true
+		}
+	}
+	return msgs, batch, err
+}
+
+// This checks that Client calls the _unsubscribe method on the server when Unsubscribe is
+// called on a subscription.
+func TestClientSubscriptionUnsubscribeServer(t *testing.T) {
+	t.Parallel()
+
+	// Create the server.
+	srv := NewServer()
+	srv.RegisterName("nftest", new(notificationTestService))
+	p1, p2 := net.Pipe()
+	recorder := &unsubscribeRecorder{ServerCodec: NewCodec(p1)}
+	go srv.ServeCodec(recorder, OptionMethodInvocation|OptionSubscriptions)
+	defer srv.Stop()
+
+	// Create the client on the other end of the pipe.
+	client, _ := newClient(context.Background(), func(context.Context) (ServerCodec, error) {
+		return NewCodec(p2), nil
+	})
+	defer client.Close()
+
+	// Create the subscription.
+	ch := make(chan int)
+	sub, err := client.Subscribe(context.Background(), "nftest", ch, "someSubscription", 1, 1)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// Unsubscribe and check that unsubscribe was called.
+	sub.Unsubscribe()
+	if !recorder.unsubscribes[sub.subid] {
+		t.Fatal("client did not call unsubscribe method")
+	}
+	if _, open := <-sub.Err(); open {
+		t.Fatal("subscription error channel not closed after unsubscribe")
+	}
+}
+
+// This checks that the subscribed channel can be closed after Unsubscribe.
+// It is the reproducer for https://github.com/ethereum/go-ethereum/issues/22322
+func TestClientSubscriptionChannelClose(t *testing.T) {
+	t.Parallel()
+
+	var (
+		srv     = NewServer()
+		httpsrv = httptest.NewServer(srv.WebsocketHandler(nil))
+		wsURL   = "ws:" + strings.TrimPrefix(httpsrv.URL, "http:")
+	)
+	defer srv.Stop()
+	defer httpsrv.Close()
+
+	srv.RegisterName("nftest", new(notificationTestService))
+	client, _ := Dial(wsURL)
+
+	for i := 0; i < 100; i++ {
+		ch := make(chan int, 100)
+		sub, err := client.Subscribe(context.Background(), "nftest", ch, "someSubscription", maxClientSubscriptionBuffer-1, 1)
+		if err != nil {
+			t.Fatal(err)
+		}
+		sub.Unsubscribe()
+		close(ch)
 	}
 }
 
@@ -380,7 +515,43 @@ func TestClientNotificationStorm(t *testing.T) {
 	}
 
 	doTest(8000, false)
-	doTest(21000, true)
+	doTest(24000, true)
+}
+
+func TestClientSetHeader(t *testing.T) {
+	var gotHeader bool
+	srv := newTestServer()
+	httpsrv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Header.Get("test") == "ok" {
+			gotHeader = true
+		}
+		srv.ServeHTTP(w, r)
+	}))
+	defer httpsrv.Close()
+	defer srv.Stop()
+
+	client, err := Dial(httpsrv.URL)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer client.Close()
+
+	client.SetHeader("test", "ok")
+	if _, err := client.SupportedModules(); err != nil {
+		t.Fatal(err)
+	}
+	if !gotHeader {
+		t.Fatal("client did not set custom header")
+	}
+
+	// Check that Content-Type can be replaced.
+	client.SetHeader("content-type", "application/x-garbage")
+	_, err = client.SupportedModules()
+	if err == nil {
+		t.Fatal("no error for invalid content-type header")
+	} else if !strings.Contains(err.Error(), "Unsupported Media Type") {
+		t.Fatalf("error is not related to content-type: %q", err)
+	}
 }
 
 func TestClientHTTP(t *testing.T) {
@@ -393,16 +564,15 @@ func TestClientHTTP(t *testing.T) {
 
 	// Launch concurrent requests.
 	var (
-		results    = make([]Result, 100)
-		errc       = make(chan error)
-		wantResult = Result{"a", 1, new(Args)}
+		results    = make([]echoResult, 100)
+		errc       = make(chan error, len(results))
+		wantResult = echoResult{"a", 1, new(echoArgs)}
 	)
 	defer client.Close()
 	for i := range results {
 		i := i
 		go func() {
-			errc <- client.Call(&results[i], "test_echo",
-				wantResult.String, wantResult.Int, wantResult.Args)
+			errc <- client.Call(&results[i], "test_echo", wantResult.String, wantResult.Int, wantResult.Args)
 		}()
 	}
 
@@ -448,9 +618,10 @@ func TestClientReconnect(t *testing.T) {
 	if err != nil {
 		t.Fatal("can't dial", err)
 	}
+	defer client.Close()
 
 	// Perform a call. This should work because the server is up.
-	var resp Result
+	var resp echoResult
 	if err := client.CallContext(ctx, &resp, "test_echo", "", 1, nil); err != nil {
 		t.Fatal(err)
 	}
@@ -478,7 +649,7 @@ func TestClientReconnect(t *testing.T) {
 	for i := 0; i < cap(errors); i++ {
 		go func() {
 			<-start
-			var resp Result
+			var resp echoResult
 			errors <- client.CallContext(ctx, &resp, "test_echo", "", 3, nil)
 		}()
 	}

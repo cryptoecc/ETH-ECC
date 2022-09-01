@@ -19,16 +19,15 @@ package ethash
 import (
 	"bytes"
 	"encoding/binary"
-	"io/ioutil"
 	"math/big"
 	"os"
 	"reflect"
 	"sync"
 	"testing"
 
-	"github.com/cryptoecc/ETH-ECC/common"
-	"github.com/cryptoecc/ETH-ECC/common/hexutil"
-	"github.com/cryptoecc/ETH-ECC/core/types"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/common/hexutil"
+	"github.com/ethereum/go-ethereum/core/types"
 )
 
 // prepare converts an ethash cache or dataset from a byte stream into the internal
@@ -698,7 +697,9 @@ func TestHashimoto(t *testing.T) {
 // Tests that caches generated on disk may be done concurrently.
 func TestConcurrentDiskCacheGeneration(t *testing.T) {
 	// Create a temp folder to generate the caches into
-	cachedir, err := ioutil.TempDir("", "")
+	// TODO: t.TempDir fails to remove the directory on Windows
+	// \AppData\Local\Temp\1\TestConcurrentDiskCacheGeneration2382060137\001\cache-R23-1dca8a85e74aa763: Access is denied.
+	cachedir, err := os.MkdirTemp("", "")
 	if err != nil {
 		t.Fatalf("Failed to create temporary cache dir: %v", err)
 	}
@@ -726,12 +727,16 @@ func TestConcurrentDiskCacheGeneration(t *testing.T) {
 
 	for i := 0; i < 3; i++ {
 		pend.Add(1)
-
 		go func(idx int) {
 			defer pend.Done()
-			ethash := New(Config{cachedir, 0, 1, "", 0, 0, ModeNormal}, nil, false)
+
+			config := Config{
+				CacheDir:     cachedir,
+				CachesOnDisk: 1,
+			}
+			ethash := New(config, nil, false)
 			defer ethash.Close()
-			if err := ethash.VerifySeal(nil, block.Header()); err != nil {
+			if err := ethash.verifySeal(nil, block.Header(), false); err != nil {
 				t.Errorf("proc %d: block verification failed: %v", idx, err)
 			}
 		}(i)
@@ -786,4 +791,25 @@ func BenchmarkHashimotoFullSmall(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		hashimotoFull(dataset, hash, 0)
 	}
+}
+
+func benchmarkHashimotoFullMmap(b *testing.B, name string, lock bool) {
+	b.Run(name, func(b *testing.B) {
+		tmpdir := b.TempDir()
+
+		d := &dataset{epoch: 0}
+		d.generate(tmpdir, 1, lock, false)
+		var hash [common.HashLength]byte
+		b.ResetTimer()
+		for i := 0; i < b.N; i++ {
+			binary.PutVarint(hash[:], int64(i))
+			hashimotoFull(d.dataset, hash[:], 0)
+		}
+	})
+}
+
+// Benchmarks the full verification performance for mmap
+func BenchmarkHashimotoFullMmap(b *testing.B) {
+	benchmarkHashimotoFullMmap(b, "WithLock", true)
+	benchmarkHashimotoFullMmap(b, "WithoutLock", false)
 }

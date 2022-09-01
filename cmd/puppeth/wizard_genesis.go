@@ -21,7 +21,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"math/big"
 	"math/rand"
 	"net/http"
@@ -29,10 +28,10 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/cryptoecc/ETH-ECC/common"
-	"github.com/cryptoecc/ETH-ECC/core"
-	"github.com/cryptoecc/ETH-ECC/log"
-	"github.com/cryptoecc/ETH-ECC/params"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/core"
+	"github.com/ethereum/go-ethereum/log"
+	"github.com/ethereum/go-ethereum/params"
 )
 
 // makeGenesis creates a new genesis struct based on some user input.
@@ -51,6 +50,7 @@ func (w *wizard) makeGenesis() {
 			ByzantiumBlock:      big.NewInt(0),
 			ConstantinopleBlock: big.NewInt(0),
 			PetersburgBlock:     big.NewInt(0),
+			IstanbulBlock:       big.NewInt(0),
 		},
 	}
 	// Figure out which consensus engine to choose
@@ -58,7 +58,6 @@ func (w *wizard) makeGenesis() {
 	fmt.Println("Which consensus engine to use? (default = clique)")
 	fmt.Println(" 1. Ethash - proof-of-work")
 	fmt.Println(" 2. Clique - proof-of-authority")
-	fmt.Println(" 3. EccPoW - proof-of-work with LDPC")
 
 	choice := w.read()
 	switch {
@@ -104,10 +103,6 @@ func (w *wizard) makeGenesis() {
 		for i, signer := range signers {
 			copy(genesis.ExtraData[32+i*common.AddressLength:], signer[:])
 		}
-	case choice == "3":
-		// In case of eccpow, we're pretty much done
-		genesis.Config.EccPoW = new(params.EccPoWConfig)
-		genesis.ExtraData = make([]byte, 32)
 
 	default:
 		log.Crit("Invalid consensus engine choice", "choice", choice)
@@ -183,7 +178,7 @@ func (w *wizard) importGenesis() {
 	// Parse the genesis file and inject it successful
 	var genesis core.Genesis
 	if err := json.NewDecoder(reader).Decode(&genesis); err != nil {
-		log.Error("Invalid genesis spec: %v", err)
+		log.Error("Invalid genesis spec", "err", err)
 		return
 	}
 	log.Info("Imported genesis block")
@@ -235,6 +230,18 @@ func (w *wizard) manageGenesis() {
 		fmt.Printf("Which block should Petersburg come into effect? (default = %v)\n", w.conf.Genesis.Config.PetersburgBlock)
 		w.conf.Genesis.Config.PetersburgBlock = w.readDefaultBigInt(w.conf.Genesis.Config.PetersburgBlock)
 
+		fmt.Println()
+		fmt.Printf("Which block should Istanbul come into effect? (default = %v)\n", w.conf.Genesis.Config.IstanbulBlock)
+		w.conf.Genesis.Config.IstanbulBlock = w.readDefaultBigInt(w.conf.Genesis.Config.IstanbulBlock)
+
+		fmt.Println()
+		fmt.Printf("Which block should Berlin come into effect? (default = %v)\n", w.conf.Genesis.Config.BerlinBlock)
+		w.conf.Genesis.Config.BerlinBlock = w.readDefaultBigInt(w.conf.Genesis.Config.BerlinBlock)
+
+		fmt.Println()
+		fmt.Printf("Which block should London come into effect? (default = %v)\n", w.conf.Genesis.Config.LondonBlock)
+		w.conf.Genesis.Config.LondonBlock = w.readDefaultBigInt(w.conf.Genesis.Config.LondonBlock)
+
 		out, _ := json.MarshalIndent(w.conf.Genesis.Config, "", "  ")
 		fmt.Printf("Chain configuration updated:\n\n%s\n", out)
 
@@ -243,8 +250,8 @@ func (w *wizard) manageGenesis() {
 	case "2":
 		// Save whatever genesis configuration we currently have
 		fmt.Println()
-		fmt.Printf("Which folder to save the genesis specs into? (default = current)\n")
-		fmt.Printf("  Will create %s.json, %s-aleth.json, %s-harmony.json, %s-parity.json\n", w.network, w.network, w.network, w.network)
+		fmt.Printf("Which folder to save the genesis spec into? (default = current)\n")
+		fmt.Printf("  Will create %s.json\n", w.network)
 
 		folder := w.readDefaultString(".")
 		if err := os.MkdirAll(folder, 0755); err != nil {
@@ -255,26 +262,11 @@ func (w *wizard) manageGenesis() {
 
 		// Export the native genesis spec used by puppeth and Geth
 		gethJson := filepath.Join(folder, fmt.Sprintf("%s.json", w.network))
-		if err := ioutil.WriteFile((gethJson), out, 0644); err != nil {
+		if err := os.WriteFile(gethJson, out, 0644); err != nil {
 			log.Error("Failed to save genesis file", "err", err)
 			return
 		}
 		log.Info("Saved native genesis chain spec", "path", gethJson)
-
-		// Export the genesis spec used by Aleth (formerly C++ Ethereum)
-		if spec, err := newAlethGenesisSpec(w.network, w.conf.Genesis); err != nil {
-			log.Error("Failed to create Aleth chain spec", "err", err)
-		} else {
-			saveGenesis(folder, w.network, "aleth", spec)
-		}
-		// Export the genesis spec used by Parity
-		if spec, err := newParityChainSpec(w.network, w.conf.Genesis, []string{}); err != nil {
-			log.Error("Failed to create Parity chain spec", "err", err)
-		} else {
-			saveGenesis(folder, w.network, "parity", spec)
-		}
-		// Export the genesis spec used by Harmony (formerly EthereumJ
-		saveGenesis(folder, w.network, "harmony", w.conf.Genesis)
 
 	case "3":
 		// Make sure we don't have any services running
@@ -290,16 +282,4 @@ func (w *wizard) manageGenesis() {
 		log.Error("That's not something I can do")
 		return
 	}
-}
-
-// saveGenesis JSON encodes an arbitrary genesis spec into a pre-defined file.
-func saveGenesis(folder, network, client string, spec interface{}) {
-	path := filepath.Join(folder, fmt.Sprintf("%s-%s.json", network, client))
-
-	out, _ := json.Marshal(spec)
-	if err := ioutil.WriteFile(path, out, 0644); err != nil {
-		log.Error("Failed to save genesis file", "client", client, "err", err)
-		return
-	}
-	log.Info("Saved genesis chain spec", "client", client, "path", path)
 }

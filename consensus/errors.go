@@ -31,7 +31,11 @@ var (
 	// to the current node.
 	ErrFutureBlock = errors.New("block in the future")
 
-	// ErrInvalidNumber is returned if a block's number doesn't equal it's parent's
+	// ErrInvalidNumber is returned if a block's number doesn't equal its parent's
 	// plus one.
 	ErrInvalidNumber = errors.New("invalid block number")
+
+	// ErrInvalidTerminalBlock is returned if a block is invalid wrt. the terminal
+	// total difficulty.
+	ErrInvalidTerminalBlock = errors.New("invalid terminal block")
 )

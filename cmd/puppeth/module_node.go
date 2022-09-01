@@ -26,13 +26,13 @@ import (
 	"strings"
 	"text/template"
 
-	"github.com/cryptoecc/ETH-ECC/common"
-	"github.com/cryptoecc/ETH-ECC/log"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/log"
 )
 
 // nodeDockerfile is the Dockerfile required to run an Ethereum node.
 var nodeDockerfile = `
-FROM cd4761/eth-ecc:latest
+FROM ethereum/client-go:latest
 
 ADD genesis.json /genesis.json
 {{if .Unlock}}
@@ -94,7 +94,7 @@ func deployNode(client *sshClient, network string, bootnodes []string, config *n
 
 	lightFlag := ""
 	if config.peersLight > 0 {
-		lightFlag = fmt.Sprintf("--lightpeers=%d --lightserv=50", config.peersLight)
+		lightFlag = fmt.Sprintf("--light.maxpeers=%d --light.serve=50", config.peersLight)
 	}
 	dockerfile := new(bytes.Buffer)
 	template.Must(template.New("").Parse(nodeDockerfile)).Execute(dockerfile, map[string]interface{}{
@@ -123,7 +123,7 @@ func deployNode(client *sshClient, network string, bootnodes []string, config *n
 		"TotalPeers": config.peersTotal,
 		"Light":      config.peersLight > 0,
 		"LightPeers": config.peersLight,
-		"Ethstats":   config.ethstats[:strings.Index(config.ethstats, ":")],
+		"Ethstats":   getEthName(config.ethstats),
 		"Etherbase":  config.etherbase,
 		"GasTarget":  config.gasTarget,
 		"GasLimit":   config.gasLimit,

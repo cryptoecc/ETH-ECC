@@ -20,23 +20,23 @@ import (
 	"math/big"
 	"testing"
 
-	"github.com/cryptoecc/ETH-ECC/common"
-	"github.com/cryptoecc/ETH-ECC/common/hexutil"
-	"github.com/cryptoecc/ETH-ECC/signer/core"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/common/hexutil"
+	"github.com/ethereum/go-ethereum/signer/core/apitypes"
 )
 
 func mixAddr(a string) (*common.MixedcaseAddress, error) {
 	return common.NewMixedcaseAddressFromString(a)
 }
 func toHexBig(h string) hexutil.Big {
-	b := big.NewInt(0).SetBytes(common.FromHex(h))
+	b := new(big.Int).SetBytes(common.FromHex(h))
 	return hexutil.Big(*b)
 }
 func toHexUint(h string) hexutil.Uint64 {
-	b := big.NewInt(0).SetBytes(common.FromHex(h))
+	b := new(big.Int).SetBytes(common.FromHex(h))
 	return hexutil.Uint64(b.Uint64())
 }
-func dummyTxArgs(t txtestcase) *core.SendTxArgs {
+func dummyTxArgs(t txtestcase) *apitypes.SendTxArgs {
 	to, _ := mixAddr(t.to)
 	from, _ := mixAddr(t.from)
 	n := toHexUint(t.n)
@@ -53,14 +53,13 @@ func dummyTxArgs(t txtestcase) *core.SendTxArgs {
 	if t.i != "" {
 		a := hexutil.Bytes(common.FromHex(t.i))
 		input = &a
-
 	}
-	return &core.SendTxArgs{
+	return &apitypes.SendTxArgs{
 		From:     *from,
 		To:       to,
 		Value:    value,
 		Nonce:    n,
-		GasPrice: gasPrice,
+		GasPrice: &gasPrice,
 		Gas:      gas,
 		Data:     data,
 		Input:    input,
