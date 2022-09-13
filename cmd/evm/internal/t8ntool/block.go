@@ -29,6 +29,7 @@ import (
 	"github.com/ethereum/go-ethereum/common/math"
 	"github.com/ethereum/go-ethereum/consensus/clique"
 	"github.com/ethereum/go-ethereum/consensus/ethash"
+	"github.com/ethereum/go-ethereum/consensus/eccpow"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/log"
@@ -207,7 +208,7 @@ func (i *bbInput) sealEccpow(block *types.Block) (*types.Block, error) {
 	}
 
 	//!!true or false? // eccpow
-	engine = eccpow.New(eccpow.Config{}, nil, true)
+	engine := eccpow.New(eccpow.Config{}, nil, true)
 	defer engine.Close()
 	// Use a buffered chan for results.
 	// If the testmode is used, the sealer will return quickly, and complain
@@ -289,7 +290,7 @@ func readInput(ctx *cli.Context) (*bbInput, error) {
 		ommersStr  = ctx.String(InputOmmersFlag.Name)
 		txsStr     = ctx.String(InputTxsRlpFlag.Name)
 		cliqueStr  = ctx.String(SealCliqueFlag.Name)
-		eccpowOn  = ctx.String(SealEccpowFlag.Name)
+		eccpowOn  = ctx.Bool(SealEccpowFlag.Name)
 		ethashOn   = ctx.Bool(SealEthashFlag.Name)
 		ethashDir  = ctx.String(SealEthashDirFlag.Name)
 		ethashMode = ctx.String(SealEthashModeFlag.Name)
@@ -298,7 +299,7 @@ func readInput(ctx *cli.Context) (*bbInput, error) {
 	if ethashOn && eccpowOn && cliqueStr != "" {
 		return nil, NewError(ErrorConfig, fmt.Errorf("ethash and clique, eccpow sealing specified, only one may be chosen"))
 	}
-	if eccpowOn  {
+	if eccpowOn {
 		inputData.Eccpow = eccpowOn
 	}
 	if ethashOn {

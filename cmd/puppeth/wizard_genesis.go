@@ -106,7 +106,7 @@ func (w *wizard) makeGenesis() {
 		}
 	case choice == "3":
 		// In case of eccpow, we're pretty much done
-		genesis.Config.EccPoW = new(params.EccPoWConfig)
+		genesis.Config.Eccpow = new(params.EccpowConfig)
 		genesis.ExtraData = make([]byte, 32)
 
 	default:

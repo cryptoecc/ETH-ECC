@@ -34,7 +34,6 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/fdlimit"
 	"github.com/ethereum/go-ethereum/consensus/ethash"
-	"github.com/cryptoecc/ETH-ECC/consensus/eccpow"
 	"github.com/ethereum/go-ethereum/core"
 	"github.com/ethereum/go-ethereum/core/rawdb"
 	"github.com/ethereum/go-ethereum/core/vm"
@@ -154,11 +153,11 @@ var (
 		Category: flags.EthCategory,
 	}
 	// EccPoW settings
-	LveFlag = cli.BoolFlag{
+	LveFlag = &cli.BoolFlag{
 		Name:  "lve",
 		Usage: "LVE Network: Error-Correction Codes Proof-of-Work Main Network",
 	}
-	LvetestFlag = cli.BoolFlag{
+	LvetestFlag = &cli.BoolFlag{
 		Name:  "lvetest",
 		Usage: "LVE test network: Error-Correction Codes Proof-of-Work Test Network",
 	}

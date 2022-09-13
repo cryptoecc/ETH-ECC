@@ -30,6 +30,7 @@ import (
 	"github.com/ethereum/go-ethereum/consensus/beacon"
 	"github.com/ethereum/go-ethereum/consensus/clique"
 	"github.com/ethereum/go-ethereum/consensus/ethash"
+	"github.com/ethereum/go-ethereum/consensus/eccpow"
 	"github.com/ethereum/go-ethereum/core"
 	"github.com/ethereum/go-ethereum/eth/downloader"
 	"github.com/ethereum/go-ethereum/eth/gasprice"
@@ -72,7 +73,6 @@ var Defaults = Config{
 		DatasetsOnDisk:   2,
 		DatasetsLockMmap: false,
 	},
-	Eccpow: eccpow.Config{},
 	NetworkId:               1,
 	TxLookupLimit:           2350000,
 	LightPeers:              100,
@@ -182,6 +182,10 @@ type Config struct {
 	// Ethash options
 	Ethash ethash.Config
 
+	// Ethash options
+	Eccpow eccpow.Config
+
+
 	// Transaction pool options
 	TxPool core.TxPoolConfig
 
@@ -218,13 +222,13 @@ type Config struct {
 }
 
 // CreateConsensusEngine creates a consensus engine for the given chain configuration.
-func CreateConsensusEngine(stack *node.Node, ethashConfig *ethash.Config, cliqueConfig *params.CliqueConfig, eccpowConfig *params.EccpowConfig, notify []string, noverify bool, db ethdb.Database) consensus.Engine {
+func CreateConsensusEngine(stack *node.Node, ethashConfig *ethash.Config, cliqueConfig *params.CliqueConfig, eccpowConfig *eccpow.Config, notify []string, noverify bool, db ethdb.Database) consensus.Engine {
 	// If proof-of-authority is requested, set it up
 	var engine consensus.Engine
 	if cliqueConfig != nil {
 		engine = clique.New(cliqueConfig, db)
-	} else if config.EccPoW != nil {
-		engine = eccpow.New(eccpowConfig, nil, false)
+	} else if eccpowConfig != nil {
+		engine = eccpow.New(eccpow.Config{}, nil, false)
 	} else {
 		switch ethashConfig.PowMode {
 		case ethash.ModeFake:
