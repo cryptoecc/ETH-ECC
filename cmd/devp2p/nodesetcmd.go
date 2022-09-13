@@ -237,6 +237,10 @@ func ethFilter(args []string) (nodeFilter, error) {
 		filter = forkid.NewStaticFilter(params.RopstenChainConfig, params.RopstenGenesisHash)
 	case "sepolia":
 		filter = forkid.NewStaticFilter(params.SepoliaChainConfig, params.SepoliaGenesisHash)
+	case "lve":
+		filter = forkid.NewStaticFilter(params.LveChainConfig, params.LveGenesisHash)
+	case "lvetest":
+		filter = forkid.NewStaticFilter(params.LvetestChainConfig, params.LvetestGenesisHash)
 	default:
 		return nil, fmt.Errorf("unknown network %q", args[0])
 	}

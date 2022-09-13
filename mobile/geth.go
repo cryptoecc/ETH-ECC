@@ -187,6 +187,20 @@ func NewNode(datadir string, config *NodeConfig) (stack *Node, _ error) {
 				config.EthereumNetworkID = 5
 			}
 		}
+
+		if config.EthereumGenesis == LveGenesis() {
+			genesis.Config = params.LveChainConfig
+			if config.EthereumNetworkID == 1 {
+				config.EthereumNetworkID = 12345
+			}
+		}
+
+		if config.EthereumGenesis == LvetestGenesis() {
+			genesis.Config = params.LvetestChainConfig
+			if config.EthereumNetworkID == 1 {
+				config.EthereumNetworkID = 12346
+			}
+		}
 	}
 	// Register the Ethereum protocol if requested
 	if config.EthereumEnabled {

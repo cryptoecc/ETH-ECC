@@ -58,6 +58,19 @@ var RinkebyBootnodes = []string{
 	"enode://b6b28890b006743680c52e64e0d16db57f28124885595fa03a562be1d2bf0f3a1da297d56b13da25fb992888fd556d4c1a27b1f39d531bde7de1921c90061cc6@159.89.28.211:30303", // AKASHA
 }
 
+// LveBootnodes are the enode URLs of the P2P bootstrap nodes running on the
+// Lve network.
+var LveBootnodes = []string{
+	"enode://cf4760feb2d6bc0f5622b301a7917b9ccae2aa46c20b03af4da20190c988a76557a7d6bfdcebd0361463019bd39a4fc9b017a974e0d7384ee23f76ddc25fe329@3.1.96.244:30301",
+}
+
+// LvetestBootnodes are the enode URLs of the P2P bootstrap nodes running on the
+// Lve test network.
+var LvetestBootnodes = []string{
+
+}
+
+
 // GoerliBootnodes are the enode URLs of the P2P bootstrap nodes running on the
 // Görli test network.
 var GoerliBootnodes = []string{
@@ -118,6 +131,10 @@ func KnownDNSNetwork(genesis common.Hash, protocol string) string {
 		net = "goerli"
 	case SepoliaGenesisHash:
 		net = "sepolia"
+	case LveGenesisHash:
+		net = "lve"
+	case LvetestGenesisHash:
+		net = "lvetest"
 	default:
 		return ""
 	}

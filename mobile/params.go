@@ -68,6 +68,24 @@ func GoerliGenesis() string {
 	return string(enc)
 }
 
+// LveGenesis returns the JSON spec to use for the LVE network
+func LveGenesis() string {
+	enc, err := json.Marshal(core.DefaultLveGenesisBlock())
+	if err != nil {
+		panic(err)
+	}
+	return string(enc)
+}
+
+// LvetestGenesis returns the JSON spec to use for the LVE TEST network
+func LvetestGenesis() string {
+	enc, err := json.Marshal(core.DefaultLvetestGenesisBlock())
+	if err != nil {
+		panic(err)
+	}
+	return string(enc)
+}
+
 // FoundationBootnodes returns the enode URLs of the P2P bootstrap nodes operated
 // by the foundation running the V5 discovery protocol.
 func FoundationBootnodes() *Enodes {
