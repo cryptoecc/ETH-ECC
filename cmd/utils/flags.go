@@ -34,6 +34,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/fdlimit"
 	"github.com/ethereum/go-ethereum/consensus/ethash"
+	"github.com/cryptoecc/ETH-ECC/consensus/eccpow"
 	"github.com/ethereum/go-ethereum/core"
 	"github.com/ethereum/go-ethereum/core/rawdb"
 	"github.com/ethereum/go-ethereum/core/vm"
@@ -152,6 +153,16 @@ var (
 		Usage:    "Kiln network: pre-configured proof-of-work to proof-of-stake test network",
 		Category: flags.EthCategory,
 	}
+	// EccPoW settings
+	LveFlag = cli.BoolFlag{
+		Name:  "lve",
+		Usage: "LVE Network: Error-Correction Codes Proof-of-Work Main Network",
+	}
+	LvetestFlag = cli.BoolFlag{
+		Name:  "lvetest",
+		Usage: "LVE test network: Error-Correction Codes Proof-of-Work Test Network",
+	}
+
 
 	// Dev mode
 	DeveloperFlag = &cli.BoolFlag{
@@ -2175,10 +2186,11 @@ func MakeChain(ctx *cli.Context, stack *node.Node) (*core.BlockChain, ethdb.Data
 		Fatalf("%v", err)
 	}
 	ethashConfig := ethconfig.Defaults.Ethash
+	eccpowConfig := ethconfig.Defaults.Eccpow
 	if ctx.Bool(FakePoWFlag.Name) {
 		ethashConfig.PowMode = ethash.ModeFake
 	}
-	engine := ethconfig.CreateConsensusEngine(stack, &ethashConfig, cliqueConfig, nil, false, chainDb)
+	engine := ethconfig.CreateConsensusEngine(stack, &ethashConfig, cliqueConfig, &eccpowConfig, nil, false, chainDb)
 	if gcmode := ctx.String(GCModeFlag.Name); gcmode != "full" && gcmode != "archive" {
 		Fatalf("--%s must be either 'full' or 'archive'", GCModeFlag.Name)
 	}
