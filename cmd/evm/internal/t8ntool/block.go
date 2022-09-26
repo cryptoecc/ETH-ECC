@@ -296,6 +296,8 @@ func readInput(ctx *cli.Context) (*bbInput, error) {
 		ethashMode = ctx.String(SealEthashModeFlag.Name)
 		inputData  = &bbInput{}
 	)
+
+	//need to update.
 	if ethashOn && eccpowOn && cliqueStr != "" {
 		return nil, NewError(ErrorConfig, fmt.Errorf("ethash and clique, eccpow sealing specified, only one may be chosen"))
 	}

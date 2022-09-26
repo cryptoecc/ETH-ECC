@@ -147,7 +147,7 @@ func (w *wizard) deployNode(boot bool) {
 				}
 			}
 		} else if w.conf.Genesis.Config.Eccpow != nil {
-			// Ethash based miners only need an etherbase to mine against
+			// Eccpow based miners only need an etherbase to mine against
 			fmt.Println()
 			if infos.etherbase == "" {
 				fmt.Printf("What address should the miner use?\n")

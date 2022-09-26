@@ -526,6 +526,14 @@ func (c *ChainConfig) String() string {
 		} else {
 			banner += "Consensus: Beacon (proof-of-stake), merged from Clique (proof-of-authority)\n"
 		}
+	case c.Eccpow != nil:
+		if c.TerminalTotalDifficulty == nil {
+			banner += "Consensus: Eccpow (proof-of-work)\n"
+		} else if !c.TerminalTotalDifficultyPassed {
+			banner += "Consensus: Beacon (proof-of-stake), merging from Eccpow (proof-of-work)\n"
+		} else {
+			banner += "Consensus: Beacon (proof-of-stake), merged from Eccpow (proof-of-work)\n"
+		}
 	default:
 		banner += "Consensus: unknown\n"
 	}
