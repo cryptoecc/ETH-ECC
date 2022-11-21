@@ -58,14 +58,19 @@ var (
 // engine implements the consensus interface (except the beacon itself).
 type Beacon struct {
 	ethone consensus.Engine // Original consensus engine used in eth1, e.g. ethash or clique or eccpow
+	ethtwo consensus.Engine // Second consensus engine used in worldland hardfork, e.g. ethash or clique or eccpow
 }
 
 // New creates a consensus engine with the given embedded eth1 engine.
-func New(ethone consensus.Engine) *Beacon {
+func New(ethone consensus.Engine, ethtwo consensus.Engine) *Beacon {
 	if _, ok := ethone.(*Beacon); ok {
 		panic("nested consensus engine")
 	}
-	return &Beacon{ethone: ethone}
+
+	if _, ok := ethtwo.(*Beacon); ok {
+		panic("nested worldland consensus engine")
+	}
+	return &Beacon{ethone: ethone, ethtwo: ethtwo}
 }
 
 // Author implements consensus.Engine, returning the verified author of the block.
@@ -86,6 +91,12 @@ func (beacon *Beacon) VerifyHeader(chain consensus.ChainHeaderReader, header *ty
 	if !reached {
 		return beacon.ethone.VerifyHeader(chain, header, seal)
 	}
+
+	//wordland hardfork
+	if IsWorldland(header.Number.Uint64()-1) {
+		return beacon.ethtwo.VerifyHeader(chain, header, seal)
+	}
+
 	// Short circuit if the parent is not known
 	parent := chain.GetHeader(header.ParentHash, header.Number.Uint64()-1)
 	if parent == nil {
