@@ -66,7 +66,6 @@ var CheckpointOracles = map[common.Hash]*CheckpointOracleConfig{
 
 var (
 	MainnetTerminalTotalDifficulty, _ = new(big.Int).SetString("58_750_000_000_000_000_000_000", 0)
-
 	// MainnetChainConfig is the chain parameters to run a node on the main network.
 	MainnetChainConfig = &ChainConfig{
 		ChainID:                 big.NewInt(1),
@@ -85,9 +84,15 @@ var (
 		BerlinBlock:             big.NewInt(12_244_000),
 		LondonBlock:             big.NewInt(12_965_000),
 		ArrowGlacierBlock:       big.NewInt(13_773_000),
-		GrayGlacierBlock:        big.NewInt(15_050_000),
+		//GrayGlacierBlock:        big.NewInt(15_050_000),
+		WorldlandBlock:        	 big.NewInt(15_000_000),
+		WorldlandForkSupport:    true
+
 		TerminalTotalDifficulty: MainnetTerminalTotalDifficulty, // 58_750_000_000_000_000_000_000
 		Ethash:                  new(EthashConfig),
+		//working...
+		Eccpow: 				 new(EccpowConfig),
+		
 	}
 
 	// MainnetTrustedCheckpoint contains the light client trusted checkpoint for the main network.
@@ -351,16 +356,16 @@ var (
 	//
 	// This configuration is intentionally not using keyed fields to force anyone
 	// adding flags to the config to also have to set these fields.
-	AllEthashProtocolChanges = &ChainConfig{big.NewInt(1337), big.NewInt(0), nil, false, big.NewInt(0), common.Hash{}, big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), nil, nil, nil, nil, false, new(EthashConfig), nil, nil}
+	AllEthashProtocolChanges = &ChainConfig{big.NewInt(1337), big.NewInt(0), nil, false, big.NewInt(0), common.Hash{}, big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), nil, nil, nil, nil, false, nil, false, new(EthashConfig), nil, nil}
 
 	// AllCliqueProtocolChanges contains every protocol change (EIPs) introduced
 	// and accepted by the Ethereum core developers into the Clique consensus.
 	//
 	// This configuration is intentionally not using keyed fields to force anyone
 	// adding flags to the config to also have to set these fields.
-	AllCliqueProtocolChanges = &ChainConfig{big.NewInt(1337), big.NewInt(0), nil, false, big.NewInt(0), common.Hash{}, big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), nil, nil, nil, nil, nil, nil, false, nil, &CliqueConfig{Period: 0, Epoch: 30000}, nil}
+	AllCliqueProtocolChanges = &ChainConfig{big.NewInt(1337), big.NewInt(0), nil, false, big.NewInt(0), common.Hash{}, big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), nil, nil, nil, nil, nil, nil, false, nil, false, nil, &CliqueConfig{Period: 0, Epoch: 30000}, nil}
 
-	TestChainConfig    = &ChainConfig{big.NewInt(1), big.NewInt(0), nil, false, big.NewInt(0), common.Hash{}, big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), nil, nil, nil, nil, false, new(EthashConfig), nil, nil}
+	TestChainConfig    = &ChainConfig{big.NewInt(1), big.NewInt(0), nil, false, big.NewInt(0), common.Hash{}, big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), nil, nil, nil, nil, false, nil, false, new(EthashConfig), nil, nil}
 	NonActivatedConfig = &ChainConfig{big.NewInt(1), nil, nil, false, nil, common.Hash{}, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, false, new(EthashConfig), nil, nil}
 	TestRules          = TestChainConfig.Rules(new(big.Int), false)
 )
@@ -456,6 +461,9 @@ type ChainConfig struct {
 	MergeNetsplitBlock  *big.Int `json:"mergeNetsplitBlock,omitempty"`  // Virtual fork after The Merge to use as a network splitter
 	ShanghaiBlock       *big.Int `json:"shanghaiBlock,omitempty"`       // Shanghai switch block (nil = no fork, 0 = already on shanghai)
 	CancunBlock         *big.Int `json:"cancunBlock,omitempty"`         // Cancun switch block (nil = no fork, 0 = already on cancun)
+	
+	WorldlandBlock      *big.Int `json:"worldlandBlock,omitempty"`      // worldrand switch block (nil = no fork, 0 = already on worldland)
+	WorldlandForkSupport bool    `json:"WorldlandForkSupport,omitempty"` // Whether the nodes supports or opposes the Worldland hard-fork
 
 	// TerminalTotalDifficulty is the amount of total difficulty reached by
 	// the network that triggers the consensus upgrade.
@@ -571,6 +579,9 @@ func (c *ChainConfig) String() string {
 	if c.CancunBlock != nil {
 		banner += fmt.Sprintf(" - Cancun:                      %-8v\n", c.CancunBlock)
 	}
+	if c.WordlandForkBlock != nil {
+		banner += fmt.Sprintf(" - Worldland:                      %-8v\n", c.EthPoWForkBlock)
+	}
 	banner += "\n"
 
 	// Add a special section for the merge as it's non-obvious
@@ -677,6 +688,11 @@ func (c *ChainConfig) IsCancun(num *big.Int) bool {
 	return isForked(c.CancunBlock, num)
 }
 
+// IsWorldland returns whether num is either equal to the Worldland fork block or greater.
+func (c *ChainConfig) IsWorldland(num *big.Int) bool {
+	return isForked(c.WordlandBlock, num)
+}
+
 // CheckCompatible checks whether scheduled fork transitions have been imported
 // with a mismatching chain configuration.
 func (c *ChainConfig) CheckCompatible(newcfg *ChainConfig, height uint64) *ConfigCompatError {
@@ -722,6 +738,7 @@ func (c *ChainConfig) CheckConfigForkOrder() error {
 		{name: "mergeNetsplitBlock", block: c.MergeNetsplitBlock, optional: true},
 		{name: "shanghaiBlock", block: c.ShanghaiBlock, optional: true},
 		{name: "cancunBlock", block: c.CancunBlock, optional: true},
+		{name: "worldlandBlock", block: c.WordlandBlock, optional: true},
 	} {
 		if lastFork.name != "" {
 			// Next one must be higher number
@@ -805,6 +822,12 @@ func (c *ChainConfig) checkCompatible(newcfg *ChainConfig, head *big.Int) *Confi
 	}
 	if isForkIncompatible(c.CancunBlock, newcfg.CancunBlock, head) {
 		return newCompatError("Cancun fork block", c.CancunBlock, newcfg.CancunBlock)
+	}
+	if isForkIncompatible(c.WorldlandBlock, newcfg.WorldlandBlock, head) {
+		return newCompatError("Worldland fork block", c.WorldlandBlock, newcfg.WorldlandBlock)
+	}
+	if c.IsWorldlandFork(head) && c.WorldlandForkSupport != newcfg.WorldlandForkSupport {
+		return newCompatError("Worldland fork support flag", c.WorldlandBlock, newcfg.WorldlandBlock)
 	}
 	return nil
 }
