@@ -86,7 +86,7 @@ var (
 		ArrowGlacierBlock:       big.NewInt(13_773_000),
 		//GrayGlacierBlock:        big.NewInt(15_050_000),
 		WorldlandBlock:        	 big.NewInt(15_000_000),
-		WorldlandForkSupport:    true
+		WorldlandForkSupport:    true,
 
 		TerminalTotalDifficulty: MainnetTerminalTotalDifficulty, // 58_750_000_000_000_000_000_000
 		Ethash:                  new(EthashConfig),
@@ -366,7 +366,7 @@ var (
 	AllCliqueProtocolChanges = &ChainConfig{big.NewInt(1337), big.NewInt(0), nil, false, big.NewInt(0), common.Hash{}, big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), nil, nil, nil, nil, nil, nil, false, nil, false, nil, &CliqueConfig{Period: 0, Epoch: 30000}, nil}
 
 	TestChainConfig    = &ChainConfig{big.NewInt(1), big.NewInt(0), nil, false, big.NewInt(0), common.Hash{}, big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), nil, nil, nil, nil, false, nil, false, new(EthashConfig), nil, nil}
-	NonActivatedConfig = &ChainConfig{big.NewInt(1), nil, nil, false, nil, common.Hash{}, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, false, new(EthashConfig), nil, nil}
+	//NonActivatedConfig = &ChainConfig{big.NewInt(1), nil, nil, false, nil, common.Hash{}, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, false, new(EthashConfig), nil, nil}
 	TestRules          = TestChainConfig.Rules(new(big.Int), false)
 )
 
@@ -579,8 +579,8 @@ func (c *ChainConfig) String() string {
 	if c.CancunBlock != nil {
 		banner += fmt.Sprintf(" - Cancun:                      %-8v\n", c.CancunBlock)
 	}
-	if c.WordlandForkBlock != nil {
-		banner += fmt.Sprintf(" - Worldland:                      %-8v\n", c.EthPoWForkBlock)
+	if c.WorldlandBlock != nil {
+		banner += fmt.Sprintf(" - Worldland:                      %-8v\n", c.WorldlandBlock)
 	}
 	banner += "\n"
 
@@ -690,7 +690,7 @@ func (c *ChainConfig) IsCancun(num *big.Int) bool {
 
 // IsWorldland returns whether num is either equal to the Worldland fork block or greater.
 func (c *ChainConfig) IsWorldland(num *big.Int) bool {
-	return isForked(c.WordlandBlock, num)
+	return isForked(c.WorldlandBlock, num)
 }
 
 // CheckCompatible checks whether scheduled fork transitions have been imported
@@ -738,7 +738,7 @@ func (c *ChainConfig) CheckConfigForkOrder() error {
 		{name: "mergeNetsplitBlock", block: c.MergeNetsplitBlock, optional: true},
 		{name: "shanghaiBlock", block: c.ShanghaiBlock, optional: true},
 		{name: "cancunBlock", block: c.CancunBlock, optional: true},
-		{name: "worldlandBlock", block: c.WordlandBlock, optional: true},
+		{name: "worldlandBlock", block: c.WorldlandBlock, optional: true},
 	} {
 		if lastFork.name != "" {
 			// Next one must be higher number
@@ -823,11 +823,8 @@ func (c *ChainConfig) checkCompatible(newcfg *ChainConfig, head *big.Int) *Confi
 	if isForkIncompatible(c.CancunBlock, newcfg.CancunBlock, head) {
 		return newCompatError("Cancun fork block", c.CancunBlock, newcfg.CancunBlock)
 	}
-	if isForkIncompatible(c.WorldlandBlock, newcfg.WorldlandBlock, head) {
+	if isForkIncompatible(c.WorldlandBlock, newcfg.WorldlandBlock, head) && c.WorldlandForkSupport != newcfg.WorldlandForkSupport {
 		return newCompatError("Worldland fork block", c.WorldlandBlock, newcfg.WorldlandBlock)
-	}
-	if c.IsWorldlandFork(head) && c.WorldlandForkSupport != newcfg.WorldlandForkSupport {
-		return newCompatError("Worldland fork support flag", c.WorldlandBlock, newcfg.WorldlandBlock)
 	}
 	return nil
 }
@@ -898,6 +895,7 @@ type Rules struct {
 	IsByzantium, IsConstantinople, IsPetersburg, IsIstanbul bool
 	IsBerlin, IsLondon                                      bool
 	IsMerge, IsShanghai, isCancun                           bool
+	IsWorldland                         					bool
 }
 
 // Rules ensures c's ChainID is not nil.
@@ -921,5 +919,6 @@ func (c *ChainConfig) Rules(num *big.Int, isMerge bool) Rules {
 		IsMerge:          isMerge,
 		IsShanghai:       c.IsShanghai(num),
 		isCancun:         c.IsCancun(num),
+		IsWorldland:      c.IsWorldland(num),
 	}
 }

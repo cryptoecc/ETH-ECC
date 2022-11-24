@@ -459,7 +459,7 @@ func (ecc *ECC) FinalizeAndAssemble(chain consensus.ChainHeaderReader, header *t
 // SealHash returns the hash of a block prior to it being sealed.
 func (ecc *ECC) SealHash(header *types.Header) (hash common.Hash) {
 	hasher := sha3.NewLegacyKeccak256()
-
+	
 	rlp.Encode(hasher, []interface{}{
 		header.ParentHash,
 		header.UncleHash,
@@ -475,6 +475,7 @@ func (ecc *ECC) SealHash(header *types.Header) (hash common.Hash) {
 		header.Time,
 		header.Extra,
 	})
+
 	hasher.Sum(hash[:0])
 	return hash
 }

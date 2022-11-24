@@ -88,13 +88,14 @@ func (beacon *Beacon) VerifyHeader(chain consensus.ChainHeaderReader, header *ty
 	if err != nil {
 		return err
 	}
-	if !reached {
-		return beacon.ethone.VerifyHeader(chain, header, seal)
-	}
 
 	//wordland hardfork
-	if IsWorldland(header.Number.Uint64()-1) {
-		return beacon.ethtwo.VerifyHeader(chain, header, seal)
+	if chain.Config().IsWorldland(header.Number) {
+			return beacon.ethtwo.VerifyHeader(chain, header, seal)
+	}
+
+	if !reached {
+		return beacon.ethone.VerifyHeader(chain, header, seal)
 	}
 
 	// Short circuit if the parent is not known
@@ -110,10 +111,20 @@ func (beacon *Beacon) VerifyHeader(chain consensus.ChainHeaderReader, header *ty
 // concurrently. The method returns a quit channel to abort the operations and
 // a results channel to retrieve the async verifications.
 // VerifyHeaders expect the headers to be ordered and continuous.
+// have to update
 func (beacon *Beacon) VerifyHeaders(chain consensus.ChainHeaderReader, headers []*types.Header, seals []bool) (chan<- struct{}, <-chan error) {
+		//wordland hardfork
+
+	//VerifyHeaders expect the headers to be ordered
+	//문제 1.
+	if !chain.Config().IsWorldland(headers[len(headers)-1].Number) {
+			return beacon.ethtwo.VerifyHeaders(chain, headers, seals)
+	}
+	
 	if !beacon.IsPoSHeader(headers[len(headers)-1]) {
 		return beacon.ethone.VerifyHeaders(chain, headers, seals)
 	}
+
 	var (
 		preHeaders  []*types.Header
 		postHeaders []*types.Header
@@ -222,6 +233,12 @@ func verifyTerminalPoWBlock(chain consensus.ChainHeaderReader, preHeaders []*typ
 // VerifyUncles verifies that the given block's uncles conform to the consensus
 // rules of the Ethereum consensus engine.
 func (beacon *Beacon) VerifyUncles(chain consensus.ChainReader, block *types.Block) error {
+	
+	//wordland hardfork
+	if chain.Config().IsWorldland(header.Number) {
+			return beacon.ethtwo.VerifyHeader(chain, header, seal)
+	}
+
 	if !beacon.IsPoSHeader(block.Header()) {
 		return beacon.ethone.VerifyUncles(chain, block)
 	}
@@ -325,9 +342,15 @@ func (beacon *Beacon) Prepare(chain consensus.ChainHeaderReader, header *types.H
 	if err != nil {
 		return err
 	}
+	
+	if chain.Config().IsWorldland(header.Number) {
+		return beacon.ethtwo.Prepare(chain, header)
+	}
+
 	if !reached {
 		return beacon.ethone.Prepare(chain, header)
 	}
+
 	header.Difficulty = beaconDifficulty
 	return nil
 }
