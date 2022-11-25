@@ -116,20 +116,93 @@ func (beacon *Beacon) VerifyHeaders(chain consensus.ChainHeaderReader, headers [
 		//wordland hardfork
 
 	//VerifyHeaders expect the headers to be ordered
-	//문제 1.
-	if !chain.Config().IsWorldland(headers[len(headers)-1].Number) {
-			return beacon.ethtwo.VerifyHeaders(chain, headers, seals)
-	}
-	
 	if !beacon.IsPoSHeader(headers[len(headers)-1]) {
-		return beacon.ethone.VerifyHeaders(chain, headers, seals)
+		if !chain.Config().IsWorldland(headers[len(headers)-1].Number) {
+			return beacon.ethone.VerifyHeaders(chain, headers, seals)
+		}
 	}
 
+	/////////////////////////////////////////////////////// wordland start ///////////////////////////////////////////////////////
+	var (
+		preHeaders  []*types.Header
+		postHeaders []*types.Header
+		preSeals    []bool
+		postSeals   []bool
+	)
+
+	for index, header := range headers {
+		if chain.Config().IsWorldland(header.Number) {
+			preHeaders = headers[:index]
+			postHeaders = headers[index:]
+			preSeals = seals[:index]
+			postSeals = seals[:index]
+			break
+		}
+	}
+
+	if len(preHeaders) == 0 {
+		return beacon.ethtwo.VerifyHeaders(chain, headers, seals)
+	}
+
+	var (
+		abort   = make(chan struct{})
+		results = make(chan error, len(headers))
+	)
+	go func() {
+		var (
+			old, new, out      = 0, len(preHeaders), 0
+			errors             = make([]error, len(headers))
+			done               = make([]bool, len(headers))
+			oldDone, oldResult = beacon.ethone.VerifyHeaders(chain, preHeaders, preSeals)
+			newDone, newResult = beacon.ethtwo.VerifyHeaders(chain, postHeaders, postSeals)
+		)
+
+		// 맞는지 한번더 검증하는 부분.
+		/* need to update
+		if index, err := verifyTerminalPoWBlock(chain, preHeaders); err != nil {
+			// Mark all subsequent pow headers with the error.
+			for i := index; i < len(preHeaders); i++ {
+				errors[i], done[i] = err, true
+			}
+		}
+		need to update */
+
+		// Collect the results
+		for {
+			for ; done[out]; out++ {
+				results <- errors[out]
+				if out == len(headers)-1 {
+					return
+				}
+			}
+			select {
+			case err := <-oldResult:
+				if !done[old] { // skip TTD-verified failures
+					errors[old], done[old] = err, true
+				}
+				old++
+			case err := <-newResult:
+				errors[new], done[new] = err, true
+				new++
+			case <-abort:
+				close(oldDone)
+				close(newDone)
+				return
+			}
+		}
+	}()
+	return abort, results
+
+	/////////////////////////////////////////////////////// wordland end ///////////////////////////////////////////////////
+	
+	/* redeclared err
 	var (
 		preHeaders  []*types.Header
 		postHeaders []*types.Header
 		preSeals    []bool
 	)
+	*/
+
 	for index, header := range headers {
 		if beacon.IsPoSHeader(header) {
 			preHeaders = headers[:index]
@@ -157,10 +230,13 @@ func (beacon *Beacon) VerifyHeaders(chain consensus.ChainHeaderReader, headers [
 
 	// The transition point exists in the middle, separate the headers
 	// into two batches and apply different verification rules for them.
+	/* redeclare err
 	var (
 		abort   = make(chan struct{})
 		results = make(chan error, len(headers))
 	)
+	*/
+
 	go func() {
 		var (
 			old, new, out      = 0, len(preHeaders), 0
@@ -235,8 +311,8 @@ func verifyTerminalPoWBlock(chain consensus.ChainHeaderReader, preHeaders []*typ
 func (beacon *Beacon) VerifyUncles(chain consensus.ChainReader, block *types.Block) error {
 	
 	//wordland hardfork
-	if chain.Config().IsWorldland(header.Number) {
-			return beacon.ethtwo.VerifyHeader(chain, header, seal)
+	if chain.Config().IsWorldland(block.Header().Number) {
+			return beacon.ethtwo.VerifyUncles(chain, block)
 	}
 
 	if !beacon.IsPoSHeader(block.Header()) {

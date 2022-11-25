@@ -253,10 +253,10 @@ func CreateConsensusEngine(stack *node.Node, ethashConfig *ethash.Config, clique
 		engine.(*ethash.Ethash).SetThreads(-1) // Disable CPU mining
 	}
 	//return engine , add worldland hardfork consensus.
-	if WorldlandForkSupport == true {
-		return beacon.New(engine, eccpow.New(eccpow.Config{}, nil, false)
-	}
+	
+	return beacon.New(engine, eccpow.New(eccpow.Config{}, nil, false))
+	
 
-	return beacon.New(engine, nil)
+	//return beacon.New(engine, nil)
 
 }
