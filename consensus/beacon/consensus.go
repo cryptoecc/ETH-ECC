@@ -312,7 +312,7 @@ func (beacon *Beacon) VerifyUncles(chain consensus.ChainReader, block *types.Blo
 	
 	//wordland hardfork
 	if chain.Config().IsWorldland(block.Header().Number) {
-			return beacon.ethtwo.VerifyUncles(chain, block)
+		return beacon.ethtwo.VerifyUncles(chain, block)
 	}
 
 	if !beacon.IsPoSHeader(block.Header()) {
@@ -419,11 +419,10 @@ func (beacon *Beacon) Prepare(chain consensus.ChainHeaderReader, header *types.H
 		return err
 	}
 	
-	if chain.Config().IsWorldland(header.Number) {
-		return beacon.ethtwo.Prepare(chain, header)
-	}
-
 	if !reached {
+		if chain.Config().IsWorldland(header.Number) {
+			return beacon.ethtwo.Prepare(chain, header)
+		}
 		return beacon.ethone.Prepare(chain, header)
 	}
 
@@ -435,7 +434,12 @@ func (beacon *Beacon) Prepare(chain consensus.ChainHeaderReader, header *types.H
 func (beacon *Beacon) Finalize(chain consensus.ChainHeaderReader, header *types.Header, state *state.StateDB, txs []*types.Transaction, uncles []*types.Header) {
 	// Finalize is different with Prepare, it can be used in both block generation
 	// and verification. So determine the consensus rules by header type.
+	
 	if !beacon.IsPoSHeader(header) {
+		if chain.Config().IsWorldland(header.Number) {
+			beacon.ethtwo.Finalize(chain, header, state, txs, uncles)
+			return 
+		}
 		beacon.ethone.Finalize(chain, header, state, txs, uncles)
 		return
 	}
@@ -450,6 +454,9 @@ func (beacon *Beacon) FinalizeAndAssemble(chain consensus.ChainHeaderReader, hea
 	// FinalizeAndAssemble is different with Prepare, it can be used in both block
 	// generation and verification. So determine the consensus rules by header type.
 	if !beacon.IsPoSHeader(header) {
+		if chain.Config().IsWorldland(header.Number) {
+			return beacon.ethtwo.FinalizeAndAssemble(chain, header, state, txs, uncles, receipts)
+		}
 		return beacon.ethone.FinalizeAndAssemble(chain, header, state, txs, uncles, receipts)
 	}
 	// Finalize and assemble the block
@@ -464,6 +471,9 @@ func (beacon *Beacon) FinalizeAndAssemble(chain consensus.ChainHeaderReader, hea
 // than one result may also be returned depending on the consensus algorithm.
 func (beacon *Beacon) Seal(chain consensus.ChainHeaderReader, block *types.Block, results chan<- *types.Block, stop <-chan struct{}) error {
 	if !beacon.IsPoSHeader(block.Header()) {
+		if chain.Config().IsWorldland(header.Number) {
+			return beacon.ethtwo.Seal(chain, block, results, stop)
+		}
 		return beacon.ethone.Seal(chain, block, results, stop)
 	}
 	// The seal verification is done by the external consensus engine,
