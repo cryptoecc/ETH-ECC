@@ -326,7 +326,7 @@ var (
 	}
 
 	// LvetestChainConfig contains the chain parameters to run a node on the Görli test network.
-	LvetestChainConfig = &ChainConfig{
+	/*LvetestChainConfig = &ChainConfig{
 		ChainID:             big.NewInt(12346),
 		HomesteadBlock:      big.NewInt(0),
 		DAOForkBlock:        nil,
@@ -339,6 +339,29 @@ var (
 		PetersburgBlock:     big.NewInt(0),
 		IstanbulBlock:       nil,
 		Eccpow: new(EccpowConfig),
+	}*/
+
+	LvetestChainConfig = &ChainConfig{
+		ChainID:                       big.NewInt(123456),
+		HomesteadBlock:                big.NewInt(0),
+		DAOForkBlock:                  nil,
+		DAOForkSupport:                true,
+		EIP150Block:                   big.NewInt(0),
+		EIP155Block:                   big.NewInt(0),
+		EIP158Block:                   big.NewInt(0),
+		ByzantiumBlock:                big.NewInt(0),
+		ConstantinopleBlock:           big.NewInt(0),
+		PetersburgBlock:               big.NewInt(0),
+		IstanbulBlock:                 big.NewInt(0),
+		MuirGlacierBlock:              big.NewInt(0),
+		BerlinBlock:                   big.NewInt(0),
+		LondonBlock:                   big.NewInt(0),
+		WorldlandBlock:        	       big.NewInt(10),
+		WorldlandForkSupport:    true,
+
+		Ethash:                  new(EthashConfig),
+		//working...
+		Eccpow: 				 new(EccpowConfig),
 	}
 	
 	// LvetestTrustedCheckpoint contains the light client trusted checkpoint for the Görli test network.
