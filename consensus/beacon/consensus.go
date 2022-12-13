@@ -471,7 +471,7 @@ func (beacon *Beacon) FinalizeAndAssemble(chain consensus.ChainHeaderReader, hea
 // than one result may also be returned depending on the consensus algorithm.
 func (beacon *Beacon) Seal(chain consensus.ChainHeaderReader, block *types.Block, results chan<- *types.Block, stop <-chan struct{}) error {
 	if !beacon.IsPoSHeader(block.Header()) {
-		if chain.Config().IsWorldland(header.Number) {
+		if chain.Config().IsWorldland(block.Header().Number) {
 			return beacon.ethtwo.Seal(chain, block, results, stop)
 		}
 		return beacon.ethone.Seal(chain, block, results, stop)

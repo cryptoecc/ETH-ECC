@@ -41,6 +41,11 @@ var (
 	FrontierBlockReward       = big.NewInt(5e+18) // Block reward in wei for successfully mining a block
 	ByzantiumBlockReward      = big.NewInt(3e+18) // Block reward in wei for successfully mining a block upward from Byzantium
 	ConstantinopleBlockReward = big.NewInt(2e+18) // Block reward in wei for successfully mining a block upward from Constantinople
+	WorldLandBlockReward		  = big.NewInt(4e+18)	//Block reward in wei for successfully mining a block upward from WorldLand
+	WorldLandFirstBlockReward	  = big.NewInt(9e+18)	//Block reward in wei for successfully mining a genesisblock upward from WorldLand
+	//eth chain genesis block 과의 혼동 막기 위해 WorldLandFirstBlockReward로 설정
+	//uncle, ghostprotocol reward 도 고려해야함
+	
 	maxUncles                 = 2                 // Maximum number of uncles allowed in a single block
 	allowedFutureBlockTime    = 15 * time.Second  // Max time from current time allowed for blocks, before they're considered future blocks
 
@@ -498,6 +503,13 @@ func accumulateRewards(config *params.ChainConfig, state *state.StateDB, header 
 	if config.IsConstantinople(header.Number) {
 		blockReward = ConstantinopleBlockReward
 	}
+	if config.IsWorldland(header.Number){
+		blockReward = WorldLandBlockReward
+		if header.Number == big.NewInt(3){
+			blockReward = WorldLandFirstBlockReward		
+		}
+	}
+
 	// Accumulate the rewards for the miner and any included uncles
 	reward := new(big.Int).Set(blockReward)
 	r := new(big.Int)
