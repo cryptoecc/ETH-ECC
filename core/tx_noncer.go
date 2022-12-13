@@ -19,8 +19,8 @@ package core
 import (
 	"sync"
 
-	"github.com/cryptoecc/ETH-ECC/common"
-	"github.com/cryptoecc/ETH-ECC/core/state"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/core/state"
 )
 
 // txNoncer is a tiny virtual state database to manage the executable nonces of
@@ -64,7 +64,7 @@ func (txn *txNoncer) set(addr common.Address, nonce uint64) {
 }
 
 // setIfLower updates a new virtual nonce into the virtual state database if the
-// the new one is lower.
+// new one is lower.
 func (txn *txNoncer) setIfLower(addr common.Address, nonce uint64) {
 	txn.lock.Lock()
 	defer txn.lock.Unlock()
@@ -76,4 +76,12 @@ func (txn *txNoncer) setIfLower(addr common.Address, nonce uint64) {
 		return
 	}
 	txn.nonces[addr] = nonce
+}
+
+// setAll sets the nonces for all accounts to the given map.
+func (txn *txNoncer) setAll(all map[common.Address]uint64) {
+	txn.lock.Lock()
+	defer txn.lock.Unlock()
+
+	txn.nonces = all
 }

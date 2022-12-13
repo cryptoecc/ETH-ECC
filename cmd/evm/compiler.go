@@ -19,14 +19,14 @@ package main
 import (
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"os"
 
-	"github.com/cryptoecc/ETH-ECC/cmd/evm/internal/compiler"
+	"github.com/ethereum/go-ethereum/cmd/evm/internal/compiler"
 
-	cli "github.com/urfave/cli"
+	"github.com/urfave/cli/v2"
 )
 
-var compileCommand = cli.Command{
+var compileCommand = &cli.Command{
 	Action:    compileCmd,
 	Name:      "compile",
 	Usage:     "compiles easm source to evm binary",
@@ -34,14 +34,14 @@ var compileCommand = cli.Command{
 }
 
 func compileCmd(ctx *cli.Context) error {
-	debug := ctx.GlobalBool(DebugFlag.Name)
+	debug := ctx.Bool(DebugFlag.Name)
 
 	if len(ctx.Args().First()) == 0 {
 		return errors.New("filename required")
 	}
 
 	fn := ctx.Args().First()
-	src, err := ioutil.ReadFile(fn)
+	src, err := os.ReadFile(fn)
 	if err != nil {
 		return err
 	}

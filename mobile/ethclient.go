@@ -21,8 +21,8 @@ package geth
 import (
 	"math/big"
 
-	"github.com/cryptoecc/ETH-ECC/core/types"
-	"github.com/cryptoecc/ETH-ECC/ethclient"
+	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/ethereum/go-ethereum/ethclient"
 )
 
 // EthereumClient provides access to the Ethereum APIs.
@@ -94,7 +94,6 @@ func (ec *EthereumClient) GetTransactionCount(ctx *Context, hash *Hash) (count i
 func (ec *EthereumClient) GetTransactionInBlock(ctx *Context, hash *Hash, index int) (tx *Transaction, _ error) {
 	rawTx, err := ec.client.TransactionInBlock(ctx.context, hash.hash, uint(index))
 	return &Transaction{rawTx}, err
-
 }
 
 // GetTransactionReceipt returns the receipt of a transaction by transaction hash.

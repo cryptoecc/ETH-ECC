@@ -23,8 +23,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/cryptoecc/ETH-ECC/log"
-	"github.com/urfave/cli"
+	"github.com/ethereum/go-ethereum/log"
+	"github.com/urfave/cli/v2"
 )
 
 // main is just a boring entry point to set up the CLI app.
@@ -33,11 +33,11 @@ func main() {
 	app.Name = "puppeth"
 	app.Usage = "assemble and maintain private Ethereum networks"
 	app.Flags = []cli.Flag{
-		cli.StringFlag{
+		&cli.StringFlag{
 			Name:  "network",
 			Usage: "name of the network to administer (no spaces or hyphens, please)",
 		},
-		cli.IntFlag{
+		&cli.IntFlag{
 			Name:  "loglevel",
 			Value: 3,
 			Usage: "log level to emit to the screen",

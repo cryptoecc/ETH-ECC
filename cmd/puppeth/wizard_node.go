@@ -21,9 +21,9 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/cryptoecc/ETH-ECC/accounts/keystore"
-	"github.com/cryptoecc/ETH-ECC/common"
-	"github.com/cryptoecc/ETH-ECC/log"
+	"github.com/ethereum/go-ethereum/accounts/keystore"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/log"
 )
 
 // deployNode creates a new node configuration based on some user input.
@@ -146,8 +146,8 @@ func (w *wizard) deployNode(boot bool) {
 					return
 				}
 			}
-		} else if w.conf.Genesis.Config.EccPoW != nil {
-			// Ethash based miners only need an etherbase to mine against
+		} else if w.conf.Genesis.Config.Eccpow != nil {
+			// Eccpow based miners only need an etherbase to mine against
 			fmt.Println()
 			if infos.etherbase == "" {
 				fmt.Printf("What address should the miner use?\n")

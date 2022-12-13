@@ -14,6 +14,7 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with the go-ethereum library. If not, see <http://www.gnu.org/licenses/>.
 
+//go:build (darwin && !ios && cgo) || freebsd || (linux && !arm64) || netbsd || solaris
 // +build darwin,!ios,cgo freebsd linux,!arm64 netbsd solaris
 
 package keystore
@@ -21,7 +22,7 @@ package keystore
 import (
 	"time"
 
-	"github.com/cryptoecc/ETH-ECC/log"
+	"github.com/ethereum/go-ethereum/log"
 	"github.com/rjeczalik/notify"
 )
 

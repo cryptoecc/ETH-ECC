@@ -20,7 +20,6 @@ import (
 	"context"
 	"errors"
 	"flag"
-	"io/ioutil"
 	"math/rand"
 	"os"
 	"sync"
@@ -28,26 +27,42 @@ import (
 	"testing"
 	"time"
 
-	"github.com/cryptoecc/ETH-ECC/common"
-	"github.com/cryptoecc/ETH-ECC/common/hexutil"
-	"github.com/cryptoecc/ETH-ECC/consensus/ethash"
-	"github.com/cryptoecc/ETH-ECC/eth"
-	"github.com/cryptoecc/ETH-ECC/eth/downloader"
-	"github.com/cryptoecc/ETH-ECC/les/flowcontrol"
-	"github.com/cryptoecc/ETH-ECC/log"
-	"github.com/cryptoecc/ETH-ECC/node"
-	"github.com/cryptoecc/ETH-ECC/p2p/enode"
-	"github.com/cryptoecc/ETH-ECC/p2p/simulations"
-	"github.com/cryptoecc/ETH-ECC/p2p/simulations/adapters"
-	"github.com/cryptoecc/ETH-ECC/rpc"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/common/hexutil"
+	"github.com/ethereum/go-ethereum/consensus/ethash"
+	"github.com/ethereum/go-ethereum/eth"
+	ethdownloader "github.com/ethereum/go-ethereum/eth/downloader"
+	"github.com/ethereum/go-ethereum/eth/ethconfig"
+	"github.com/ethereum/go-ethereum/les/downloader"
+	"github.com/ethereum/go-ethereum/les/flowcontrol"
+	"github.com/ethereum/go-ethereum/log"
+	"github.com/ethereum/go-ethereum/node"
+	"github.com/ethereum/go-ethereum/p2p/enode"
+	"github.com/ethereum/go-ethereum/p2p/simulations"
+	"github.com/ethereum/go-ethereum/p2p/simulations/adapters"
+	"github.com/ethereum/go-ethereum/rpc"
 	"github.com/mattn/go-colorable"
 )
 
-/*
-This test is not meant to be a part of the automatic testing process because it
-runs for a long time and also requires a large database in order to do a meaningful
-request performance test. When testServerDataDir is empty, the test is skipped.
-*/
+// Additional command line flags for the test binary.
+var (
+	loglevel   = flag.Int("loglevel", 0, "verbosity of logs")
+	simAdapter = flag.String("adapter", "exec", "type of simulation: sim|socket|exec|docker")
+)
+
+func TestMain(m *testing.M) {
+	flag.Parse()
+	log.PrintOrigins(true)
+	log.Root().SetHandler(log.LvlFilterHandler(log.Lvl(*loglevel), log.StreamHandler(colorable.NewColorableStderr(), log.TerminalFormat(true))))
+	// register the Delivery service which will run as a devp2p
+	// protocol when using the exec adapter
+	adapters.RegisterLifecycles(services)
+	os.Exit(m.Run())
+}
+
+// This test is not meant to be a part of the automatic testing process because it
+// runs for a long time and also requires a large database in order to do a meaningful
+// request performance test. When testServerDataDir is empty, the test is skipped.
 
 const (
 	testServerDataDir  = "" // should always be empty on the master branch
@@ -93,7 +108,7 @@ func testCapacityAPI(t *testing.T, clientCount int) {
 			t.Fatalf("Failed to obtain rpc client: %v", err)
 		}
 		headNum, headHash := getHead(ctx, t, serverRpcClient)
-		minCap, freeCap, totalCap := getCapacityInfo(ctx, t, serverRpcClient)
+		minCap, totalCap := getCapacityInfo(ctx, t, serverRpcClient)
 		testCap := totalCap * 3 / 4
 		t.Logf("Server testCap: %d  minCap: %d  head number: %d  head hash: %064x\n", testCap, minCap, headNum, headHash)
 		reqMinCap := uint64(float64(testCap) * minRelCap / (minRelCap + float64(len(clients)-1)))
@@ -188,7 +203,7 @@ func testCapacityAPI(t *testing.T, clientCount int) {
 
 		weights := make([]float64, len(clients))
 		for c := 0; c < 5; c++ {
-			setCapacity(ctx, t, serverRpcClient, clients[freeIdx].ID(), freeCap)
+			setCapacity(ctx, t, serverRpcClient, clients[freeIdx].ID(), minCap)
 			freeIdx = rand.Intn(len(clients))
 			var sum float64
 			for i := range clients {
@@ -200,7 +215,7 @@ func testCapacityAPI(t *testing.T, clientCount int) {
 				sum += weights[i]
 			}
 			for i, client := range clients {
-				weights[i] *= float64(testCap-freeCap-100) / sum
+				weights[i] *= float64(testCap-minCap-100) / sum
 				capacity := uint64(weights[i])
 				if i != freeIdx && capacity < getCapacity(ctx, t, serverRpcClient, client.ID()) {
 					setCapacity(ctx, t, serverRpcClient, client.ID(), capacity)
@@ -213,7 +228,7 @@ func testCapacityAPI(t *testing.T, clientCount int) {
 					setCapacity(ctx, t, serverRpcClient, client.ID(), capacity)
 				}
 			}
-			weights[freeIdx] = float64(freeCap)
+			weights[freeIdx] = float64(minCap)
 			for i := range clients {
 				weights[i] /= float64(testCap)
 			}
@@ -233,7 +248,7 @@ func testCapacityAPI(t *testing.T, clientCount int) {
 				default:
 				}
 
-				_, _, totalCap = getCapacityInfo(ctx, t, serverRpcClient)
+				_, totalCap = getCapacityInfo(ctx, t, serverRpcClient)
 				if totalCap < testCap {
 					t.Log("Total capacity underrun")
 					close(stop)
@@ -312,7 +327,8 @@ func testRequest(ctx context.Context, t *testing.T, client *rpc.Client) bool {
 	var res string
 	var addr common.Address
 	rand.Read(addr[:])
-	c, _ := context.WithTimeout(ctx, time.Second*12)
+	c, cancel := context.WithTimeout(ctx, time.Second*12)
+	defer cancel()
 	err := client.CallContext(c, &res, "eth_getBalance", addr, "latest")
 	if err != nil {
 		t.Log("request error:", err)
@@ -324,7 +340,6 @@ func freezeClient(ctx context.Context, t *testing.T, server *rpc.Client, clientI
 	if err := server.CallContext(ctx, nil, "debug_freezeClient", clientID); err != nil {
 		t.Fatalf("Failed to freeze client: %v", err)
 	}
-
 }
 
 func setCapacity(ctx context.Context, t *testing.T, server *rpc.Client, clientID enode.ID, cap uint64) {
@@ -355,7 +370,7 @@ func getCapacity(ctx context.Context, t *testing.T, server *rpc.Client, clientID
 	return uint64(vv)
 }
 
-func getCapacityInfo(ctx context.Context, t *testing.T, server *rpc.Client) (minCap, freeCap, totalCap uint64) {
+func getCapacityInfo(ctx context.Context, t *testing.T, server *rpc.Client) (minCap, totalCap uint64) {
 	var res map[string]interface{}
 	if err := server.CallContext(ctx, &res, "les_serverInfo"); err != nil {
 		t.Fatalf("Failed to query server info: %v", err)
@@ -372,34 +387,17 @@ func getCapacityInfo(ctx context.Context, t *testing.T, server *rpc.Client) (min
 		return uint64(vv)
 	}
 	minCap = decode("minimumCapacity")
-	freeCap = decode("freeClientCapacity")
 	totalCap = decode("totalCapacity")
 	return
 }
 
-func init() {
-	flag.Parse()
-	// register the Delivery service which will run as a devp2p
-	// protocol when using the exec adapter
-	adapters.RegisterServices(services)
-
-	log.PrintOrigins(true)
-	log.Root().SetHandler(log.LvlFilterHandler(log.Lvl(*loglevel), log.StreamHandler(colorable.NewColorableStderr(), log.TerminalFormat(true))))
-}
-
-var (
-	adapter  = flag.String("adapter", "exec", "type of simulation: sim|socket|exec|docker")
-	loglevel = flag.Int("loglevel", 0, "verbosity of logs")
-	nodes    = flag.Int("nodes", 0, "number of nodes")
-)
-
-var services = adapters.Services{
+var services = adapters.LifecycleConstructors{
 	"lesclient": newLesClientService,
 	"lesserver": newLesServerService,
 }
 
 func NewNetwork() (*simulations.Network, func(), error) {
-	adapter, adapterTeardown, err := NewAdapter(*adapter, services)
+	adapter, adapterTeardown, err := NewAdapter(*simAdapter, services)
 	if err != nil {
 		return nil, adapterTeardown, err
 	}
@@ -415,7 +413,7 @@ func NewNetwork() (*simulations.Network, func(), error) {
 	return net, teardown, nil
 }
 
-func NewAdapter(adapterType string, services adapters.Services) (adapter adapters.NodeAdapter, teardown func(), err error) {
+func NewAdapter(adapterType string, services adapters.LifecycleConstructors) (adapter adapters.NodeAdapter, teardown func(), err error) {
 	teardown = func() {}
 	switch adapterType {
 	case "sim":
@@ -423,7 +421,7 @@ func NewAdapter(adapterType string, services adapters.Services) (adapter adapter
 		//	case "socket":
 		//		adapter = adapters.NewSocketAdapter(services)
 	case "exec":
-		baseDir, err0 := ioutil.TempDir("", "les-test")
+		baseDir, err0 := os.MkdirTemp("", "les-test")
 		if err0 != nil {
 			return nil, teardown, err0
 		}
@@ -455,7 +453,7 @@ func testSim(t *testing.T, serverCount, clientCount int, serverDir, clientDir []
 
 	for i := range clients {
 		clientconf := adapters.RandomNodeConfig()
-		clientconf.Services = []string{"lesclient"}
+		clientconf.Lifecycles = []string{"lesclient"}
 		if len(clientDir) == clientCount {
 			clientconf.DataDir = clientDir[i]
 		}
@@ -468,7 +466,7 @@ func testSim(t *testing.T, serverCount, clientCount int, serverDir, clientDir []
 
 	for i := range servers {
 		serverconf := adapters.RandomNodeConfig()
-		serverconf.Services = []string{"lesserver"}
+		serverconf.Lifecycles = []string{"lesserver"}
 		if len(serverDir) == serverCount {
 			serverconf.DataDir = serverDir[i]
 		}
@@ -493,26 +491,25 @@ func testSim(t *testing.T, serverCount, clientCount int, serverDir, clientDir []
 	return test(ctx, net, servers, clients)
 }
 
-func newLesClientService(ctx *adapters.ServiceContext) (node.Service, error) {
-	config := eth.DefaultConfig
-	config.SyncMode = downloader.LightSync
+func newLesClientService(ctx *adapters.ServiceContext, stack *node.Node) (node.Lifecycle, error) {
+	config := ethconfig.Defaults
+	config.SyncMode = (ethdownloader.SyncMode)(downloader.LightSync)
 	config.Ethash.PowMode = ethash.ModeFake
-	return New(ctx.NodeContext, &config)
+	return New(stack, &config)
 }
 
-func newLesServerService(ctx *adapters.ServiceContext) (node.Service, error) {
-	config := eth.DefaultConfig
-	config.SyncMode = downloader.FullSync
+func newLesServerService(ctx *adapters.ServiceContext, stack *node.Node) (node.Lifecycle, error) {
+	config := ethconfig.Defaults
+	config.SyncMode = (ethdownloader.SyncMode)(downloader.FullSync)
 	config.LightServ = testServerCapacity
 	config.LightPeers = testMaxClients
-	ethereum, err := eth.New(ctx.NodeContext, &config)
+	ethereum, err := eth.New(stack, &config)
 	if err != nil {
 		return nil, err
 	}
-	server, err := NewLesServer(ethereum, &config)
+	_, err = NewLesServer(stack, ethereum, &config)
 	if err != nil {
 		return nil, err
 	}
-	ethereum.AddLesServer(server)
 	return ethereum, nil
 }
