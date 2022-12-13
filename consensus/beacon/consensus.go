@@ -483,6 +483,7 @@ func (beacon *Beacon) Seal(chain consensus.ChainHeaderReader, block *types.Block
 	return nil
 }
 
+//!!!!! have to solve...
 // SealHash returns the hash of a block prior to it being sealed.
 func (beacon *Beacon) SealHash(header *types.Header) common.Hash {
 	if chain.Config().IsWorldland(header.Number) {
@@ -497,8 +498,8 @@ func (beacon *Beacon) SealHash(header *types.Header) common.Hash {
 // 추가로 수정해야하는 부분이 많이 있음.
 func (beacon *Beacon) CalcDifficulty(chain consensus.ChainHeaderReader, time uint64, parent *types.Header) *big.Int {
 	// Transition isn't triggered yet, use the legacy rules for calculation
-	if chain.Config().IsWorldland( parent.Number + 1 ) {
-		return beacon.ethtwo.SealHash(header)
+	if chain.Config().IsWorldland( parent.Number ) {
+		return beacon.ethtwo.CalcDifficulty(chain, time, parent)
 	}
 
 	if reached, _ := IsTTDReached(chain, parent.Hash(), parent.Number.Uint64()); !reached {
