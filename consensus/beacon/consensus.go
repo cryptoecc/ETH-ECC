@@ -483,12 +483,9 @@ func (beacon *Beacon) Seal(chain consensus.ChainHeaderReader, block *types.Block
 	return nil
 }
 
-//!!!!! have to solve...
+//eccpow ethhash sealhash is equal
 // SealHash returns the hash of a block prior to it being sealed.
 func (beacon *Beacon) SealHash(header *types.Header) common.Hash {
-	if chain.Config().IsWorldland(header.Number) {
-		return beacon.ethtwo.SealHash(header)
-	}
 	return beacon.ethone.SealHash(header)
 }
 
