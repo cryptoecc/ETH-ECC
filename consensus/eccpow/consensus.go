@@ -508,7 +508,7 @@ func accumulateRewards(config *params.ChainConfig, state *state.StateDB, header 
 	}
 	if config.IsWorldland(header.Number){
 		blockReward = WorldLandBlockReward
-		if header.Number == big.NewInt(3){
+		if config.IsWorldlandMerge(header.Number){
 			blockReward = WorldLandFirstBlockReward		
 		}
 	}

@@ -554,9 +554,13 @@ func (c *ChainConfig) String() string {
 	switch {
 	case c.Ethash != nil:
 		if c.TerminalTotalDifficulty == nil {
-			banner += "Consensus: Ethash (proof-of-work)\n"
+			if c.WorldlandForkSupport {
+				banner += "Consensus: Eccpow (proof-of-work), changing from Ethash (proof-of-work)\n"
+			} else {
+				banner += "Consensus: Ethash (proof-of-work)\n"
+			}
 		} else if !c.TerminalTotalDifficultyPassed {
-			banner += "Consensus: Beacon (proof-of-stake), merging from Ethash (proof-of-work)\n"
+			banner += "Consensus: Beacon (proof-of-stake), merged from Eccpow (proof-of-work)\n"
 		} else {
 			banner += "Consensus: Beacon (proof-of-stake), merged from Ethash (proof-of-work)\n"
 		}
@@ -727,6 +731,11 @@ func (c *ChainConfig) IsWorldland(num *big.Int) bool {
 	return isForked(c.WorldlandBlock, num)
 }
 
+// IsWorldlandMerge returns whether num is either equal to the Worldland fork block.
+func (c *ChainConfig) IsWorldlandMerge(num *big.Int) bool {
+	return isMerged(c.WorldlandBlock, num)
+}
+
 // CheckCompatible checks whether scheduled fork transitions have been imported
 // with a mismatching chain configuration.
 func (c *ChainConfig) CheckCompatible(newcfg *ChainConfig, height uint64) *ConfigCompatError {
@@ -876,6 +885,15 @@ func isForked(s, head *big.Int) bool {
 	}
 	return s.Cmp(head) <= 0
 }
+
+// isMerged
+func isMerged(s, head *big.Int) bool {
+	if s == nil || head == nil {
+		return false
+	}
+	return s.Cmp(head) == 0
+}
+
 
 func configNumEqual(x, y *big.Int) bool {
 	if x == nil {
