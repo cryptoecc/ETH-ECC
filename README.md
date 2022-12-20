@@ -11,7 +11,7 @@
 [Go to ETH-ECC Repository](https://github.com/cryptoecc/ETH-ECC)
 
 ### ETH-ECC client launch and LVE mainnet connection
-[Go to ETH-ECC client launch and LVE mainnet connection](https://github.com/cryptoecc/bitcoin_ECC/blob/master/doc/Connect_LVE_mainnet.md)
+[Go to ETH-ECC client launch and LVE mainnet connection](https://github.com/cryptoecc/ETH-ECC/blob/master/Connect_LVE_mainnet.md)
 
 ### Build private network and test(Bitcoin-ECC)
 [Go to Build private network and test](https://github.com/cryptoecc/bitcoin_ECC/blob/master/doc/Build_private_network.md)
