@@ -21,46 +21,48 @@ import (
 	"encoding/base64"
 	"encoding/hex"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net"
 	"os"
 	"strconv"
 	"strings"
 
-	"github.com/cryptoecc/ETH-ECC/p2p/enode"
-	"github.com/cryptoecc/ETH-ECC/p2p/enr"
-	"github.com/cryptoecc/ETH-ECC/rlp"
-	"github.com/urfave/cli"
+	"github.com/ethereum/go-ethereum/p2p/enode"
+	"github.com/ethereum/go-ethereum/p2p/enr"
+	"github.com/ethereum/go-ethereum/rlp"
+	"github.com/urfave/cli/v2"
 )
 
-var enrdumpCommand = cli.Command{
+var fileFlag = &cli.StringFlag{Name: "file"}
+
+var enrdumpCommand = &cli.Command{
 	Name:   "enrdump",
 	Usage:  "Pretty-prints node records",
 	Action: enrdump,
 	Flags: []cli.Flag{
-		cli.StringFlag{Name: "file"},
+		fileFlag,
 	},
 }
 
 func enrdump(ctx *cli.Context) error {
 	var source string
-	if file := ctx.String("file"); file != "" {
+	if file := ctx.String(fileFlag.Name); file != "" {
 		if ctx.NArg() != 0 {
 			return fmt.Errorf("can't dump record from command-line argument in -file mode")
 		}
 		var b []byte
 		var err error
 		if file == "-" {
-			b, err = ioutil.ReadAll(os.Stdin)
+			b, err = io.ReadAll(os.Stdin)
 		} else {
-			b, err = ioutil.ReadFile(file)
+			b, err = os.ReadFile(file)
 		}
 		if err != nil {
 			return err
 		}
 		source = string(b)
 	} else if ctx.NArg() == 1 {
-		source = ctx.Args()[0]
+		source = ctx.Args().First()
 	} else {
 		return fmt.Errorf("need record as argument")
 	}
@@ -69,22 +71,30 @@ func enrdump(ctx *cli.Context) error {
 	if err != nil {
 		return fmt.Errorf("INVALID: %v", err)
 	}
-	fmt.Print(dumpRecord(r))
+	dumpRecord(os.Stdout, r)
 	return nil
 }
 
 // dumpRecord creates a human-readable description of the given node record.
-func dumpRecord(r *enr.Record) string {
-	out := new(bytes.Buffer)
-	if n, err := enode.New(enode.ValidSchemes, r); err != nil {
+func dumpRecord(out io.Writer, r *enr.Record) {
+	n, err := enode.New(enode.ValidSchemes, r)
+	if err != nil {
 		fmt.Fprintf(out, "INVALID: %v\n", err)
 	} else {
 		fmt.Fprintf(out, "Node ID: %v\n", n.ID())
+		dumpNodeURL(out, n)
 	}
 	kv := r.AppendElements(nil)[1:]
 	fmt.Fprintf(out, "Record has sequence number %d and %d key/value pairs.\n", r.Seq(), len(kv)/2)
 	fmt.Fprint(out, dumpRecordKV(kv, 2))
-	return out.String()
+}
+
+func dumpNodeURL(out io.Writer, n *enode.Node) {
+	var key enode.Secp256k1
+	if n.Load(&key) != nil {
+		return // no secp256k1 public key
+	}
+	fmt.Fprintf(out, "URLv4:   %s\n", n.URLv4())
 }
 
 func dumpRecordKV(kv []interface{}, indent int) string {

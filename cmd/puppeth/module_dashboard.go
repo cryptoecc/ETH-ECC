@@ -18,7 +18,6 @@ package main
 
 import (
 	"bytes"
-	"encoding/json"
 	"fmt"
 	"html/template"
 	"math/rand"
@@ -26,7 +25,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/cryptoecc/ETH-ECC/log"
+	"github.com/ethereum/go-ethereum/log"
 )
 
 // dashboardContent is the actual dashboard HTML content to serve up when users
@@ -41,7 +40,7 @@ var dashboardContent = `
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 
-		<title>{{.NetworkTitle}}: Ethereum Testnet</title>
+		<title>{{.NetworkTitle}}: Network Dashboard</title>
 
 		<link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
 		<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
@@ -80,12 +79,10 @@ var dashboardContent = `
 								<ul class="nav side-menu">
 									{{if .EthstatsPage}}<li id="stats_menu"><a onclick="load('#stats')"><i class="fa fa-tachometer"></i> Network Stats</a></li>{{end}}
 									{{if .ExplorerPage}}<li id="explorer_menu"><a onclick="load('#explorer')"><i class="fa fa-database"></i> Block Explorer</a></li>{{end}}
-									{{if .WalletPage}}<li id="wallet_menu"><a onclick="load('#wallet')"><i class="fa fa-address-book-o"></i> Browser Wallet</a></li>{{end}}
 									{{if .FaucetPage}}<li id="faucet_menu"><a onclick="load('#faucet')"><i class="fa fa-bath"></i> Crypto Faucet</a></li>{{end}}
 									<li id="connect_menu"><a><i class="fa fa-plug"></i> Connect Yourself</a>
 										<ul id="connect_list" class="nav child_menu">
 											<li><a onclick="$('#connect_menu').removeClass('active'); $('#connect_list').toggle(); load('#geth')">Go Ethereum: Geth</a></li>
-											<li><a onclick="$('#connect_menu').removeClass('active'); $('#connect_list').toggle(); load('#mist')">Go Ethereum: Wallet & Mist</a></li>
 											<li><a onclick="$('#connect_menu').removeClass('active'); $('#connect_list').toggle(); load('#mobile')">Go Ethereum: Android & iOS</a></li>{{if .Ethash}}
 											<li><a onclick="$('#connect_menu').removeClass('active'); $('#connect_list').toggle(); load('#other')">Other Ethereum Clients</a></li>{{end}}
 										</ul>
@@ -186,58 +183,6 @@ var dashboardContent = `
 							</div>
 						</div>
 					</div>
-					<div id="mist" hidden style="padding: 16px;">
-						<div class="page-title">
-							<div class="title_left">
-								<h3>Connect Yourself &ndash; Go Ethereum: Wallet &amp; Mist</h3>
-							</div>
-						</div>
-						<div class="clearfix"></div>
-						<div class="row">
-							<div class="col-md-6">
-								<div class="x_panel">
-									<div class="x_title">
-										<h2><i class="fa fa-credit-card" aria-hidden="true"></i> Desktop wallet <small>Interacts with accounts and contracts</small></h2>
-										<div class="clearfix"></div>
-									</div>
-									<div class="x_content">
-										<p>The Ethereum Wallet is an <a href="https://electron.atom.io/" target="about:blank">Electron</a> based desktop application to manage your Ethereum accounts and funds. Beside the usual account life-cycle operations you would expect to perform, the wallet also provides a means to send transactions from your accounts and to interact with smart contracts deployed on the network.</p>
-										<p>Under the hood the wallet is backed by a go-ethereum full node, meaning that a mid range machine is assumed. Similarly, synchronization is based on <strong>fast-sync</strong>, which will download all blockchain data from the network and make it available to the wallet. Light nodes cannot currently fully back the wallet, but it's a target actively pursued.</p>
-										<br/>
-										<p>To connect with the Ethereum Wallet, you'll need to initialize your private network first via Geth as the wallet does not currently support calling Geth directly. To initialize your local chain, download <a href="/{{.GethGenesis}}"><code>{{.GethGenesis}}</code></a> and run:
-											<pre>geth --datadir=$HOME/.{{.Network}} init {{.GethGenesis}}</pre>
-										</p>
-										<p>With your local chain initialized, you can start the Ethereum Wallet:
-											<pre>ethereumwallet --rpc $HOME/.{{.Network}}/geth.ipc --node-networkid={{.NetworkID}} --node-datadir=$HOME/.{{.Network}}{{if .Ethstats}} --node-ethstats='{{.Ethstats}}'{{end}} --node-bootnodes={{.BootnodesFlat}}</pre>
-										<p>
-										<br/>
-										<p>You can download the Ethereum Wallet from <a href="https://github.com/Onther-Tech/mist/releases" target="about:blank">https://github.com/Onther-Tech/mist/releases</a>.</p>
-									</div>
-								</div>
-							</div>
-							<div class="col-md-6">
-								<div class="x_panel">
-									<div class="x_title">
-										<h2><i class="fa fa-picture-o" aria-hidden="true"></i> Mist browser <small>Interacts with third party DApps</small></h2>
-										<div class="clearfix"></div>
-									</div>
-									<div class="x_content">
-										<p>The Mist browser is an <a href="https://electron.atom.io/" target="about:blank">Electron</a> based desktop application to load and interact with Ethereum enabled third party web DApps. Beside all the functionality provided by the Ethereum Wallet, Mist is an extended web-browser where loaded pages have access to the Ethereum network via a web3.js provider, and may also interact with users' own accounts (given proper authorization and confirmation of course).</p>
-										<p>Under the hood the browser is backed by a go-ethereum full node, meaning that a mid range machine is assumed. Similarly, synchronization is based on <strong>fast-sync</strong>, which will download all blockchain data from the network and make it available to the wallet. Light nodes cannot currently fully back the wallet, but it's a target actively pursued.</p>
-										<br/>
-										<p>To connect with the Mist browser, you'll need to initialize your private network first via Geth as Mist does not currently support calling Geth directly. To initialize your local chain, download <a href="/{{.GethGenesis}}"><code>{{.GethGenesis}}</code></a> and run:
-											<pre>geth --datadir=$HOME/.{{.Network}} init {{.GethGenesis}}</pre>
-										</p>
-										<p>With your local chain initialized, you can start Mist:
-											<pre>mist --rpc $HOME/.{{.Network}}/geth.ipc --node-networkid={{.NetworkID}} --node-datadir=$HOME/.{{.Network}}{{if .Ethstats}} --node-ethstats='{{.Ethstats}}'{{end}} --node-bootnodes={{.BootnodesFlat}}</pre>
-										<p>
-										<br/>
-										<p>You can download the Mist browser from <a href="https://github.com/Onther-Tech/mist/releases" target="about:blank">https://github.com/Onther-Tech/mist/releases</a>.</p>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
 					<div id="mobile" hidden style="padding: 16px;">
 						<div class="page-title">
 							<div class="title_left">
@@ -256,8 +201,8 @@ var dashboardContent = `
 										<p>Starting with the 1.5 release of go-ethereum, we've transitioned away from shipping only full blown Ethereum clients and started focusing on releasing the code as reusable packages initially for Go projects, then later for Java based Android projects too. Mobile support is still evolving, hence is bound to change often and hard, but the Ethereum network can nonetheless be accessed from Android too.</p>
 										<p>Under the hood the Android library is backed by a go-ethereum light node, meaning that given a not-too-old Android device, you should be able to join the network without significant issues. Certain functionality is not yet available and rough edges are bound to appear here and there, please report issues if you find any.</p>
 										<br/>
-										<p>The stable Android archives are distributed via Maven Central, and the develop snapshots via the Sonatype repositories. Before proceeding, please ensure you have a recent version configured in your Android project. You can find details in <a href="https://github.com/cryptoecc/ETH-ECC/wiki/Mobile:-Introduction#android-archive" target="about:blank">Mobile: Introduction &ndash; Android archive</a>.
-										<p>Before connecting to the Ethereum network, download the <a href="/{{.GethGenesis}}"><code>{{.GethGenesis}}</code></a> genesis json file and either store it in your Android project as a resource file you can access, or save it as a string in a variable. You're going to need to to initialize your client.</p>
+										<p>The stable Android archives are distributed via Maven Central, and the develop snapshots via the Sonatype repositories. Before proceeding, please ensure you have a recent version configured in your Android project. You can find details in <a href="https://github.com/ethereum/go-ethereum/wiki/Mobile:-Introduction#android-archive" target="about:blank">Mobile: Introduction &ndash; Android archive</a>.
+										<p>Before connecting to the Ethereum network, download the <a href="/{{.GethGenesis}}"><code>{{.GethGenesis}}</code></a> genesis json file and either store it in your Android project as a resource file you can access, or save it as a string in a variable. You're going to need to initialize your client.</p>
 										<p>Inside your Java code you can now import the geth archive and connect to Ethereum:
 											<pre>import org.ethereum.geth.*;</pre>
 <pre>
@@ -287,8 +232,8 @@ node.start();
 										<p>Starting with the 1.5 release of go-ethereum, we've transitioned away from shipping only full blown Ethereum clients and started focusing on releasing the code as reusable packages initially for Go projects, then later for ObjC/Swift based iOS projects too. Mobile support is still evolving, hence is bound to change often and hard, but the Ethereum network can nonetheless be accessed from iOS too.</p>
 										<p>Under the hood the iOS library is backed by a go-ethereum light node, meaning that given a not-too-old Apple device, you should be able to join the network without significant issues. Certain functionality is not yet available and rough edges are bound to appear here and there, please report issues if you find any.</p>
 										<br/>
-										<p>Both stable and develop builds of the iOS framework are available via CocoaPods. Before proceeding, please ensure you have a recent version configured in your iOS project. You can find details in <a href="https://github.com/cryptoecc/ETH-ECC/wiki/Mobile:-Introduction#ios-framework" target="about:blank">Mobile: Introduction &ndash; iOS framework</a>.
-										<p>Before connecting to the Ethereum network, download the <a href="/{{.GethGenesis}}"><code>{{.GethGenesis}}</code></a> genesis json file and either store it in your iOS project as a resource file you can access, or save it as a string in a variable. You're going to need to to initialize your client.</p>
+										<p>Both stable and develop builds of the iOS framework are available via CocoaPods. Before proceeding, please ensure you have a recent version configured in your iOS project. You can find details in <a href="https://github.com/ethereum/go-ethereum/wiki/Mobile:-Introduction#ios-framework" target="about:blank">Mobile: Introduction &ndash; iOS framework</a>.
+										<p>Before connecting to the Ethereum network, download the <a href="/{{.GethGenesis}}"><code>{{.GethGenesis}}</code></a> genesis json file and either store it in your iOS project as a resource file you can access, or save it as a string in a variable. You're going to need to initialize your client.</p>
 										<p>Inside your Swift code you can now import the geth framework and connect to Ethereum (ObjC should be analogous):
 											<pre>import Geth</pre>
 <pre>
@@ -337,7 +282,7 @@ try! node?.start();
 											<pre>eth --config {{.CppGenesis}} --datadir $HOME/.{{.Network}} --peerset "{{.CppBootnodes}}"</pre>
 										</p>
 										<br/>
-										<p>You can find cpp-ethereum at <a href="https://github.com/Onther-Tech/cpp-ethereum/" target="about:blank">https://github.com/Onther-Tech/cpp-ethereum/</a>.</p>
+										<p>You can find cpp-ethereum at <a href="https://github.com/ethereum/cpp-ethereum/" target="about:blank">https://github.com/ethereum/cpp-ethereum/</a>.</p>
 									</div>
 								</div>
 							</div>
@@ -357,7 +302,7 @@ try! node?.start();
 											<pre>./gradlew runCustom -DgenesisFile={{.HarmonyGenesis}} -Dpeer.networkId={{.NetworkID}} -Ddatabase.dir=$HOME/.harmony/{{.Network}} {{.HarmonyBootnodes}} </pre>
 										</p>
 										<br/>
-										<p>You can find Ethereum Harmony at <a href="https://github.com/ether-camp/Onther-Tech-harmony/" target="about:blank">https://github.com/ether-camp/Onther-Tech-harmony/</a>.</p>
+										<p>You can find Ethereum Harmony at <a href="https://github.com/ether-camp/ethereum-harmony/" target="about:blank">https://github.com/ether-camp/ethereum-harmony/</a>.</p>
 									</div>
 								</div>
 							</div>
@@ -401,7 +346,7 @@ try! node?.start();
 											<pre>pyethapp -c eth.genesis="$(cat {{.PythonGenesis}})" -c eth.network_id={{.NetworkID}} -c data_dir=$HOME/.config/pyethapp/{{.Network}} -c discovery.bootstrap_nodes="[{{.PythonBootnodes}}]" -c eth.block.HOMESTEAD_FORK_BLKNUM={{.Homestead}} -c eth.block.ANTI_DOS_FORK_BLKNUM={{.Tangerine}} -c eth.block.SPURIOUS_DRAGON_FORK_BLKNUM={{.Spurious}} -c eth.block.METROPOLIS_FORK_BLKNUM={{.Byzantium}} -c eth.block.DAO_FORK_BLKNUM=18446744073709551615 run --console</pre>
 										</p>
 										<br/>
-										<p>You can find pyethapp at <a href="https://github.com/Onther-Tech/pyethapp/" target="about:blank">https://github.com/Onther-Tech/pyethapp/</a>.</p>
+										<p>You can find pyethapp at <a href="https://github.com/ethereum/pyethapp/" target="about:blank">https://github.com/ethereum/pyethapp/</a>.</p>
 									</div>
 								</div>
 							</div>
@@ -416,10 +361,10 @@ try! node?.start();
 										<div class="clearfix"></div>
 									</div>
 									<div style="display: inline-block; vertical-align: bottom; width: 623px; margin-top: 16px;">
-										<p>Puppeth is a tool to aid you in creating a new Ethereum network down to the genesis block, bootnodes, signers, ethstats server, crypto faucet, wallet browsers, block explorer, dashboard and more; without the hassle that it would normally entail to manually configure all these services one by one.</p>
+										<p>Puppeth is a tool to aid you in creating a new Ethereum network down to the genesis block, bootnodes, signers, ethstats server, crypto faucet,  block explorer, dashboard and more; without the hassle that it would normally entail to manually configure all these services one by one.</p>
 										<p>Puppeth uses ssh to dial in to remote servers, and builds its network components out of docker containers using docker-compose. The user is guided through the process via a command line wizard that does the heavy lifting and topology configuration automatically behind the scenes.</p>
 										<br/>
-										<p>Puppeth is distributed as part of the <a href="https://geth.ethereum.org/downloads/" target="about:blank">Geth &amp; Tools</a> bundles, but can also be installed separately via:<pre>go get github.com/cryptoecc/ETH-ECC/cmd/puppeth</pre></p>
+										<p>Puppeth is distributed as part of the <a href="https://geth.ethereum.org/downloads/" target="about:blank">Geth &amp; Tools</a> bundles, but can also be installed separately via:<pre>go get github.com/ethereum/go-ethereum/cmd/puppeth</pre></p>
 										<br/>
 										<p><em>Copyright 2017. The go-ethereum Authors.</em></p>
 									</div>
@@ -460,9 +405,6 @@ try! node?.start();
 						break;
 					case "#explorer":
 						url = "//{{.ExplorerPage}}";
-						break;
-					case "#wallet":
-						url = "//{{.WalletPage}}";
 						break;
 					case "#faucet":
 						url = "//{{.FaucetPage}}";
@@ -518,6 +460,8 @@ var dashboardMascot = []byte("\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x01s\x
 var dashboardDockerfile = `
 FROM mhart/alpine-node:latest
 
+WORKDIR /usr/app
+
 RUN \
 	npm install connect serve-static && \
 	\
@@ -537,7 +481,7 @@ ADD puppeth.png /dashboard/puppeth.png
 
 EXPOSE 80
 
-CMD ["node", "/server.js"]
+CMD ["node", "./server.js"]
 `
 
 // dashboardComposefile is the docker-compose.yml file required to deploy and
@@ -585,7 +529,6 @@ func deployDashboard(client *sshClient, network string, conf *config, config *da
 		"VHost":        config.host,
 		"EthstatsPage": config.ethstats,
 		"ExplorerPage": config.explorer,
-		"WalletPage":   config.wallet,
 		"FaucetPage":   config.faucet,
 	})
 	files[filepath.Join(workdir, "docker-compose.yaml")] = composefile.Bytes()
@@ -613,7 +556,6 @@ func deployDashboard(client *sshClient, network string, conf *config, config *da
 		"NetworkTitle":      strings.Title(network),
 		"EthstatsPage":      config.ethstats,
 		"ExplorerPage":      config.explorer,
-		"WalletPage":        config.wallet,
 		"FaucetPage":        config.faucet,
 		"GethGenesis":       network + ".json",
 		"Bootnodes":         conf.bootnodes,
@@ -639,36 +581,6 @@ func deployDashboard(client *sshClient, network string, conf *config, config *da
 	// Marshal the genesis spec files for go-ethereum and all the other clients
 	genesis, _ := conf.Genesis.MarshalJSON()
 	files[filepath.Join(workdir, network+".json")] = genesis
-
-	if conf.Genesis.Config.Ethash != nil {
-		cppSpec, err := newAlethGenesisSpec(network, conf.Genesis)
-		if err != nil {
-			return nil, err
-		}
-		cppSpecJSON, _ := json.Marshal(cppSpec)
-		files[filepath.Join(workdir, network+"-cpp.json")] = cppSpecJSON
-
-		harmonySpecJSON, _ := conf.Genesis.MarshalJSON()
-		files[filepath.Join(workdir, network+"-harmony.json")] = harmonySpecJSON
-
-		paritySpec, err := newParityChainSpec(network, conf.Genesis, conf.bootnodes)
-		if err != nil {
-			return nil, err
-		}
-		paritySpecJSON, _ := json.Marshal(paritySpec)
-		files[filepath.Join(workdir, network+"-parity.json")] = paritySpecJSON
-
-		pyethSpec, err := newPyEthereumGenesisSpec(network, conf.Genesis)
-		if err != nil {
-			return nil, err
-		}
-		pyethSpecJSON, _ := json.Marshal(pyethSpec)
-		files[filepath.Join(workdir, network+"-python.json")] = pyethSpecJSON
-	} else {
-		for _, client := range []string{"cpp", "harmony", "parity", "python"} {
-			files[filepath.Join(workdir, network+"-"+client+".json")] = []byte{}
-		}
-	}
 	files[filepath.Join(workdir, "puppeth.png")] = dashboardMascot
 
 	// Upload the deployment files to the remote server (and clean up afterwards)
@@ -693,7 +605,6 @@ type dashboardInfos struct {
 
 	ethstats string
 	explorer string
-	wallet   string
 	faucet   string
 }
 
@@ -705,7 +616,6 @@ func (info *dashboardInfos) Report() map[string]string {
 		"Website listener port": strconv.Itoa(info.port),
 		"Ethstats service":      info.ethstats,
 		"Explorer service":      info.explorer,
-		"Wallet service":        info.wallet,
 		"Faucet service":        info.faucet,
 	}
 }
@@ -746,7 +656,6 @@ func checkDashboard(client *sshClient, network string) (*dashboardInfos, error) 
 		port:     port,
 		ethstats: infos.envvars["ETHSTATS_PAGE"],
 		explorer: infos.envvars["EXPLORER_PAGE"],
-		wallet:   infos.envvars["WALLET_PAGE"],
 		faucet:   infos.envvars["FAUCET_PAGE"],
 	}, nil
 }

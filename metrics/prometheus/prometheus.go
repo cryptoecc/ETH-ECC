@@ -22,8 +22,8 @@ import (
 	"net/http"
 	"sort"
 
-	"github.com/cryptoecc/ETH-ECC/log"
-	"github.com/cryptoecc/ETH-ECC/metrics"
+	"github.com/ethereum/go-ethereum/log"
+	"github.com/ethereum/go-ethereum/metrics"
 )
 
 // Handler returns an HTTP handler which dump metrics in Prometheus format.
@@ -36,7 +36,7 @@ func Handler(reg metrics.Registry) http.Handler {
 		})
 		sort.Strings(names)
 
-		// Aggregate all the metris into a Prometheus collector
+		// Aggregate all the metrics into a Prometheus collector
 		c := newCollector()
 
 		for _, name := range names {

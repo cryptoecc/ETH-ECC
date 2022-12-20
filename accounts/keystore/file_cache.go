@@ -17,22 +17,21 @@
 package keystore
 
 import (
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
 	"sync"
 	"time"
 
-	"github.com/cryptoecc/ETH-ECC/log"
 	mapset "github.com/deckarep/golang-set"
+	"github.com/ethereum/go-ethereum/log"
 )
 
 // fileCache is a cache of files seen during scan of keystore.
 type fileCache struct {
 	all     mapset.Set // Set of all files from the keystore folder
 	lastMod time.Time  // Last time instance when a file was modified
-	mu      sync.RWMutex
+	mu      sync.Mutex
 }
 
 // scan performs a new scan on the given directory, compares against the already
@@ -40,8 +39,8 @@ type fileCache struct {
 func (fc *fileCache) scan(keyDir string) (mapset.Set, mapset.Set, mapset.Set, error) {
 	t0 := time.Now()
 
-	// List all the failes from the keystore folder
-	files, err := ioutil.ReadDir(keyDir)
+	// List all the files from the keystore folder
+	files, err := os.ReadDir(keyDir)
 	if err != nil {
 		return nil, nil, nil, err
 	}
@@ -62,10 +61,14 @@ func (fc *fileCache) scan(keyDir string) (mapset.Set, mapset.Set, mapset.Set, er
 			log.Trace("Ignoring file on account scan", "path", path)
 			continue
 		}
-		// Gather the set of all and fresly modified files
+		// Gather the set of all and freshly modified files
 		all.Add(path)
 
-		modified := fi.ModTime()
+		info, err := fi.Info()
+		if err != nil {
+			return nil, nil, nil, err
+		}
+		modified := info.ModTime()
 		if modified.After(fc.lastMod) {
 			mods.Add(path)
 		}
@@ -89,13 +92,13 @@ func (fc *fileCache) scan(keyDir string) (mapset.Set, mapset.Set, mapset.Set, er
 }
 
 // nonKeyFile ignores editor backups, hidden files and folders/symlinks.
-func nonKeyFile(fi os.FileInfo) bool {
+func nonKeyFile(fi os.DirEntry) bool {
 	// Skip editor backups and UNIX-style hidden files.
 	if strings.HasSuffix(fi.Name(), "~") || strings.HasPrefix(fi.Name(), ".") {
 		return true
 	}
 	// Skip misc special files, directories (yes, symlinks too).
-	if fi.IsDir() || fi.Mode()&os.ModeType != 0 {
+	if fi.IsDir() || !fi.Type().IsRegular() {
 		return true
 	}
 	return false

@@ -18,12 +18,11 @@ package fourbyte
 
 import (
 	"fmt"
-	"io/ioutil"
 	"strings"
 	"testing"
 
-	"github.com/cryptoecc/ETH-ECC/accounts/abi"
-	"github.com/cryptoecc/ETH-ECC/common"
+	"github.com/ethereum/go-ethereum/accounts/abi"
+	"github.com/ethereum/go-ethereum/common"
 )
 
 // Tests that all the selectors contained in the 4byte database are valid.
@@ -48,8 +47,8 @@ func TestEmbeddedDatabase(t *testing.T) {
 			t.Errorf("Failed to get method by id (%s): %v", id, err)
 			continue
 		}
-		if m.Sig() != selector {
-			t.Errorf("Selector mismatch: have %v, want %v", m.Sig(), selector)
+		if m.Sig != selector {
+			t.Errorf("Selector mismatch: have %v, want %v", m.Sig, selector)
 		}
 	}
 }
@@ -57,10 +56,7 @@ func TestEmbeddedDatabase(t *testing.T) {
 // Tests that custom 4byte datasets can be handled too.
 func TestCustomDatabase(t *testing.T) {
 	// Create a new custom 4byte database with no embedded component
-	tmpdir, err := ioutil.TempDir("", "signer-4byte-test")
-	if err != nil {
-		t.Fatal(err)
-	}
+	tmpdir := t.TempDir()
 	filename := fmt.Sprintf("%s/4byte_custom.json", tmpdir)
 
 	db, err := NewWithFile(filename)

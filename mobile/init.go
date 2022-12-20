@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with the go-ethereum library. If not, see <http://www.gnu.org/licenses/>.
 
-// Contains initialization code for the mbile library.
+// Contains initialization code for the mobile library.
 
 package geth
 
@@ -22,7 +22,7 @@ import (
 	"os"
 	"runtime"
 
-	"github.com/cryptoecc/ETH-ECC/log"
+	"github.com/ethereum/go-ethereum/log"
 )
 
 func init() {

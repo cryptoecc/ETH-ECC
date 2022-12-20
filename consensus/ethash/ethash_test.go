@@ -17,7 +17,6 @@
 package ethash
 
 import (
-	"io/ioutil"
 	"math/big"
 	"math/rand"
 	"os"
@@ -25,9 +24,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/cryptoecc/ETH-ECC/common"
-	"github.com/cryptoecc/ETH-ECC/common/hexutil"
-	"github.com/cryptoecc/ETH-ECC/core/types"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/common/hexutil"
+	"github.com/ethereum/go-ethereum/core/types"
 )
 
 // Tests that ethash works correctly in test mode.
@@ -46,23 +45,32 @@ func TestTestMode(t *testing.T) {
 	case block := <-results:
 		header.Nonce = types.EncodeNonce(block.Nonce())
 		header.MixDigest = block.MixDigest()
-		if err := ethash.VerifySeal(nil, header); err != nil {
+		if err := ethash.verifySeal(nil, header, false); err != nil {
 			t.Fatalf("unexpected verification error: %v", err)
 		}
-	case <-time.NewTimer(time.Second).C:
+	case <-time.NewTimer(4 * time.Second).C:
 		t.Error("sealing result timeout")
 	}
 }
 
 // This test checks that cache lru logic doesn't crash under load.
-// It reproduces https://github.com/cryptoecc/ETH-ECC/issues/14943
+// It reproduces https://github.com/ethereum/go-ethereum/issues/14943
 func TestCacheFileEvict(t *testing.T) {
-	tmpdir, err := ioutil.TempDir("", "ethash-test")
+	// TODO: t.TempDir fails to remove the directory on Windows
+	// \AppData\Local\Temp\1\TestCacheFileEvict2179435125\001\cache-R23-0000000000000000: Access is denied.
+	tmpdir, err := os.MkdirTemp("", "ethash-test")
 	if err != nil {
 		t.Fatal(err)
 	}
 	defer os.RemoveAll(tmpdir)
-	e := New(Config{CachesInMem: 3, CachesOnDisk: 10, CacheDir: tmpdir, PowMode: ModeTest}, nil, false)
+
+	config := Config{
+		CachesInMem:  3,
+		CachesOnDisk: 10,
+		CacheDir:     tmpdir,
+		PowMode:      ModeTest,
+	}
+	e := New(config, nil, false)
 	defer e.Close()
 
 	workers := 8
@@ -86,7 +94,7 @@ func verifyTest(wg *sync.WaitGroup, e *Ethash, workerIndex, epochs int) {
 			block = 0
 		}
 		header := &types.Header{Number: big.NewInt(block), Difficulty: big.NewInt(100)}
-		e.VerifySeal(nil, header)
+		e.verifySeal(nil, header, false)
 	}
 }
 
@@ -128,7 +136,7 @@ func TestRemoteSealer(t *testing.T) {
 	}
 }
 
-func TestHashRate(t *testing.T) {
+func TestHashrate(t *testing.T) {
 	var (
 		hashrate = []hexutil.Uint64{100, 200, 300}
 		expect   uint64
@@ -143,7 +151,7 @@ func TestHashRate(t *testing.T) {
 
 	api := &API{ethash}
 	for i := 0; i < len(hashrate); i += 1 {
-		if res := api.SubmitHashRate(hashrate[i], ids[i]); !res {
+		if res := api.SubmitHashrate(hashrate[i], ids[i]); !res {
 			t.Error("remote miner submit hashrate failed")
 		}
 		expect += uint64(hashrate[i])
@@ -163,7 +171,7 @@ func TestClosedRemoteSealer(t *testing.T) {
 		t.Error("expect to return an error to indicate ethash is stopped")
 	}
 
-	if res := api.SubmitHashRate(hexutil.Uint64(100), common.HexToHash("a")); res {
+	if res := api.SubmitHashrate(hexutil.Uint64(100), common.HexToHash("a")); res {
 		t.Error("expect to return false when submit hashrate to a stopped ethash")
 	}
 }

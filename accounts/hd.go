@@ -41,7 +41,7 @@ var DefaultBaseDerivationPath = DerivationPath{0x80000000 + 44, 0x80000000 + 60,
 var LegacyLedgerBaseDerivationPath = DerivationPath{0x80000000 + 44, 0x80000000 + 60, 0x80000000 + 0, 0}
 
 // DerivationPath represents the computer friendly version of a hierarchical
-// deterministic wallet account derivaion path.
+// deterministic wallet account derivation path.
 //
 // The BIP-32 spec https://github.com/bitcoin/bips/blob/master/bip-0032.mediawiki
 // defines derivation paths to be of the form:
@@ -54,7 +54,7 @@ var LegacyLedgerBaseDerivationPath = DerivationPath{0x80000000 + 44, 0x80000000 
 // the `coin_type` 60' (or 0x8000003C) to Ethereum.
 //
 // The root path for Ethereum is m/44'/60'/0'/0 according to the specification
-// from https://github.com/Onther-Tech/EIPs/issues/84, albeit it's not set in stone
+// from https://github.com/ethereum/EIPs/issues/84, albeit it's not set in stone
 // yet whether accounts should increment the last component or the children of
 // that. We will go with the simpler approach of incrementing the last component.
 type DerivationPath []uint32
@@ -149,4 +149,32 @@ func (path *DerivationPath) UnmarshalJSON(b []byte) error {
 	}
 	*path, err = ParseDerivationPath(dp)
 	return err
+}
+
+// DefaultIterator creates a BIP-32 path iterator, which progresses by increasing the last component:
+// i.e. m/44'/60'/0'/0/0, m/44'/60'/0'/0/1, m/44'/60'/0'/0/2, ... m/44'/60'/0'/0/N.
+func DefaultIterator(base DerivationPath) func() DerivationPath {
+	path := make(DerivationPath, len(base))
+	copy(path[:], base[:])
+	// Set it back by one, so the first call gives the first result
+	path[len(path)-1]--
+	return func() DerivationPath {
+		path[len(path)-1]++
+		return path
+	}
+}
+
+// LedgerLiveIterator creates a bip44 path iterator for Ledger Live.
+// Ledger Live increments the third component rather than the fifth component
+// i.e. m/44'/60'/0'/0/0, m/44'/60'/1'/0/0, m/44'/60'/2'/0/0, ... m/44'/60'/N'/0/0.
+func LedgerLiveIterator(base DerivationPath) func() DerivationPath {
+	path := make(DerivationPath, len(base))
+	copy(path[:], base[:])
+	// Set it back by one, so the first call gives the first result
+	path[2]--
+	return func() DerivationPath {
+		// ledgerLivePathIterator iterates on the third component
+		path[2]++
+		return path
+	}
 }

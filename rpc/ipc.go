@@ -20,8 +20,8 @@ import (
 	"context"
 	"net"
 
-	"github.com/cryptoecc/ETH-ECC/log"
-	"github.com/cryptoecc/ETH-ECC/p2p/netutil"
+	"github.com/ethereum/go-ethereum/log"
+	"github.com/ethereum/go-ethereum/p2p/netutil"
 )
 
 // ServeListener accepts connections on l, serving JSON-RPC on them.
@@ -35,7 +35,7 @@ func (s *Server) ServeListener(l net.Listener) error {
 			return err
 		}
 		log.Trace("Accepted RPC connection", "conn", conn.RemoteAddr())
-		go s.ServeCodec(NewJSONCodec(conn), OptionMethodInvocation|OptionSubscriptions)
+		go s.ServeCodec(NewCodec(conn), 0)
 	}
 }
 
@@ -51,6 +51,6 @@ func DialIPC(ctx context.Context, endpoint string) (*Client, error) {
 		if err != nil {
 			return nil, err
 		}
-		return NewJSONCodec(conn), err
+		return NewCodec(conn), err
 	})
 }

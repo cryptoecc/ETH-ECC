@@ -19,21 +19,21 @@ package main
 import (
 	"strconv"
 
-	"github.com/cryptoecc/ETH-ECC/accounts"
-	"github.com/cryptoecc/ETH-ECC/accounts/abi/bind"
-	"github.com/cryptoecc/ETH-ECC/accounts/external"
-	"github.com/cryptoecc/ETH-ECC/cmd/utils"
-	"github.com/cryptoecc/ETH-ECC/common"
-	"github.com/cryptoecc/ETH-ECC/contracts/checkpointoracle"
-	"github.com/cryptoecc/ETH-ECC/ethclient"
-	"github.com/cryptoecc/ETH-ECC/params"
-	"github.com/cryptoecc/ETH-ECC/rpc"
-	"github.com/urfave/cli"
+	"github.com/ethereum/go-ethereum/accounts"
+	"github.com/ethereum/go-ethereum/accounts/abi/bind"
+	"github.com/ethereum/go-ethereum/accounts/external"
+	"github.com/ethereum/go-ethereum/cmd/utils"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/contracts/checkpointoracle"
+	"github.com/ethereum/go-ethereum/ethclient"
+	"github.com/ethereum/go-ethereum/params"
+	"github.com/ethereum/go-ethereum/rpc"
+	"github.com/urfave/cli/v2"
 )
 
 // newClient creates a client with specified remote URL.
 func newClient(ctx *cli.Context) *ethclient.Client {
-	client, err := ethclient.Dial(ctx.GlobalString(nodeURLFlag.Name))
+	client, err := ethclient.Dial(ctx.String(nodeURLFlag.Name))
 	if err != nil {
 		utils.Fatalf("Failed to connect to Ethereum node: %v", err)
 	}
@@ -64,9 +64,9 @@ func getContractAddr(client *rpc.Client) common.Address {
 func getCheckpoint(ctx *cli.Context, client *rpc.Client) *params.TrustedCheckpoint {
 	var checkpoint *params.TrustedCheckpoint
 
-	if ctx.GlobalIsSet(indexFlag.Name) {
+	if ctx.IsSet(indexFlag.Name) {
 		var result [3]string
-		index := uint64(ctx.GlobalInt64(indexFlag.Name))
+		index := uint64(ctx.Int64(indexFlag.Name))
 		if err := client.Call(&result, "les_getCheckpoint", index); err != nil {
 			utils.Fatalf("Failed to get local checkpoint %v, please ensure the les API is exposed", err)
 		}

@@ -17,8 +17,8 @@
 package les
 
 import (
-	"github.com/cryptoecc/ETH-ECC/metrics"
-	"github.com/cryptoecc/ETH-ECC/p2p"
+	"github.com/ethereum/go-ethereum/metrics"
+	"github.com/ethereum/go-ethereum/p2p"
 )
 
 var (
@@ -60,35 +60,54 @@ var (
 	miscOutTxStatusPacketsMeter   = metrics.NewRegisteredMeter("les/misc/out/packets/txStatus", nil)
 	miscOutTxStatusTrafficMeter   = metrics.NewRegisteredMeter("les/misc/out/traffic/txStatus", nil)
 
+	miscServingTimeHeaderTimer     = metrics.NewRegisteredTimer("les/misc/serve/header", nil)
+	miscServingTimeBodyTimer       = metrics.NewRegisteredTimer("les/misc/serve/body", nil)
+	miscServingTimeCodeTimer       = metrics.NewRegisteredTimer("les/misc/serve/code", nil)
+	miscServingTimeReceiptTimer    = metrics.NewRegisteredTimer("les/misc/serve/receipt", nil)
+	miscServingTimeTrieProofTimer  = metrics.NewRegisteredTimer("les/misc/serve/proof", nil)
+	miscServingTimeHelperTrieTimer = metrics.NewRegisteredTimer("les/misc/serve/helperTrie", nil)
+	miscServingTimeTxTimer         = metrics.NewRegisteredTimer("les/misc/serve/txs", nil)
+	miscServingTimeTxStatusTimer   = metrics.NewRegisteredTimer("les/misc/serve/txStatus", nil)
+
 	connectionTimer       = metrics.NewRegisteredTimer("les/connection/duration", nil)
 	serverConnectionGauge = metrics.NewRegisteredGauge("les/connection/server", nil)
-	clientConnectionGauge = metrics.NewRegisteredGauge("les/connection/client", nil)
 
 	totalCapacityGauge   = metrics.NewRegisteredGauge("les/server/totalCapacity", nil)
 	totalRechargeGauge   = metrics.NewRegisteredGauge("les/server/totalRecharge", nil)
-	totalConnectedGauge  = metrics.NewRegisteredGauge("les/server/totalConnected", nil)
 	blockProcessingTimer = metrics.NewRegisteredTimer("les/server/blockProcessingTime", nil)
 
-	requestServedMeter    = metrics.NewRegisteredMeter("les/server/req/avgServedTime", nil)
-	requestServedTimer    = metrics.NewRegisteredTimer("les/server/req/servedTime", nil)
-	requestEstimatedMeter = metrics.NewRegisteredMeter("les/server/req/avgEstimatedTime", nil)
-	requestEstimatedTimer = metrics.NewRegisteredTimer("les/server/req/estimatedTime", nil)
-	relativeCostHistogram = metrics.NewRegisteredHistogram("les/server/req/relative", nil, metrics.NewExpDecaySample(1028, 0.015))
+	requestServedMeter               = metrics.NewRegisteredMeter("les/server/req/avgServedTime", nil)
+	requestServedTimer               = metrics.NewRegisteredTimer("les/server/req/servedTime", nil)
+	requestEstimatedMeter            = metrics.NewRegisteredMeter("les/server/req/avgEstimatedTime", nil)
+	requestEstimatedTimer            = metrics.NewRegisteredTimer("les/server/req/estimatedTime", nil)
+	relativeCostHistogram            = metrics.NewRegisteredHistogram("les/server/req/relative", nil, metrics.NewExpDecaySample(1028, 0.015))
+	relativeCostHeaderHistogram      = metrics.NewRegisteredHistogram("les/server/req/relative/header", nil, metrics.NewExpDecaySample(1028, 0.015))
+	relativeCostBodyHistogram        = metrics.NewRegisteredHistogram("les/server/req/relative/body", nil, metrics.NewExpDecaySample(1028, 0.015))
+	relativeCostReceiptHistogram     = metrics.NewRegisteredHistogram("les/server/req/relative/receipt", nil, metrics.NewExpDecaySample(1028, 0.015))
+	relativeCostCodeHistogram        = metrics.NewRegisteredHistogram("les/server/req/relative/code", nil, metrics.NewExpDecaySample(1028, 0.015))
+	relativeCostProofHistogram       = metrics.NewRegisteredHistogram("les/server/req/relative/proof", nil, metrics.NewExpDecaySample(1028, 0.015))
+	relativeCostHelperProofHistogram = metrics.NewRegisteredHistogram("les/server/req/relative/helperTrie", nil, metrics.NewExpDecaySample(1028, 0.015))
+	relativeCostSendTxHistogram      = metrics.NewRegisteredHistogram("les/server/req/relative/txs", nil, metrics.NewExpDecaySample(1028, 0.015))
+	relativeCostTxStatusHistogram    = metrics.NewRegisteredHistogram("les/server/req/relative/txStatus", nil, metrics.NewExpDecaySample(1028, 0.015))
 
+	globalFactorGauge    = metrics.NewRegisteredGauge("les/server/globalFactor", nil)
 	recentServedGauge    = metrics.NewRegisteredGauge("les/server/recentRequestServed", nil)
 	recentEstimatedGauge = metrics.NewRegisteredGauge("les/server/recentRequestEstimated", nil)
 	sqServedGauge        = metrics.NewRegisteredGauge("les/server/servingQueue/served", nil)
 	sqQueuedGauge        = metrics.NewRegisteredGauge("les/server/servingQueue/queued", nil)
 
-	clientConnectedMeter    = metrics.NewRegisteredMeter("les/server/clientEvent/connected", nil)
-	clientRejectedMeter     = metrics.NewRegisteredMeter("les/server/clientEvent/rejected", nil)
-	clientKickedMeter       = metrics.NewRegisteredMeter("les/server/clientEvent/kicked", nil)
-	clientDisconnectedMeter = metrics.NewRegisteredMeter("les/server/clientEvent/disconnected", nil)
-	clientFreezeMeter       = metrics.NewRegisteredMeter("les/server/clientEvent/freeze", nil)
-	clientErrorMeter        = metrics.NewRegisteredMeter("les/server/clientEvent/error", nil)
+	clientFreezeMeter = metrics.NewRegisteredMeter("les/server/clientEvent/freeze", nil)
+	clientErrorMeter  = metrics.NewRegisteredMeter("les/server/clientEvent/error", nil)
 
 	requestRTT       = metrics.NewRegisteredTimer("les/client/req/rtt", nil)
 	requestSendDelay = metrics.NewRegisteredTimer("les/client/req/sendDelay", nil)
+
+	serverSelectableGauge = metrics.NewRegisteredGauge("les/client/serverPool/selectable", nil)
+	serverDialedMeter     = metrics.NewRegisteredMeter("les/client/serverPool/dialed", nil)
+	serverConnectedGauge  = metrics.NewRegisteredGauge("les/client/serverPool/connected", nil)
+	sessionValueMeter     = metrics.NewRegisteredMeter("les/client/serverPool/sessionValue", nil)
+	totalValueGauge       = metrics.NewRegisteredGauge("les/client/serverPool/totalValue", nil)
+	suggestedTimeoutGauge = metrics.NewRegisteredGauge("les/client/serverPool/timeout", nil)
 )
 
 // meteredMsgReadWriter is a wrapper around a p2p.MsgReadWriter, capable of

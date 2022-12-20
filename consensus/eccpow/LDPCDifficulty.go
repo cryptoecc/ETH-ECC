@@ -4,7 +4,7 @@ import (
 	"math"
 	"math/big"
 
-	"github.com/cryptoecc/ETH-ECC/core/types"
+	"github.com/ethereum/go-ethereum/core/types"
 )
 
 /*

@@ -19,44 +19,21 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"os"
 	"strings"
 
-	"github.com/cryptoecc/ETH-ECC/cmd/utils"
-	"github.com/cryptoecc/ETH-ECC/console"
-	"github.com/cryptoecc/ETH-ECC/crypto"
-	"github.com/urfave/cli"
+	"github.com/ethereum/go-ethereum/cmd/utils"
+	"github.com/urfave/cli/v2"
 )
-
-// promptPassphrase prompts the user for a passphrase.  Set confirmation to true
-// to require the user to confirm the passphrase.
-func promptPassphrase(confirmation bool) string {
-	passphrase, err := console.Stdin.PromptPassword("Password: ")
-	if err != nil {
-		utils.Fatalf("Failed to read password: %v", err)
-	}
-
-	if confirmation {
-		confirm, err := console.Stdin.PromptPassword("Repeat password: ")
-		if err != nil {
-			utils.Fatalf("Failed to read password confirmation: %v", err)
-		}
-		if passphrase != confirm {
-			utils.Fatalf("Passwords do not match")
-		}
-	}
-
-	return passphrase
-}
 
 // getPassphrase obtains a passphrase given by the user.  It first checks the
 // --passfile command line flag and ultimately prompts the user for a
 // passphrase.
-func getPassphrase(ctx *cli.Context) string {
+func getPassphrase(ctx *cli.Context, confirmation bool) string {
 	// Look for the --passwordfile flag.
 	passphraseFile := ctx.String(passphraseFlag.Name)
 	if passphraseFile != "" {
-		content, err := ioutil.ReadFile(passphraseFile)
+		content, err := os.ReadFile(passphraseFile)
 		if err != nil {
 			utils.Fatalf("Failed to read password file '%s': %v",
 				passphraseFile, err)
@@ -65,19 +42,7 @@ func getPassphrase(ctx *cli.Context) string {
 	}
 
 	// Otherwise prompt the user for the passphrase.
-	return promptPassphrase(false)
-}
-
-// signHash is a helper function that calculates a hash for the given message
-// that can be safely used to calculate a signature from.
-//
-// The hash is calulcated as
-//   keccak256("\x19Ethereum Signed Message:\n"${message length}${message}).
-//
-// This gives context to the signed message and prevents signing of transactions.
-func signHash(data []byte) []byte {
-	msg := fmt.Sprintf("\x19Ethereum Signed Message:\n%d%s", len(data), data)
-	return crypto.Keccak256([]byte(msg))
+	return utils.GetPassPhrase("", confirmation)
 }
 
 // mustPrintJSON prints the JSON encoding of the given object and
