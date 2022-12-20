@@ -10,7 +10,7 @@
 ### What is the ETH-ECC?
 [Go to ETH-ECC Repository](https://github.com/cryptoecc/ETH-ECC)
 
-###ETH-ECC client launch and LVE mainnet connection
+### ETH-ECC client launch and LVE mainnet connection
 [Go to ETH-ECC client launch and LVE mainnet connection](https://github.com/cryptoecc/bitcoin_ECC/blob/master/doc/Connect_LVE_mainnet.md)
 
 ### Build private network and test(Bitcoin-ECC)
