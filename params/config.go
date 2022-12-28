@@ -46,9 +46,10 @@ var TrustedCheckpoints = map[common.Hash]*TrustedCheckpoint{
 	SepoliaGenesisHash: SepoliaTrustedCheckpoint,
 	RinkebyGenesisHash: RinkebyTrustedCheckpoint,
 	GoerliGenesisHash:  GoerliTrustedCheckpoint,
-
+	/*
 	LveGenesisHash:  LveTrustedCheckpoint,
 	LvetestGenesisHash:  LvetestTrustedCheckpoint,
+	*/
 }
 
 // CheckpointOracles associates each known checkpoint oracles with the genesis hash of
@@ -59,9 +60,10 @@ var CheckpointOracles = map[common.Hash]*CheckpointOracleConfig{
 	RinkebyGenesisHash: RinkebyCheckpointOracle,
 	GoerliGenesisHash:  GoerliCheckpointOracle,
 
-	//update
+	/*
 	LveGenesisHash:  LveCheckpointOracle,
 	LvetestGenesisHash:  LvetestCheckpointOracle,
+	*/
 }
 
 var (
@@ -288,6 +290,7 @@ var (
 		Eccpow: new(EccpowConfig),
 	}
 	
+	/*
 	// LveTrustedCheckpoint contains the light client trusted checkpoint for the Görli test network.
 	LveTrustedCheckpoint = &TrustedCheckpoint{
 		SectionIndex: 32,
@@ -307,7 +310,7 @@ var (
 			common.HexToAddress("0x0DF8fa387C602AE62559cC4aFa4972A7045d6707"), // Guillaume
 		},
 			Threshold: 2,
-	}
+	}*/
 
 	// LvetestChainConfig contains the chain parameters to run a node on the Görli test network.
 	LvetestChainConfig = &ChainConfig{
@@ -325,7 +328,7 @@ var (
 		Eccpow: new(EccpowConfig),
 	}
 	
-	// LvetestTrustedCheckpoint contains the light client trusted checkpoint for the Görli test network.
+	/* LvetestTrustedCheckpoint contains the light client trusted checkpoint for the Görli test network.
 	LvetestTrustedCheckpoint = &TrustedCheckpoint{
 		SectionIndex: 32,
 		SectionHead:  common.HexToHash("0x50eaedd8361fa9edd0ac2dec410310b9bdf67b963b60f3b1dce47f84b30670f9"),
@@ -344,7 +347,7 @@ var (
 			common.HexToAddress("0x0DF8fa387C602AE62559cC4aFa4972A7045d6707"), // Guillaume
 		},
 		Threshold: 2,
-	}	
+	}*/
 
 	// AllEthashProtocolChanges contains every protocol change (EIPs) introduced
 	// and accepted by the Ethereum core developers into the Ethash consensus.
