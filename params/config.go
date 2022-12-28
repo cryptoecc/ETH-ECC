@@ -287,6 +287,12 @@ var (
 		ByzantiumBlock:      big.NewInt(0),
 		ConstantinopleBlock: big.NewInt(0),
 		PetersburgBlock:     big.NewInt(0),
+		IstanbulBlock:       big.NewInt(40_000),
+		MuirGlacierBlock:    nil,
+		BerlinBlock:         big.NewInt(40_000),
+		LondonBlock:         big.NewInt(40_000),
+		ArrowGlacierBlock:   nil,
+		GrayGlacierBlock:    nil,
 		Eccpow: new(EccpowConfig),
 	}
 	
