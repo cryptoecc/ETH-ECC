@@ -48,8 +48,8 @@ var TrustedCheckpoints = map[common.Hash]*TrustedCheckpoint{
 	RinkebyGenesisHash: RinkebyTrustedCheckpoint,
 	GoerliGenesisHash:  GoerliTrustedCheckpoint,
 
-	LveGenesisHash:  LveTrustedCheckpoint,
-	LvetestGenesisHash:  LvetestTrustedCheckpoint,
+	//LveGenesisHash:  LveTrustedCheckpoint,
+	//LvetestGenesisHash:  LvetestTrustedCheckpoint,
 	WorldlandtestGenesisHash:  WorldlandtestTrustedCheckpoint,
 }
 
@@ -62,8 +62,8 @@ var CheckpointOracles = map[common.Hash]*CheckpointOracleConfig{
 	GoerliGenesisHash:  GoerliCheckpointOracle,
 
 	//update
-	LveGenesisHash:  LveCheckpointOracle,
-	LvetestGenesisHash:  LvetestCheckpointOracle,
+	//LveGenesisHash:  LveCheckpointOracle,
+	//LvetestGenesisHash:  LvetestCheckpointOracle,
 	WorldlandtestGenesisHash:  WorldlandtestCheckpointOracle,
 }
 
@@ -285,28 +285,24 @@ var (
 	// LveChainConfig contains the chain parameters to run a node on the Görli test network.
 	LveChainConfig = &ChainConfig{
 		ChainID:             big.NewInt(12345),
-		HomesteadBlock:          big.NewInt(0),
-		DAOForkBlock:            big.NewInt(0),
-		DAOForkSupport:          true,
-		EIP150Block:             big.NewInt(0),
-		EIP150Hash:              common.HexToHash("0x2086799aeebeae135c246c65021c82b4e15a2c451340993aacfd2751886514f0"),
-		EIP155Block:             big.NewInt(0),
-		EIP158Block:             big.NewInt(0),
-		ByzantiumBlock:          big.NewInt(0),
-		ConstantinopleBlock:     big.NewInt(0),
-		PetersburgBlock:         big.NewInt(0),
-		IstanbulBlock:           big.NewInt(0),
-		MuirGlacierBlock:        big.NewInt(0),
-		BerlinBlock:             big.NewInt(0),
-		LondonBlock:             big.NewInt(0),
-		ArrowGlacierBlock:       big.NewInt(0),
-		//GrayGlacierBlock:        big.NewInt(15_050_000),
-		WorldlandBlock:        	 big.NewInt(2),
-		WorldlandForkSupport:    true,
-		//Eccpow: new(EccpowConfig),
-		Ethash:                   new(EthashConfig),
+		HomesteadBlock:      big.NewInt(0),
+		EIP150Block:         big.NewInt(0),
+		EIP150Hash:          common.HexToHash("0x0000000000000000000000000000000000000000000000000000000000000000"),
+		EIP155Block:         big.NewInt(0),
+		EIP158Block:         big.NewInt(0),
+		ByzantiumBlock:      big.NewInt(0),
+		ConstantinopleBlock: big.NewInt(0),
+		PetersburgBlock:     big.NewInt(0),
+		IstanbulBlock:       big.NewInt(40_000),
+		MuirGlacierBlock:    nil,
+		BerlinBlock:         big.NewInt(40_000),
+		LondonBlock:         big.NewInt(40_000),
+		ArrowGlacierBlock:   nil,
+		GrayGlacierBlock:    nil,
+		Eccpow: new(EccpowConfig),
 	}
 	
+	/*
 	// LveTrustedCheckpoint contains the light client trusted checkpoint for the Görli test network.
 	LveTrustedCheckpoint = &TrustedCheckpoint{
 		SectionIndex: 32,
@@ -326,7 +322,7 @@ var (
 			common.HexToAddress("0x0DF8fa387C602AE62559cC4aFa4972A7045d6707"), // Guillaume
 		},
 			Threshold: 2,
-	}
+	}*/
 
 	// LvetestChainConfig contains the chain parameters to run a node on the Görli test network.
 	/*LvetestChainConfig = &ChainConfig{

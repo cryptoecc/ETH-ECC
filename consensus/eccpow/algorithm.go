@@ -4,16 +4,17 @@ import (
 	"encoding/binary"
 	"math/big"
 	"math/rand"
-
+	"hash"
 	"sync"
 	"time"
 
-	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/consensus"
 	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/ethereum/go-ethereum/log"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/metrics"
 	"github.com/ethereum/go-ethereum/rpc"
+	"golang.org/x/crypto/sha3"
 )
 
 type ECC struct {
@@ -24,6 +25,7 @@ type ECC struct {
 	threads  int           // Number of threads to mine on if mining
 	update   chan struct{} // Notification channel to update mining parameters
 	hashrate metrics.Meter // Meter tracking the average hashrate
+	remote   *remoteSealer
 
 	// Remote sealer related fields
 	workCh       chan *sealTask   // Notification channel to push new work and relative result channel to remote sealer
@@ -38,13 +40,12 @@ type ECC struct {
 
 	lock      sync.Mutex      // Ensures thread safety for the in-memory caches and mining fields
 	closeOnce sync.Once       // Ensures exit channel will not be closed twice.
-	exitCh    chan chan error // Notification channel to exiting backend threads
-
 }
 
 type Mode uint
 
 const (
+	epochLength        = 30000   // Blocks per epoch
 	ModeNormal Mode = iota
 	//ModeShared
 	ModeTest
@@ -54,37 +55,11 @@ const (
 
 // Config are the configuration parameters of the ethash.
 type Config struct {
-	PowMode Mode
-}
-
-// sealTask wraps a seal block with relative result channel for remote sealer thread.
-type sealTask struct {
-	block   *types.Block
-	results chan<- *types.Block
-}
-
-// mineResult wraps the pow solution parameters for the specified block.
-type mineResult struct {
-	nonce     types.BlockNonce
-	mixDigest common.Hash
-	hash      common.Hash
-
-	errc chan error
-}
-
-// hashrate wraps the hash rate submitted by the remote sealer.
-type hashrate struct {
-	id   common.Hash
-	ping time.Time
-	rate uint64
-
-	done chan struct{}
-}
-
-// sealWork wraps a seal work package for remote sealer.
-type sealWork struct {
-	errc chan error
-	res  chan [4]string
+	PowMode          Mode
+	// When set, notifications sent by the remote sealer will
+	// be block header JSON objects instead of work package arrays.
+	NotifyFull bool
+	Log log.Logger `toml:"-"`
 }
 
 // hasher is a repetitive hasher allowing the same hash data structures to be
@@ -93,9 +68,20 @@ type sealWork struct {
 
 var (
 	two256 = new(big.Int).Exp(big.NewInt(2), big.NewInt(256), big.NewInt(0))
+	
+	// sharedECC is a full instance that can be shared between multiple users.
+	sharedECC *ECC
 
-	sharedECC = New(Config{ModeNormal}, nil, false)
+	// algorithmRevision is the data structure version used for file naming.
+	algorithmRevision = 2
 )
+
+func init() {
+	sharedConfig := Config{
+		PowMode:       ModeNormal,
+	}
+	sharedECC = New(sharedConfig, nil, false)
+}
 
 type verifyParameters struct {
 	n          uint64
@@ -311,9 +297,8 @@ func New(config Config, notify []string, noverify bool) *ECC {
 		submitWorkCh: make(chan *mineResult),
 		fetchRateCh:  make(chan chan uint64),
 		submitRateCh: make(chan *hashrate),
-		exitCh:       make(chan chan error),
 	}
-	go ecc.remote(notify, noverify)
+	ecc.remote = startRemoteSealer(ecc, notify, noverify)
 	return ecc
 }
 
@@ -327,9 +312,8 @@ func NewTester(notify []string, noverify bool) *ECC {
 		submitWorkCh: make(chan *mineResult),
 		fetchRateCh:  make(chan chan uint64),
 		submitRateCh: make(chan *hashrate),
-		exitCh:       make(chan chan error),
 	}
-	go ecc.remote(notify, noverify)
+	ecc.remote = startRemoteSealer(ecc, notify, noverify)
 	return ecc
 }
 
@@ -340,6 +324,7 @@ func NewFaker() *ECC {
 	return &ECC{
 		config: Config{
 			PowMode: ModeFake,
+			Log:     log.Root(),
 		},
 	}
 }
@@ -351,6 +336,7 @@ func NewFakeFailer(fail uint64) *ECC {
 	return &ECC{
 		config: Config{
 			PowMode: ModeFake,
+			Log:     log.Root(),
 		},
 		fakeFail: fail,
 	}
@@ -363,6 +349,7 @@ func NewFakeDelayer(delay time.Duration) *ECC {
 	return &ECC{
 		config: Config{
 			PowMode: ModeFake,
+			Log:     log.Root(),
 		},
 		fakeDelay: delay,
 	}
@@ -374,6 +361,7 @@ func NewFullFaker() *ECC {
 	return &ECC{
 		config: Config{
 			PowMode: ModeFullFake,
+			Log:     log.Root(),
 		},
 	}
 }
@@ -386,18 +374,20 @@ func NewFullFaker() *ECC {
 
 // Close closes the exit channel to notify all backend threads exiting.
 func (ecc *ECC) Close() error {
-	var err error
+	return ecc.StopRemoteSealer()
+}
+
+// StopRemoteSealer stops the remote sealer
+func (ecc *ECC) StopRemoteSealer() error {
 	ecc.closeOnce.Do(func() {
 		// Short circuit if the exit channel is not allocated.
-		if ecc.exitCh == nil {
+		if ecc.remote == nil {
 			return
 		}
-		errc := make(chan error)
-		ecc.exitCh <- errc
-		err = <-errc
-		close(ecc.exitCh)
+		close(ecc.remote.requestExit)
+		<-ecc.remote.exitCh
 	})
-	return err
+	return nil
 }
 
 // Threads returns the number of mining threads currently enabled. This doesn't
@@ -441,8 +431,8 @@ func (ecc *ECC) Hashrate() float64 {
 	var res = make(chan uint64, 1)
 
 	select {
-	case ecc.fetchRateCh <- res:
-	case <-ecc.exitCh:
+	case ecc.remote.fetchRateCh <- res:
+	case <-ecc.remote.exitCh:
 		// Return local hashrate only if ecc is stopped.
 		return ecc.hashrate.Rate1()
 	}
@@ -471,8 +461,49 @@ func (ecc *ECC) APIs(chain consensus.ChainHeaderReader) []rpc.API {
 	}
 }
 
+// hasher is a repetitive hasher allowing the same hash data structures to be
+// reused between hash runs instead of requiring new ones to be created.
+type hasher func(dest []byte, data []byte)
+
+// makeHasher creates a repetitive hasher, allowing the same hash data structures to
+// be reused between hash runs instead of requiring new ones to be created. The returned
+// function is not thread safe!
+func makeHasher(h hash.Hash) hasher {
+	// sha3.state supports Read to get the sum, use it to avoid the overhead of Sum.
+	// Read alters the state but we reset the hash before every operation.
+	type readerHash interface {
+		hash.Hash
+		Read([]byte) (int, error)
+	}
+	rh, ok := h.(readerHash)
+	if !ok {
+		panic("can't find Read method on hash")
+	}
+	outputLen := rh.Size()
+	return func(dest []byte, data []byte) {
+		rh.Reset()
+		rh.Write(data)
+		rh.Read(dest[:outputLen])
+	}
+}
+
+// seedHash is the seed to use for generating a verification cache and the mining
+// dataset.
+func seedHash(block uint64) []byte {
+	seed := make([]byte, 32)
+	if block < epochLength {
+		return seed
+	}
+	keccak256 := makeHasher(sha3.NewLegacyKeccak256())
+	for i := 0; i < int(block/epochLength); i++ {
+		keccak256(seed, seed)
+	}
+	return seed
+}
+
+
 //// SeedHash is the seed to use for generating a verification cache and the mining
 //// dataset.
-func SeedHash(block *types.Block) []byte {
-	return block.ParentHash().Bytes()
+func SeedHash(block uint64) []byte {
+	return seedHash(block)
 }

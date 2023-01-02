@@ -18,6 +18,7 @@ package eccpow
 
 import (
 	"bytes"
+	"context"
 	crand "crypto/rand"
 	"encoding/json"
 	"errors"
@@ -113,14 +114,14 @@ func (ecc *ECC) Seal(chain consensus.ChainHeaderReader, block *types.Block, resu
 			select {
 			case results <- result:
 			default:
-				ecc.config.log.Warn("Sealing result is not read by miner", "mode", "local", "sealhash", ecc.SealHash(block.Header()))
+				ecc.config.Log.Warn("Sealing result is not read by miner", "mode", "local", "sealhash", ecc.SealHash(block.Header()))
 			}
 			close(abort)
 		case <-ecc.update:
 			// Thread count was changed on user request, restart
 			close(abort)
 			if err := ecc.Seal(chain, block, results, stop); err != nil {
-				ecc.config.log.Error("Failed to restart sealing after update", "err", err)
+				ecc.config.Log.Error("Failed to restart sealing after update", "err", err)
 			}
 		}
 		// Wait for all miners to terminate and return the block
