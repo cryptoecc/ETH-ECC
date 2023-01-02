@@ -36,6 +36,7 @@ var (
 
 	LveGenesisHash = common.HexToHash("0x7c5cb1a45d2424a2be1155c22979bbe384aff07810260041d5609a87bc3c58cc")
 	LvetestGenesisHash = common.HexToHash("0xd4e56740f876aef8c010b86a40d5f56745a118d0906a34e69aec8c0db1cb8fa3")
+	WorldlandtestGenesisHash = common.HexToHash("0xd4e56740f876aef8c010b86a40d5f56745a118d0906a34e69aec8c0db1cb8fa3")
 )
 
 // TrustedCheckpoints associates each known checkpoint with the genesis hash of
@@ -49,6 +50,7 @@ var TrustedCheckpoints = map[common.Hash]*TrustedCheckpoint{
 
 	LveGenesisHash:  LveTrustedCheckpoint,
 	LvetestGenesisHash:  LvetestTrustedCheckpoint,
+	WorldlandtestGenesisHash:  WorldlandtestTrustedCheckpoint,
 }
 
 // CheckpointOracles associates each known checkpoint oracles with the genesis hash of
@@ -62,6 +64,7 @@ var CheckpointOracles = map[common.Hash]*CheckpointOracleConfig{
 	//update
 	LveGenesisHash:  LveCheckpointOracle,
 	LvetestGenesisHash:  LvetestCheckpointOracle,
+	WorldlandtestGenesisHash:  WorldlandtestCheckpointOracle,
 }
 
 var (
@@ -85,7 +88,7 @@ var (
 		LondonBlock:             big.NewInt(12_965_000),
 		ArrowGlacierBlock:       big.NewInt(13_773_000),
 		//GrayGlacierBlock:        big.NewInt(15_050_000),
-		WorldlandBlock:        	 big.NewInt(15_000_000),
+		WorldlandBlock:        	 big.NewInt(15_500_000),
 		WorldlandForkSupport:    true,
 
 		TerminalTotalDifficulty: MainnetTerminalTotalDifficulty, // 58_750_000_000_000_000_000_000
@@ -385,6 +388,52 @@ var (
 		Threshold: 2,
 	}	
 
+	WorldlandtestChainConfig = &ChainConfig{
+		ChainID:                 big.NewInt(1), //10001
+		HomesteadBlock:          big.NewInt(1_150_000),
+		DAOForkBlock:            big.NewInt(1_920_000),
+		DAOForkSupport:          true,
+		EIP150Block:             big.NewInt(2_463_000),
+		EIP150Hash:              common.HexToHash("0x2086799aeebeae135c246c65021c82b4e15a2c451340993aacfd2751886514f0"),
+		EIP155Block:             big.NewInt(2_675_000),
+		EIP158Block:             big.NewInt(2_675_000),
+		ByzantiumBlock:          big.NewInt(4_370_000),
+		ConstantinopleBlock:     big.NewInt(7_280_000),
+		PetersburgBlock:         big.NewInt(7_280_000),
+		IstanbulBlock:           big.NewInt(9_069_000),
+		MuirGlacierBlock:        big.NewInt(9_200_000),
+		BerlinBlock:             big.NewInt(12_244_000),
+		LondonBlock:             big.NewInt(12_965_000),
+		ArrowGlacierBlock:       big.NewInt(13_773_000),
+		GrayGlacierBlock:        big.NewInt(15_050_000),
+		//EthPoWForkBlock:         big.NewInt(15_537_394),
+		//EthPoWForkSupport:       true,
+		//ChainID_ALT:             big.NewInt(10001), //10001
+		TerminalTotalDifficulty: nil,               // 58_750_000_000_000_000_000_000
+		Ethash:                  new(EthashConfig),
+	}
+
+	// MainnetTrustedCheckpoint contains the light client trusted checkpoint for the main network.
+	WorldlandtestTrustedCheckpoint = &TrustedCheckpoint{
+		SectionIndex: 451,
+		SectionHead:  common.HexToHash("0xe47f84b9967eb2ad2afff74d59901b63134660011822fdababaf8fdd18a75aa6"),
+		CHTRoot:      common.HexToHash("0xc31e0462ca3d39a46111bb6b63ac4e1cac84089472b7474a319d582f72b3f0c0"),
+		BloomRoot:    common.HexToHash("0x7c9f25ce3577a3ab330d52a7343f801899cf9d4980c69f81de31ccc1a055c809"),
+	}
+
+	// MainnetCheckpointOracle contains a set of configs for the main network oracle.
+	WorldlandtestCheckpointOracle = &CheckpointOracleConfig{
+		Address: common.HexToAddress("0x9a9070028361F7AAbeB3f2F2Dc07F82C4a98A02a"),
+		Signers: []common.Address{
+			common.HexToAddress("0x1b2C260efc720BE89101890E4Db589b44E950527"), // Peter
+			common.HexToAddress("0x78d1aD571A1A09D60D9BBf25894b44e4C8859595"), // Martin
+			common.HexToAddress("0x286834935f4A8Cfb4FF4C77D5770C2775aE2b0E7"), // Zsolt
+			common.HexToAddress("0xb86e2B0Ab5A4B1373e40c51A7C712c70Ba2f9f8E"), // Gary
+			common.HexToAddress("0x0DF8fa387C602AE62559cC4aFa4972A7045d6707"), // Guillaume
+		},
+		Threshold: 2,
+	}
+
 	// AllEthashProtocolChanges contains every protocol change (EIPs) introduced
 	// and accepted by the Ethereum core developers into the Ethash consensus.
 	//
@@ -413,6 +462,7 @@ var NetworkNames = map[string]string{
 	SepoliaChainConfig.ChainID.String(): "sepolia",
 	LveChainConfig.ChainID.String():  "lve",
 	LvetestChainConfig.ChainID.String(): "lvetest",
+	WorldlandtestChainConfig.ChainID.String(): "lvetest",
 }
 
 // TrustedCheckpoint represents a set of post-processed trie roots (CHT and
@@ -555,12 +605,12 @@ func (c *ChainConfig) String() string {
 	case c.Ethash != nil:
 		if c.TerminalTotalDifficulty == nil {
 			if c.WorldlandForkSupport {
-				banner += "Consensus: Eccpow (proof-of-work), changing from Ethash (proof-of-work)\n"
+				banner += "Consensus: Ethash (proof-of-work) and Eccpow (proof-of-work)\n"
 			} else {
 				banner += "Consensus: Ethash (proof-of-work)\n"
 			}
 		} else if !c.TerminalTotalDifficultyPassed {
-			banner += "Consensus: Beacon (proof-of-stake), merged from Eccpow (proof-of-work)\n"
+			banner += "Consensus: Beacon (proof-of-stake), merging from Ethash (proof-of-work)\n"
 		} else {
 			banner += "Consensus: Beacon (proof-of-stake), merged from Ethash (proof-of-work)\n"
 		}

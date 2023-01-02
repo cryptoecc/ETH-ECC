@@ -24,7 +24,9 @@ import (
 	"runtime"
 	"time"
 
+	mapset "github.com/deckarep/golang-set"
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/common/math"
 	"github.com/ethereum/go-ethereum/consensus"
 	"github.com/ethereum/go-ethereum/consensus/misc"
 	"github.com/ethereum/go-ethereum/core/state"
@@ -32,7 +34,6 @@ import (
 	"github.com/ethereum/go-ethereum/params"
 	"github.com/ethereum/go-ethereum/rlp"
 	"github.com/ethereum/go-ethereum/trie"
-	mapset "github.com/deckarep/golang-set"
 	"golang.org/x/crypto/sha3"
 )
 
@@ -47,7 +48,27 @@ var (
 	//uncle, ghostprotocol reward 도 고려해야함
 	
 	maxUncles                 = 2                 // Maximum number of uncles allowed in a single block
-	allowedFutureBlockTime    = 15 * time.Second  // Max time from current time allowed for blocks, before they're considered future blocks
+	allowedFutureBlockTime    = int64(15)   // Max seconds from current time allowed for blocks, before they're considered future blocks
+
+	// calcDifficultyEip5133 is the difficulty adjustment algorithm as specified by EIP 5133.
+	// It offsets the bomb a total of 11.4M blocks.
+	// Specification EIP-5133: https://eips.ethereum.org/EIPS/eip-5133
+	calcDifficultyEip5133 = makeDifficultyCalculator(big.NewInt(11_400_000))
+
+	// calcDifficultyEip4345 is the difficulty adjustment algorithm as specified by EIP 4345.
+	// It offsets the bomb a total of 10.7M blocks.
+	// Specification EIP-4345: https://eips.ethereum.org/EIPS/eip-4345
+	calcDifficultyEip4345 = makeDifficultyCalculator(big.NewInt(10_700_000))
+
+	// calcDifficultyEip3554 is the difficulty adjustment algorithm as specified by EIP 3554.
+	// It offsets the bomb a total of 9.7M blocks.
+	// Specification EIP-3554: https://eips.ethereum.org/EIPS/eip-3554
+	calcDifficultyEip3554 = makeDifficultyCalculator(big.NewInt(9700000))
+
+	// calcDifficultyEip2384 is the difficulty adjustment algorithm as specified by EIP 2384.
+	// It offsets the bomb 4M blocks from Constantinople, so in total 9M blocks.
+	// Specification EIP-2384: https://eips.ethereum.org/EIPS/eip-2384
+	calcDifficultyEip2384 = makeDifficultyCalculator(big.NewInt(9000000))
 
 	// calcDifficultyConstantinople is the difficulty adjustment algorithm for Constantinople.
 	// It returns the difficulty that a new block should have when created at time given the
@@ -102,7 +123,7 @@ func (ecc *ECC) VerifyHeader(chain consensus.ChainHeaderReader, header *types.He
 		return consensus.ErrUnknownAncestor
 	}
 	// Sanity checks passed, do a proper verification
-	return ecc.verifyHeader(chain, header, parent, false, seal)
+	return ecc.verifyHeader(chain, header, parent, false, seal, time.Now().Unix())
 }
 
 // VerifyHeaders is similar to VerifyHeader, but verifies a batch of headers
@@ -129,6 +150,7 @@ func (ecc *ECC) VerifyHeaders(chain consensus.ChainHeaderReader, headers []*type
 		done   = make(chan int, workers)
 		errors = make([]error, len(headers))
 		abort  = make(chan struct{})
+		unixNow = time.Now().Unix()
 	)
 	for i := 0; i < workers; i++ {
 		go func() {
@@ -169,7 +191,7 @@ func (ecc *ECC) VerifyHeaders(chain consensus.ChainHeaderReader, headers []*type
 	return abort, errorsOut
 }
 
-func (ecc *ECC) verifyHeaderWorker(chain consensus.ChainHeaderReader, headers []*types.Header, seals []bool, index int) error {
+func (ecc *ECC) verifyHeaderWorker(chain consensus.ChainHeaderReader, headers []*types.Header, seals []bool, index int, unixNow int64) error {
 	var parent *types.Header
 	if index == 0 {
 		parent = chain.GetHeader(headers[0].ParentHash, headers[0].Number.Uint64()-1)
@@ -242,7 +264,7 @@ func (ecc *ECC) VerifyUncles(chain consensus.ChainReader, block *types.Block) er
 		if ancestors[uncle.ParentHash] == nil || uncle.ParentHash == block.ParentHash() {
 			return errDanglingUncle
 		}
-		if err := ecc.verifyHeader(chain, uncle, ancestors[uncle.ParentHash], true, true); err != nil {
+		if err := ecc.verifyHeader(chain, uncle, ancestors[uncle.ParentHash], true, true, time.Now().Unix()); err != nil {
 			return err
 		}
 	}
@@ -252,7 +274,7 @@ func (ecc *ECC) VerifyUncles(chain consensus.ChainReader, block *types.Block) er
 // verifyHeader checks whether a header conforms to the consensus rules of the
 // stock Ethereum ecc engine.
 // See YP section 4.3.4. "Block Header Validity"
-func (ecc *ECC) verifyHeader(chain consensus.ChainHeaderReader, header, parent *types.Header, uncle bool, seal bool) error {
+func (ecc *ECC) verifyHeader(chain consensus.ChainHeaderReader, header, parent *types.Header, uncle bool, seal bool, unixNow int64) error {
 	// Ensure that the header's extra-data section is of a reasonable size
 	if uint64(len(header.Extra)) > params.MaximumExtraDataSize {
 		return fmt.Errorf("extra-data too long: %d > %d", len(header.Extra), params.MaximumExtraDataSize)
@@ -273,25 +295,28 @@ func (ecc *ECC) verifyHeader(chain consensus.ChainHeaderReader, header, parent *
 	if expected.Cmp(header.Difficulty) != 0 {
 		return fmt.Errorf("invalid difficulty: have %v, want %v", header.Difficulty, expected)
 	}
+
 	// Verify that the gas limit is <= 2^63-1
-	cap := uint64(0x7fffffffffffffff)
-	if header.GasLimit > cap {
-		return fmt.Errorf("invalid gasLimit: have %v, max %v", header.GasLimit, cap)
+	if header.GasLimit > params.MaxGasLimit {
+		return fmt.Errorf("invalid gasLimit: have %v, max %v", header.GasLimit, params.MaxGasLimit)
 	}
 	// Verify that the gasUsed is <= gasLimit
 	if header.GasUsed > header.GasLimit {
 		return fmt.Errorf("invalid gasUsed: have %d, gasLimit %d", header.GasUsed, header.GasLimit)
 	}
 
-	// Verify that the gas limit remains within allowed bounds
-	diff := int64(parent.GasLimit) - int64(header.GasLimit)
-	if diff < 0 {
-		diff *= -1
-	}
-	limit := parent.GasLimit / params.GasLimitBoundDivisor
-
-	if uint64(diff) >= limit || header.GasLimit < params.MinGasLimit {
-		return fmt.Errorf("invalid gas limit: have %d, want %d += %d", header.GasLimit, parent.GasLimit, limit)
+	// Verify the block's gas usage and (if applicable) verify the base fee.
+	if !chain.Config().IsLondon(header.Number) {
+		// Verify BaseFee not present before EIP-1559 fork.
+		if header.BaseFee != nil {
+			return fmt.Errorf("invalid baseFee before fork: have %d, expected 'nil'", header.BaseFee)
+		}
+		if err := misc.VerifyGaslimit(parent.GasLimit, header.GasLimit); err != nil {
+			return err
+		}
+	} else if err := misc.VerifyEip1559Header(chain.Config(), parent, header); err != nil {
+		// Verify the header's EIP-1559 attributes.
+		return err
 	}
 	// Verify that the block number is parent's +1
 	if diff := new(big.Int).Sub(header.Number, parent.Number); diff.Cmp(big.NewInt(1)) != 0 {
@@ -299,7 +324,7 @@ func (ecc *ECC) verifyHeader(chain consensus.ChainHeaderReader, header, parent *
 	}
 	// Verify the engine specific seal securing the block
 	if seal {
-		if err := ecc.VerifySeal(chain, header); err != nil {
+		if err := ecc.verifySeal(chain, header); err != nil {
 			return err
 		}
 	}
@@ -323,17 +348,9 @@ func (ecc *ECC) CalcDifficulty(chain consensus.ChainHeaderReader, time uint64, p
 // CalcDifficulty is the difficulty adjustment algorithm. It returns
 // the difficulty that a new block should have when created at time
 // given the parent block's time and difficulty.
-// 새로운 난이도 정책 필요. 
-// working...
 func CalcDifficulty(config *params.ChainConfig, time uint64, parent *types.Header) *big.Int {
 	next := new(big.Int).Add(parent.Number, big1)
 	switch {
-	case config.IsConstantinople(next):
-		return calcDifficultyConstantinople(time, parent)
-	case config.IsByzantium(next):
-		return calcDifficultyByzantium(time, parent)
-	case config.IsHomestead(next):
-		return calcDifficultyHomestead(time, parent)
 	default:
 		return calcDifficultyFrontier(time, parent)
 	}
@@ -356,14 +373,6 @@ func makeDifficultyCalculator(bombDelay *big.Int) func(time uint64, parent *type
 	return MakeLDPCDifficultyCalculator()
 }
 
-// calcDifficultyHomestead is the difficulty adjustment algorithm. It returns
-// the difficulty that a new block should have when created at time given the
-// parent block's time and difficulty. The calculation uses the Homestead rules.
-func calcDifficultyHomestead(time uint64, parent *types.Header) *big.Int {
-	difficultyCalculator := MakeLDPCDifficultyCalculator()
-	return difficultyCalculator(time, parent)
-}
-
 // calcDifficultyFrontier is the difficulty adjustment algorithm. It returns the
 // difficulty that a new block should have when created at time given the parent
 // block's time and difficulty. The calculation uses the Frontier rules.
@@ -372,16 +381,14 @@ func calcDifficultyFrontier(time uint64, parent *types.Header) *big.Int {
 	return difficultyCalculator(time, parent)
 }
 
-// VerifySeal implements consensus.Engine, checking whether the given block satisfies
-// the PoW difficulty requirements.
-func (ecc *ECC) VerifySeal(chain consensus.ChainHeaderReader, header *types.Header) error {
-	return ecc.verifySeal(chain, header, false)
-}
+// Exported for fuzzing
+var FrontierDifficultyCalculator = calcDifficultyFrontier
+var DynamicDifficultyCalculator = makeDifficultyCalculator
 
 // verifySeal checks whether a block satisfies the PoW difficulty requirements,
 // either using the usual ecc cache for it, or alternatively using a full DAG
 // to make remote mining fast.
-func (ecc *ECC) verifySeal(chain consensus.ChainHeaderReader, header *types.Header, fulldag bool) error {
+func (ecc *ECC) verifySeal(chain consensus.ChainHeaderReader, header *types.Header) error {
 	// If we're running a fake PoW, accept any seal as valid
 	if ecc.config.PowMode == ModeFake || ecc.config.PowMode == ModeFullFake {
 		time.Sleep(ecc.fakeDelay)
@@ -392,44 +399,28 @@ func (ecc *ECC) verifySeal(chain consensus.ChainHeaderReader, header *types.Head
 	}
 	// If we're running a shared PoW, delegate verification to it
 	if ecc.shared != nil {
-		return ecc.shared.verifySeal(chain, header, fulldag)
+		return ecc.shared.verifySeal(chain, header)
 	}
 	// Ensure that we have a valid difficulty for the block
 	if header.Difficulty.Sign() <= 0 {
 		return errInvalidDifficulty
 	}
-	// Recompute the digest and PoW values
-	//number := header.Number.Uint64()
 
 	var (
 		digest []byte
-		nonce  int
 	)
-	//VerifyDecoding()
-	vParameter := &verifyParameters{}
 
-	rlp.DecodeBytes(header.Extra, vParameter)
-	//VerifyDecoding(Parameters{},vParameter.outputWord, header.Nonce.Uint64(), header.ParentHash.Bytes())
-
-	var hash = ecc.SealHash(header).Bytes()
-	flag, _, _, digest := VerifyOptimizedDecoding(header, hash)
-	if flag == false {
-		return errInvalidPoW
-	}
+	flag, _, _, digest := VerifyOptimizedDecoding(header, ecc.SealHash(header).Bytes())
 
 	encodedDigest := common.BytesToHash(digest)
 	if !bytes.Equal(header.MixDigest[:], encodedDigest[:]) {
 		return errInvalidMixDigest
 	}
-	if nonce < 0 {
+
+	if flag == false {
 		return errInvalidPoW
 	}
 
-	//ToDo: replace target
-	//target := new(big.Int).Div(two256, header.Difficulty)
-	//if new(big.Int).SetBytes(result).Cmp(target) > 0 {
-	//	return errInvalidPoW
-	//}
 	return nil
 }
 
@@ -454,8 +445,7 @@ func (ecc *ECC) Finalize(chain consensus.ChainHeaderReader, header *types.Header
 
 func (ecc *ECC) FinalizeAndAssemble(chain consensus.ChainHeaderReader, header *types.Header, state *state.StateDB, txs []*types.Transaction, uncles []*types.Header, receipts []*types.Receipt) (*types.Block, error) {
 	// Accumulate any block and uncle rewards and commit the final state root
-	accumulateRewards(chain.Config(), state, header, uncles)
-	header.Root = state.IntermediateRoot(chain.Config().IsEIP158(header.Number))
+	ecc.Finalize(chain, header, state, txs, uncles)
 
 	// Header seems complete, assemble into a block and return
 	return types.NewBlock(header, txs, uncles, receipts, trie.NewStackTrie(nil)), nil

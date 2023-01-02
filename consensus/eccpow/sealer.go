@@ -273,7 +273,7 @@ func (ecc *ECC) remote(notify []string, noverify bool) {
 
 		start := time.Now()
 		if !noverify {
-			if err := ecc.verifySeal(nil, header, true); err != nil {
+			if err := ecc.verifySeal(nil, header); err != nil {
 				log.Warn("Invalid proof-of-work submitted", "sealhash", sealhash, "elapsed", time.Since(start), "err", err)
 				return false
 			}
