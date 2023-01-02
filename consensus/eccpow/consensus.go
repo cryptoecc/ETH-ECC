@@ -254,10 +254,10 @@ func (ecc *ECC) verifyHeader(chain consensus.ChainHeaderReader, header, parent *
 		return errZeroBlockTime
 	}
 	// Verify the block's difficulty based in it's timestamp and parent's difficulty
-	expected := ecc.CalcDifficulty(chain, header.Time, parent)
+	expectDiff := ecc.CalcDifficulty(chain, header.Time, parent)
 
-	if expected.Cmp(header.Difficulty) != 0 {
-		return fmt.Errorf("invalid difficulty: have %v, want %v", header.Difficulty, expected)
+	if expectDiff.Cmp(header.Difficulty) != 0 {
+		return fmt.Errorf("invalid difficulty: have %v, want %v", header.Difficulty, expectDiff)
 	}
 
 	// Verify that the gas limit is <= 2^63-1
