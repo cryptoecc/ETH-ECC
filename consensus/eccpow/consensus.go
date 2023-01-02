@@ -255,7 +255,7 @@ func (ecc *ECC) verifyHeader(chain consensus.ChainHeaderReader, header, parent *
 	}
 	// Verify the block's difficulty based in it's timestamp and parent's difficulty
 	expected := ecc.CalcDifficulty(chain, header.Time, parent)
-
+	fmt.Printf("header %v : parent %v\n", header.Time, parent.Time)
 	if expected.Cmp(header.Difficulty) != 0 {
 		return fmt.Errorf("invalid difficulty: have %v, want %v", header.Difficulty, expected)
 	}
