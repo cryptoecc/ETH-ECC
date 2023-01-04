@@ -50,7 +50,7 @@ var TrustedCheckpoints = map[common.Hash]*TrustedCheckpoint{
 
 	//LveGenesisHash:  LveTrustedCheckpoint,
 	//LvetestGenesisHash:  LvetestTrustedCheckpoint,
-	WorldlandtestGenesisHash:  WorldlandtestTrustedCheckpoint,
+	//WorldlandtestGenesisHash:  WorldlandtestTrustedCheckpoint,
 }
 
 // CheckpointOracles associates each known checkpoint oracles with the genesis hash of
@@ -363,7 +363,7 @@ var (
 		Eccpow: 				 new(EccpowConfig),
 	}
 	
-	// LvetestTrustedCheckpoint contains the light client trusted checkpoint for the Görli test network.
+	/* LvetestTrustedCheckpoint contains the light client trusted checkpoint for the Görli test network.
 	LvetestTrustedCheckpoint = &TrustedCheckpoint{
 		SectionIndex: 32,
 		SectionHead:  common.HexToHash("0x50eaedd8361fa9edd0ac2dec410310b9bdf67b963b60f3b1dce47f84b30670f9"),
@@ -382,7 +382,7 @@ var (
 			common.HexToAddress("0x0DF8fa387C602AE62559cC4aFa4972A7045d6707"), // Guillaume
 		},
 		Threshold: 2,
-	}	
+	}*/
 
 	WorldlandtestChainConfig = &ChainConfig{
 		ChainID:                 big.NewInt(1), //10001
