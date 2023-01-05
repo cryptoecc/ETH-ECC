@@ -161,6 +161,11 @@ var (
 		Name:  "lvetest",
 		Usage: "LVE test network: Error-Correction Codes Proof-of-Work Test Network",
 	}
+	WorldlandtestFlag = &cli.BoolFlag{
+		Name:  "worldlandtest",
+		Usage: "Worldland test network: Worldland Test Network",
+	}
+
 
 
 	// Dev mode
@@ -997,6 +1002,7 @@ var (
 		SepoliaFlag,
 		KilnFlag,
 		LvetestFlag,
+		WorldlandtestFlag,
 	}
 	// NetworkFlags is the flag group of all built-in supported networks.
 	NetworkFlags = append([]cli.Flag{
@@ -1039,6 +1045,9 @@ func MakeDataDir(ctx *cli.Context) string {
 		}
 		if ctx.Bool(LvetestFlag.Name) {
 			return filepath.Join(path, "lvetest")
+		}
+		if ctx.Bool(WorldlandtestFlag.Name) {
+			return filepath.Join(path, "worldlandtest")
 		}
 		return path
 	}
@@ -1100,6 +1109,8 @@ func setBootstrapNodes(ctx *cli.Context, cfg *p2p.Config) {
 		urls = params.LveBootnodes
 	case ctx.Bool(LvetestFlag.Name):
 		urls = params.LvetestBootnodes
+	case ctx.Bool(WorldlandtestFlag.Name):
+		urls = params.WorldlandtestBootnodes
 	}
 
 	// don't apply defaults if BootstrapNodes is already set
@@ -1562,6 +1573,8 @@ func SetDataDir(ctx *cli.Context, cfg *node.Config) {
 		cfg.DataDir = filepath.Join(node.DefaultDataDir(), "lve")
 	case ctx.Bool(LvetestFlag.Name) && cfg.DataDir == node.DefaultDataDir():
 		cfg.DataDir = filepath.Join(node.DefaultDataDir(), "lvetest")
+	case ctx.Bool(WorldlandtestFlag.Name) && cfg.DataDir == node.DefaultDataDir():
+		cfg.DataDir = filepath.Join(node.DefaultDataDir(), "worldlandtest")
 	}
 }
 
@@ -1752,7 +1765,7 @@ func CheckExclusive(ctx *cli.Context, args ...interface{}) {
 // SetEthConfig applies eth-related command line flags to the config.
 func SetEthConfig(ctx *cli.Context, stack *node.Node, cfg *ethconfig.Config) {
 	// Avoid conflicting network flags
-	CheckExclusive(ctx, MainnetFlag, DeveloperFlag, RopstenFlag, RinkebyFlag, GoerliFlag, SepoliaFlag, KilnFlag, LveFlag, LvetestFlag)
+	CheckExclusive(ctx, MainnetFlag, DeveloperFlag, RopstenFlag, RinkebyFlag, GoerliFlag, SepoliaFlag, KilnFlag, LveFlag, LvetestFlag, WorldlandtestFlag)
 	CheckExclusive(ctx, LightServeFlag, SyncModeFlag, "light")
 	CheckExclusive(ctx, DeveloperFlag, ExternalSignerFlag) // Can't use both ephemeral unlocked and external signer
 	if ctx.String(GCModeFlag.Name) == "archive" && ctx.Uint64(TxLookupLimitFlag.Name) != 0 {
@@ -1945,6 +1958,12 @@ func SetEthConfig(ctx *cli.Context, stack *node.Node, cfg *ethconfig.Config) {
 		}
 		cfg.Genesis = core.DefaultLvetestGenesisBlock()
 		SetDNSDiscoveryDefaults(cfg, params.LvetestGenesisHash)
+	case ctx.Bool(WorldlandtestFlag.Name):
+		if !ctx.IsSet(NetworkIdFlag.Name) {
+			cfg.NetworkId = 10001
+		}
+		cfg.Genesis = core.DefaultWorldlandtestGenesisBlock()
+		SetDNSDiscoveryDefaults(cfg, params.WorldlandtestGenesisHash)
 	case ctx.Bool(DeveloperFlag.Name):
 		if !ctx.IsSet(NetworkIdFlag.Name) {
 			cfg.NetworkId = 1337
@@ -2200,6 +2219,8 @@ func MakeGenesis(ctx *cli.Context) *core.Genesis {
 		genesis = core.DefaultLveGenesisBlock()
 	case ctx.Bool(LvetestFlag.Name):
 		genesis = core.DefaultLvetestGenesisBlock()
+	case ctx.Bool(WorldlandtestFlag.Name):
+		genesis = core.DefaultWorldlandtestGenesisBlock()
 	case ctx.Bool(DeveloperFlag.Name):
 		Fatalf("Developer chains are ephemeral")
 	}

@@ -164,6 +164,8 @@ func CommitGenesisState(db ethdb.Database, hash common.Hash) error {
 			genesis = DefaultLveGenesisBlock()
 		case params.LvetestGenesisHash:
 			genesis = DefaultLvetestGenesisBlock()
+		case params.WorldlandtestGenesisHash:
+			genesis = DefaultWorldlandtestGenesisBlock()
 		}
 		if genesis != nil {
 			alloc = genesis.Alloc
@@ -406,6 +408,8 @@ func (g *Genesis) configOrDefault(ghash common.Hash) *params.ChainConfig {
 		return params.LveChainConfig
 	case ghash == params.LvetestGenesisHash:
 		return params.LvetestChainConfig
+	case ghash == params.WorldlandtestGenesisHash:
+		return params.WorldlandtestChainConfig
 	default:
 		return params.AllEthashProtocolChanges
 	}
@@ -857,6 +861,18 @@ func DefaultLvetestGenesisBlock() *Genesis {
 			common.BytesToAddress([]byte{7}): {Balance: big.NewInt(1)}, // ECScalarMul
 			common.BytesToAddress([]byte{8}): {Balance: big.NewInt(1)}, // ECPairing
 		},
+	}
+}
+
+// DefaultGenesisBlock returns the Ethereum main net genesis block.
+func DefaultWorldlandtestGenesisBlock() *Genesis {
+	return &Genesis{
+		Config:     params.MainnetChainConfig,
+		Nonce:      66,
+		ExtraData:  hexutil.MustDecode("0x11bbe8db4e347b4e8c937c1c8370e4b5ed33adb3db69cbdb7a38e1e50b1b82fa"),
+		GasLimit:   5000,
+		Difficulty: big.NewInt(17179869184),
+		Alloc:      decodePrealloc(mainnetAllocData),
 	}
 }
 

@@ -201,6 +201,13 @@ func NewNode(datadir string, config *NodeConfig) (stack *Node, _ error) {
 				config.EthereumNetworkID = 12346
 			}
 		}
+
+		if config.EthereumGenesis == WorldlandtestGenesis() {
+			genesis.Config = params.WorldlandtestChainConfig
+			if config.EthereumNetworkID == 1 {
+				config.EthereumNetworkID = 10001
+			}
+		}
 	}
 	// Register the Ethereum protocol if requested
 	if config.EthereumEnabled {
