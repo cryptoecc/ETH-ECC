@@ -83,6 +83,7 @@ func MakeLDPCDifficultyCalculator() func(time uint64, parent *types.Header) *big
 		if x.Cmp(MinimumDifficulty) < 0 {
 			x.Set(MinimumDifficulty)
 		}
+		
 		//fmt.Printf("x : %v, Minimum difficulty : %v\n", x, MinimumDifficulty)
 
 		return x

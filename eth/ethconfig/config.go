@@ -227,7 +227,7 @@ func CreateConsensusEngine(stack *node.Node, ethashConfig *ethash.Config, clique
 	var engine consensus.Engine
 	if cliqueConfig != nil {
 		engine = clique.New(cliqueConfig, db)
-	} else if eccpowConfig != nil && ethashConfig == nil {
+	} else if eccpowConfig != nil {
 		engine = eccpow.New(eccpow.Config{}, nil, false)
 	} else {
 		switch ethashConfig.PowMode {

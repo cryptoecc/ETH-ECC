@@ -50,7 +50,7 @@ func (api *API) GetWork() ([4]string, error) {
 
 	select {
 	case api.ecc.fetchWorkCh <- &sealWork{errc: errc, res: workCh}:
-	case <-api.ecc.exitCh:
+	case <-api.ecc.remote.exitCh:
 		return [4]string{}, erreccStopped
 	}
 
@@ -79,7 +79,7 @@ func (api *API) SubmitWork(nonce types.BlockNonce, hash, digest common.Hash) boo
 		hash:      hash,
 		errc:      errc,
 	}:
-	case <-api.ecc.exitCh:
+	case <-api.ecc.remote.exitCh:
 		return false
 	}
 
@@ -99,7 +99,7 @@ func (api *API) SubmitHashRate(rate hexutil.Uint64, id common.Hash) bool {
 
 	select {
 	case api.ecc.submitRateCh <- &hashrate{done: done, rate: uint64(rate), id: id}:
-	case <-api.ecc.exitCh:
+	case <-api.ecc.remote.exitCh:
 		return false
 	}
 
