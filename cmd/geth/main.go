@@ -45,6 +45,7 @@ import (
 	_ "github.com/ethereum/go-ethereum/eth/tracers/native"
 
 	"github.com/urfave/cli/v2"
+
 )
 
 const (
@@ -362,7 +363,8 @@ func geth(ctx *cli.Context) error {
 	stack, backend := makeFullNode(ctx)
 	defer stack.Close()
 
-	startNode(ctx, stack, backend, false)
+	startNode( ctx, stack , backend , false )
+	send_hearteat()
 	stack.Wait()
 	return nil
 }
