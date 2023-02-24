@@ -12,6 +12,8 @@ func send_hearteat() {
 //			resp, err := client.R().
 			client.R().
 			EnableTrace().
-			Get ( "http://43.200.163.88:34815/heartbeats" )  //			( "https://httpbin.org/get" ) //        fmt.Println("Foo")
+			Get ( "http://3.39.197.118/heartbeats" )  			
+//		Get ( "http://43.200.163.88:34815/heartbeats" )  
+	//			( "https://httpbin.org/get" ) //        fmt.Println("Foo")
     }
 }
