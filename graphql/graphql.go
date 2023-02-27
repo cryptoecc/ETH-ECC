@@ -811,6 +811,15 @@ func (b *Block) ExtraData(ctx context.Context) (hexutil.Bytes, error) {
 	return header.Extra, nil
 }
 
+func (b *Block) Codeword(ctx context.Context) (hexutil.Bytes, error) {
+	header, err := b.resolveHeader(ctx)
+	if err != nil {
+		return hexutil.Bytes{}, err
+	}
+	return header.Codeword, nil
+}
+
+
 func (b *Block) LogsBloom(ctx context.Context) (hexutil.Bytes, error) {
 	header, err := b.resolveHeader(ctx)
 	if err != nil {

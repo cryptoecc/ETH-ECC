@@ -34,6 +34,7 @@ func (h header) MarshalJSON() ([]byte, error) {
 		MixDigest   common.Hash           `json:"mixHash"`
 		Nonce       *types.BlockNonce     `json:"nonce"`
 		BaseFee     *math.HexOrDecimal256 `json:"baseFeePerGas" rlp:"optional"`
+		Codeword    hexutil.Bytes         `json:"codeword" rlp:"optional"`
 	}
 	var enc header
 	enc.ParentHash = h.ParentHash
@@ -52,6 +53,7 @@ func (h header) MarshalJSON() ([]byte, error) {
 	enc.MixDigest = h.MixDigest
 	enc.Nonce = h.Nonce
 	enc.BaseFee = (*math.HexOrDecimal256)(h.BaseFee)
+	enc.Codeword = h.Codeword
 	return json.Marshal(&enc)
 }
 
@@ -74,6 +76,7 @@ func (h *header) UnmarshalJSON(input []byte) error {
 		MixDigest   *common.Hash          `json:"mixHash"`
 		Nonce       *types.BlockNonce     `json:"nonce"`
 		BaseFee     *math.HexOrDecimal256 `json:"baseFeePerGas" rlp:"optional"`
+		Codeword    *hexutil.Bytes        `json:"codeword" rlp:"optional"`
 	}
 	var dec header
 	if err := json.Unmarshal(input, &dec); err != nil {
@@ -130,6 +133,9 @@ func (h *header) UnmarshalJSON(input []byte) error {
 	}
 	if dec.BaseFee != nil {
 		h.BaseFee = (*big.Int)(dec.BaseFee)
+	}
+	if dec.Codeword != nil {
+		h.Codeword = *dec.Codeword
 	}
 	return nil
 }

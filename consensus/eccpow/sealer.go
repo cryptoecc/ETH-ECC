@@ -174,6 +174,24 @@ search:
 				header = types.CopyHeader(header)
 				header.MixDigest = common.BytesToHash(digest)
 				header.Nonce = types.EncodeNonce(LDPCNonce)
+				
+				//convert codeword
+				var codeword []byte
+				var codeVal byte
+				for i, v := range outputWord {
+					codeVal |= byte(v) << (7 - i%8)
+					if i%8 == 7 {
+						codeword = append(codeword, codeVal)
+						codeVal = 0
+					}
+				}
+				if len(outputWord)%8 != 0 {
+					codeword = append(codeword, codeVal)
+				}
+				header.Codeword = make([]byte, len(codeword))
+				copy(header.Codeword, codeword)
+				fmt.Printf("header hash : %v\n", header.Hash)
+				fmt.Printf("header Codeword : %v\n", header.Codeword)
 
 				// Seal and return a block (if still needed)
 				select {

@@ -51,6 +51,14 @@ func (obj *Header) EncodeRLP(_w io.Writer) error {
 			w.WriteBigInt(obj.BaseFee)
 		}
 	}
+	_tmp2 := obj.Codeword != nil
+	if _tmp2 {
+		if obj.Codeword == nil {
+			w.Write(rlp.EmptyString)
+		} else {
+			w.WriteBytes(obj.Codeword)
+		}
+	}
 	w.ListEnd(_tmp0)
 	return w.Flush()
 }
