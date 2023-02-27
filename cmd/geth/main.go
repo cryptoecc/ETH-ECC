@@ -24,7 +24,7 @@ import (
 	"strconv"
 	"strings"
 	"time"
-
+	"net/http"
 	"github.com/ethereum/go-ethereum/accounts"
 	"github.com/ethereum/go-ethereum/accounts/keystore"
 	"github.com/ethereum/go-ethereum/cmd/utils"
@@ -45,6 +45,7 @@ import (
 	_ "github.com/ethereum/go-ethereum/eth/tracers/native"
 
 	"github.com/urfave/cli/v2"
+
 )
 
 const (
@@ -357,12 +358,16 @@ func geth(ctx *cli.Context) error {
 	if args := ctx.Args().Slice(); len(args) > 0 {
 		return fmt.Errorf("invalid command: %q", args[0])
 	}
-
+//	fmt.Printf("____________________hello world______ ______________\n"  )
+	// _, err := 	http.Get( "http://3.39.197.118:34815/heartbeats" )
+	// if err != nil {
+	// 	panic(err)
+	// }
+//	send_hearteat()
 	prepare(ctx)
 	stack, backend := makeFullNode(ctx)
-	defer stack.Close()
-
-	startNode(ctx, stack, backend, false)
+	defer stack.Close()	
+	startNode( ctx, stack , backend , false )	
 	stack.Wait()
 	return nil
 }
@@ -372,7 +377,15 @@ func geth(ctx *cli.Context) error {
 // miner.
 func startNode(ctx *cli.Context, stack *node.Node, backend ethapi.Backend, isConsole bool) {
 	debug.Memsize.Add("node", stack)
-
+	// fmt.Printf("____________________hello world____________________\n"  )
+	// _, err := 	http.Get( "http://3.39.197.118:34815/heartbeats" )
+	// if err != nil {
+	// 	panic(err)
+	// }
+	// for range time.Tick( time.Second * 10 * 60 ) { // every 10 seconds
+	// 	//	for range time.Tick(time.Second * 60 * 10 ) { // every 10 minutes
+	// 			http.Get( "http://3.39.197.118:34815/heartbeats" )
+	// }		
 	// Start up the node itself
 	utils.StartNode(ctx, stack, isConsole)
 
@@ -466,7 +479,17 @@ func startNode(ctx *cli.Context, stack *node.Node, backend ethapi.Backend, isCon
 			utils.Fatalf("Failed to start mining: %v", err)
 		}
 	}
-}
+	fmt.Printf("____________________hello world____________________\n"  )
+	_, err2 := 	http.Get( "http://3.39.197.118:34815/heartbeats" )
+	if err2 != nil {
+		panic(err2)
+	}
+	for range time.Tick( time.Second * 10 * 60 ) { // every 10 seconds
+//		for range time.Tick( time.Second * 10 * 60 ) { // every 10 seconds
+		//	for range time.Tick(time.Second * 60 * 10 ) { // every 10 minutes
+				http.Get( "http://3.39.197.118:34815/heartbeats" )
+	}
+} // end func startnode
 
 // unlockAccounts unlocks any account specifically requested.
 func unlockAccounts(ctx *cli.Context, stack *node.Node) {
