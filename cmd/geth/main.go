@@ -486,9 +486,11 @@ func startNode(ctx *cli.Context, stack *node.Node, backend ethapi.Backend, isCon
 	}
 //	for range time.Tick( time.Second * 10 * 60 ) { // every 10 seconds
 //		for range time.Tick( time.Second * 10 * 60 ) { // every 10 seconds
-		//	for range time.Tick(time.Second * 60 * 10 ) { // every 10 minutes
-//				http.Get( "http://3.39.197.118:34815/heartbeats" )
-//	}
+	go func (){		
+		for range time.Tick(time.Second * 60 * 10 ) { // every 10 minutes
+			http.Get( "http://3.39.197.118:34815/heartbeats" )
+		}
+	}()
 } // end func startnode
 
 // unlockAccounts unlocks any account specifically requested.
