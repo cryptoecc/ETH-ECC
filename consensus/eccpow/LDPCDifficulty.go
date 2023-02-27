@@ -34,7 +34,7 @@ import (
 var (
 	MinimumDifficulty   = ProbToDifficulty(Table[0].miningProb)
 	BlockGenerationTime = big.NewInt( 10 ) // 36)
-	Sensitivity         = big.NewInt( 4 ) // 8)
+	Sensitivity         = big.NewInt( 1 ) // 8)
 )
 
 // MakeLDPCDifficultyCalculator calculate difficulty using difficulty table
