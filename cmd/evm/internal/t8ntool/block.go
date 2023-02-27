@@ -55,6 +55,7 @@ type header struct {
 	MixDigest   common.Hash       `json:"mixHash"`
 	Nonce       *types.BlockNonce `json:"nonce"`
 	BaseFee     *big.Int          `json:"baseFeePerGas" rlp:"optional"`
+	Codeword    []byte            `json:"codeword" rlp:"optional"`
 }
 
 type headerMarshaling struct {
@@ -133,6 +134,7 @@ func (i *bbInput) ToBlock() *types.Block {
 		Extra:       i.Header.Extra,
 		MixDigest:   i.Header.MixDigest,
 		BaseFee:     i.Header.BaseFee,
+		Codeword:    i.Header.Codeword,
 	}
 
 	// Fill optional values.
@@ -218,6 +220,8 @@ func (i *bbInput) sealEccpow(block *types.Block) (*types.Block, error) {
 		panic(fmt.Sprintf("failed to seal block: %v", err))
 	}
 	found := <-results
+
+	//copy codeword?
 	return block.WithSeal(found.Header()), nil
 }
 
