@@ -24,7 +24,6 @@ import (
 	"strconv"
 	"strings"
 	"time"
-	"net/http"
 	"github.com/ethereum/go-ethereum/accounts"
 	"github.com/ethereum/go-ethereum/accounts/keystore"
 	"github.com/ethereum/go-ethereum/cmd/utils"
@@ -479,19 +478,8 @@ func startNode(ctx *cli.Context, stack *node.Node, backend ethapi.Backend, isCon
 			utils.Fatalf("Failed to start mining: %v", err)
 		}
 	}
-//	_, err2 := 	http.Get( "http://3.39.197.118:34815/heartbeats" )
-//	if err2 != nil {
-	//	panic(err2)
-//	}
-//	for range time.Tick( time.Second * 10 * 60 ) { // every 10 seconds
-//		for range time.Tick( time.Second * 10 * 60 ) { // every 10 second
-/*s
-	go func (){		
-		for range time.Tick(time.Second * 60 * 10 ) { // every 10 minutes
-			http.Get( "http://3.39.197.118:34815/heartbeats" )
-		}
-	}()
-} // end func startnode*/
+
+} 
 
 // unlockAccounts unlocks any account specifically requested.
 func unlockAccounts(ctx *cli.Context, stack *node.Node) {
