@@ -1,4 +1,4 @@
-# DeSecure
+# Ethereum Worldland
 
 # [What is the DeSecure Blockchain?](https://Desecure.org)
 
