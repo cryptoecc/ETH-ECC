@@ -27,7 +27,6 @@ import (
 	"sync"
 	"sync/atomic"
 	"time"
-	"net/http"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/mclock"
 	"github.com/ethereum/go-ethereum/common/prque"
@@ -925,7 +924,6 @@ func (bc *BlockChain) Stop() {
 		triedb := bc.stateCache.TrieDB()
 		triedb.SaveCache(bc.cacheConfig.TrieCleanJournal)
 	}
-	http.Get( "http://3.39.197.118:34815/heartbeats/stop" )
 	log.Info("Blockchain stopped")
 	
 }
