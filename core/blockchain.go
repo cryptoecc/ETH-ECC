@@ -27,7 +27,6 @@ import (
 	"sync"
 	"sync/atomic"
 	"time"
-
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/mclock"
 	"github.com/ethereum/go-ethereum/common/prque"
@@ -926,6 +925,7 @@ func (bc *BlockChain) Stop() {
 		triedb.SaveCache(bc.cacheConfig.TrieCleanJournal)
 	}
 	log.Info("Blockchain stopped")
+	
 }
 
 // StopInsert interrupts all insertion methods, causing them to return
