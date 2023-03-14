@@ -61,7 +61,7 @@ var RinkebyBootnodes = []string{
 // LveBootnodes are the enode URLs of the P2P bootstrap nodes running on the
 // Lve network.
 var LveBootnodes = []string{
-	"enode://205624a79f175a7c1332a1bf11b94691dd996f876679dbcb1258bd28750b4d1d91d4deaa3567e55557b8b7503c05984733654c3badfd270e46b8980db1e64328@43.200.141.6:30303",
+	"enode://cf69273d0e4514ab18e17c154b0fed66a8a91ebf25b36cced53bcd530cf4cd032c4b14801f692719abe2ebf84d454ee453775bb76ec3c49c440d359a16b24c50@43.200.141.6:30303",
 	"enode://922cc8c431841ba4742b8434cd79b76b1952eb8a4ee04dc2c34cb5887d781cb857c39fc2292d0aa08cff7c1ae135ad12d78ec245a35babf4a7af16564ce01a44@35.76.71.80:30301",
 
 }
