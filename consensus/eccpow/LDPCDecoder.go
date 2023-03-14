@@ -36,7 +36,7 @@ func OptimizedDecoding(parameters Parameters, hashVector []int, H, rowInCol, col
 			}
 		}
 
-		for k := 0; k < parameters.wr; k++ {
+		for k := 0; k < parameters.m; k++ {
 			for l := 0; l < parameters.wr; l++ {
 				temp3 := 0.0
 				sign := 1.0
