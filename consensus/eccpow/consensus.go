@@ -39,14 +39,12 @@ import (
 // ecc proof-of-work protocol constants.
 var (
 	FrontierBlockReward       = big.NewInt(5e+18) // Block reward in wei for successfully mining a block
-	ByzantiumBlockReward      = big.NewInt(3e+18) // Block reward in wei for successfully mining a block upward from Byzantium
-	ConstantinopleBlockReward = big.NewInt(2e+18) // Block reward in wei for successfully mining a block upward from Constantinople
-	WorldLandBlockReward		  = big.NewInt(4e+18)	//Block reward in wei for successfully mining a block upward from WorldLand
+	WorldLandInitialBlockReward	  = big.NewInt(8e+18)	//Block reward in wei for successfully mining a block upward from WorldLand
 	WorldLandFirstBlockReward	  = big.NewInt(9e+18)	//Block reward in wei for successfully mining a genesisblock upward from WorldLand
-	//eth chain genesis block 과의 혼동 막기 위해 WorldLandFirstBlockReward로 설정
-	//uncle, ghostprotocol reward 도 고려해야함
-	
-	maxUncles                 = 2                 // Maximum number of uncles allowed in a single block
+
+	HALVING_INTERVAL		  = uint64(3)
+
+	maxUncles                 = 2                // Maximum number of uncles allowed in a single block
 	allowedFutureBlockTimeSeconds    = int64(15)   // Max seconds from current time allowed for blocks, before they're considered future blocks
 
 )
@@ -458,18 +456,30 @@ var (
 func accumulateRewards(config *params.ChainConfig, state *state.StateDB, header *types.Header, uncles []*types.Header) {
 	// Select the correct block reward based on chain progression
 	blockReward := FrontierBlockReward
-	if config.IsByzantium(header.Number) {
-		blockReward = ByzantiumBlockReward
-	}
-	if config.IsConstantinople(header.Number) {
-		blockReward = ConstantinopleBlockReward
-	}
+	
 	if config.IsWorldland(header.Number){
-		blockReward = WorldLandBlockReward
+		blockReward = WorldLandInitialBlockReward
+
+		if config.IsWorldLandHalving(header.Number){
+			blockHeight := header.Number.Uint64()
+		
+			halvings := blockHeight / HALVING_INTERVAL
+		
+			for i := uint64(0); i < halvings; i++ {
+				if i%2 == 0 {
+					blockReward.Div(blockReward, big.NewInt(2))
+				}
+			}
+		} else if config.IsWorldLandMaturity(header.Number){
+			blockReward = new(big.Int).Mul(blockReward, big.NewInt(104))
+			blockReward.Div(blockReward, big.NewInt(100))
+		}
+		
 		if config.IsWorldlandMerge(header.Number){
-			blockReward = WorldLandFirstBlockReward		
+			blockReward = WorldLandFirstBlockReward	
 		}
 	}
+
 
 	// Accumulate the rewards for the miner and any included uncles
 	reward := new(big.Int).Set(blockReward)
