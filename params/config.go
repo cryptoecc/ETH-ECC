@@ -341,6 +341,7 @@ var (
 	}*/
 
 	LvetestChainConfig = &ChainConfig{
+<<<<<<< HEAD
 		ChainID:                       big.NewInt(123456),
 		HomesteadBlock:                big.NewInt(0),
 		DAOForkBlock:                  nil,
@@ -359,6 +360,26 @@ var (
 		WorldlandForkSupport:    true,
 
 		Eccpow: 				 new(EccpowConfig),
+=======
+		ChainID:             big.NewInt(12345),
+		HomesteadBlock:      big.NewInt(0),
+		EIP150Block:         big.NewInt(0),
+		EIP150Hash:          common.HexToHash("0x0000000000000000000000000000000000000000000000000000000000000000"),
+		EIP155Block:         big.NewInt(0),
+		EIP158Block:         big.NewInt(0),
+		ByzantiumBlock:      big.NewInt(0),
+		ConstantinopleBlock: big.NewInt(0),
+		PetersburgBlock:     big.NewInt(0),
+		IstanbulBlock:       big.NewInt(0),
+		MuirGlacierBlock:    nil,
+		BerlinBlock:         big.NewInt(0),
+		LondonBlock:         big.NewInt(0),
+		ArrowGlacierBlock:   nil,
+		GrayGlacierBlock:    nil,
+		WorldlandBlock:		 big.NewInt(3),
+		HalvingEndTime:		 big.NewInt(12),
+		Eccpow: new(EccpowConfig),
+>>>>>>> 97932c9d60fe7bb37cd9c0d098f012664b3c62de
 	}
 	
 	/* LvetestTrustedCheckpoint contains the light client trusted checkpoint for the Görli test network.
@@ -433,16 +454,16 @@ var (
 	//
 	// This configuration is intentionally not using keyed fields to force anyone
 	// adding flags to the config to also have to set these fields.
-	AllEthashProtocolChanges = &ChainConfig{big.NewInt(1337), big.NewInt(0), nil, false, big.NewInt(0), common.Hash{}, big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), nil, nil, nil, nil, false, nil, false, new(EthashConfig), nil, nil}
+	AllEthashProtocolChanges = &ChainConfig{big.NewInt(1337), big.NewInt(0), nil, false, big.NewInt(0), common.Hash{}, big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), nil, nil, nil, nil, false, nil, nil, false, new(EthashConfig), nil, nil}
 
 	// AllCliqueProtocolChanges contains every protocol change (EIPs) introduced
 	// and accepted by the Ethereum core developers into the Clique consensus.
 	//
 	// This configuration is intentionally not using keyed fields to force anyone
 	// adding flags to the config to also have to set these fields.
-	AllCliqueProtocolChanges = &ChainConfig{big.NewInt(1337), big.NewInt(0), nil, false, big.NewInt(0), common.Hash{}, big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), nil, nil, nil, nil, nil, nil, false, nil, false, nil, &CliqueConfig{Period: 0, Epoch: 30000}, nil}
+	AllCliqueProtocolChanges = &ChainConfig{big.NewInt(1337), big.NewInt(0), nil, false, big.NewInt(0), common.Hash{}, big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), nil, nil, nil, nil, nil, nil, false, nil, nil, false, nil, &CliqueConfig{Period: 0, Epoch: 30000}, nil}
 
-	TestChainConfig    = &ChainConfig{big.NewInt(1), big.NewInt(0), nil, false, big.NewInt(0), common.Hash{}, big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), nil, nil, nil, nil, false, nil, false, new(EthashConfig), nil, nil}
+	TestChainConfig    = &ChainConfig{big.NewInt(1), big.NewInt(0), nil, false, big.NewInt(0), common.Hash{}, big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), nil, nil, nil, nil, false, nil, nil, false, new(EthashConfig), nil, nil}
 	//NonActivatedConfig = &ChainConfig{big.NewInt(1), nil, nil, false, nil, common.Hash{}, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, false, new(EthashConfig), nil, nil}
 	TestRules          = TestChainConfig.Rules(new(big.Int), false)
 )
@@ -542,6 +563,7 @@ type ChainConfig struct {
 	
 	WorldlandBlock      *big.Int `json:"worldlandBlock,omitempty"`      // worldrand switch block (nil = no fork, 0 = already on worldland)
 	WorldlandForkSupport bool    `json:"WorldlandForkSupport,omitempty"` // Whether the nodes supports or opposes the Worldland hard-fork
+	HalvingEndTime		*big.Int `json:"HalvingEndTime,omitempty"` 
 
 	// TerminalTotalDifficulty is the amount of total difficulty reached by
 	// the network that triggers the consensus upgrade.
@@ -770,7 +792,7 @@ func (c *ChainConfig) IsCancun(num *big.Int) bool {
 	return isForked(c.CancunBlock, num)
 }
 
-// IsWorldland returns whether num is either equal to the Worldland fork block or greater.
+// IsWorldland returns whether num is either equ`al to the Worldland fork block or greater.
 func (c *ChainConfig) IsWorldland(num *big.Int) bool {
 	return isForked(c.WorldlandBlock, num)
 }
@@ -779,6 +801,16 @@ func (c *ChainConfig) IsWorldland(num *big.Int) bool {
 func (c *ChainConfig) IsWorldlandMerge(num *big.Int) bool {
 	return isMerged(c.WorldlandBlock, num)
 }
+
+func (c *ChainConfig) IsWorldLandHalving(num *big.Int) bool {
+	return isHalving(c.HalvingEndTime, num)
+}
+
+func (c *ChainConfig) IsWorldLandMaturity(num *big.Int) bool {
+	return isMatured(c.HalvingEndTime, num)
+}
+
+
 
 // CheckCompatible checks whether scheduled fork transitions have been imported
 // with a mismatching chain configuration.
@@ -938,6 +970,19 @@ func isMerged(s, head *big.Int) bool {
 	return s.Cmp(head) == 0
 }
 
+func isHalving(HalvingEndTime, head *big.Int) bool {
+	if HalvingEndTime == nil || head == nil {
+		return false
+	}
+	return HalvingEndTime.Cmp(head) > 0
+}
+
+func isMatured(HalvingEndTime, head *big.Int) bool {
+	if HalvingEndTime == nil || head == nil {
+		return false
+	}
+	return HalvingEndTime.Cmp(head) <= 0
+}
 
 func configNumEqual(x, y *big.Int) bool {
 	if x == nil {
