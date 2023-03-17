@@ -355,11 +355,9 @@ var (
 		MuirGlacierBlock:              big.NewInt(0),
 		BerlinBlock:                   big.NewInt(0),
 		LondonBlock:                   big.NewInt(0),
-		WorldlandBlock:        	       big.NewInt(10),
+		WorldlandBlock:        	       big.NewInt(0),
 		WorldlandForkSupport:    true,
 
-		Ethash:                  new(EthashConfig),
-		//working...
 		Eccpow: 				 new(EccpowConfig),
 	}
 	
