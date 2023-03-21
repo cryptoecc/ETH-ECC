@@ -23,7 +23,7 @@ import (
 	"math/big"
 	"runtime"
 	"time"
-
+	"log"
 	mapset "github.com/deckarep/golang-set"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/consensus"
@@ -43,9 +43,13 @@ var (
 	WorldLandFirstBlockReward	  = big.NewInt(9e+18)	//Block reward in wei for successfully mining a genesisblock upward from WorldLand
 
 	HALVING_INTERVAL		  = uint64(3)
+	MaxHalving				  = uint64(3)
+
+	
 
 	maxUncles                 = 2                // Maximum number of uncles allowed in a single block
 	allowedFutureBlockTimeSeconds    = int64(15)   // Max seconds from current time allowed for blocks, before they're considered future blocks
+
 
 )
 
@@ -455,31 +459,41 @@ var (
 // included uncles. The coinbase of each uncle block is also rewarded.
 func accumulateRewards(config *params.ChainConfig, state *state.StateDB, header *types.Header, uncles []*types.Header) {
 	// Select the correct block reward based on chain progression
-	blockReward := FrontierBlockReward
+	var blockReward = big.NewInt(FrontierBlockReward.Int64())
 	
 	if config.IsWorldland(header.Number){
-		blockReward = WorldLandInitialBlockReward
+		blockReward = big.NewInt(WorldLandInitialBlockReward.Int64())
+		log.Println("blockreward:", blockReward)
+		log.Println("WorldLandInitiallockreward:", WorldLandInitialBlockReward)
 
-		if config.IsWorldLandHalving(header.Number){
+		if config.IsWorldLandHalving(header.Number) {
 			blockHeight := header.Number.Uint64()
-		
 			halvings := blockHeight / HALVING_INTERVAL
-		
-			for i := uint64(0); i < halvings; i++ {
-				if i%2 == 0 {
-					blockReward.Div(blockReward, big.NewInt(2))
-				}
+
+			blockReward.Rsh(blockReward, uint(halvings))
+
+			log.Println("halvings:", halvings)
+			log.Println("halvingblockReward:", blockReward)
+
+		} 
+
+		if config.IsWorldLandMaturity(header.Number){
+			blockReward = big.NewIng(WorldLandInitialBlockReward.Int64())
+			for i :=1; i<MaxHalving; i++{
+				blockReward.Mul(blockReward, big.NewInt(104))
+				blockReward.Div(blockReward, big.NewInt(100))
 			}
-		} else if config.IsWorldLandMaturity(header.Number){
-			blockReward = new(big.Int).Mul(blockReward, big.NewInt(104))
-			blockReward.Div(blockReward, big.NewInt(100))
+			log.Println("maturityblockReward:", blockReward)
 		}
 		
 		if config.IsWorldlandMerge(header.Number){
 			blockReward = WorldLandFirstBlockReward	
+
+			log.Println("mergeblockReward:", blockReward)
 		}
 	}
-
+	
+	log.Println("after func blockReward:", blockReward)
 
 	// Accumulate the rewards for the miner and any included uncles
 	reward := new(big.Int).Set(blockReward)
