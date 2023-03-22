@@ -42,10 +42,9 @@ var (
 	WorldLandInitialBlockReward	  = big.NewInt(8e+18)	//Block reward in wei for successfully mining a block upward from WorldLand
 	WorldLandFirstBlockReward	  = big.NewInt(9e+18)	//Block reward in wei for successfully mining a genesisblock upward from WorldLand
 
-	HALVING_INTERVAL		  = uint64(3)
-	MaxHalving				  = uint64(3)
-
-	
+	HALVING_INTERVAL		  = uint64(10)
+	MaxHalving				  = uint64(4)
+	MATURITY_INTERVAL		  = uint64(10)
 
 	maxUncles                 = 2                // Maximum number of uncles allowed in a single block
 	allowedFutureBlockTimeSeconds    = int64(15)   // Max seconds from current time allowed for blocks, before they're considered future blocks
@@ -463,23 +462,21 @@ func accumulateRewards(config *params.ChainConfig, state *state.StateDB, header 
 	
 	if config.IsWorldland(header.Number){
 		blockReward = big.NewInt(WorldLandInitialBlockReward.Int64())
-		log.Println("blockreward:", blockReward)
-		log.Println("WorldLandInitiallockreward:", WorldLandInitialBlockReward)
 
 		if config.IsWorldLandHalving(header.Number) {
 			blockHeight := header.Number.Uint64()
-			halvings := blockHeight / HALVING_INTERVAL
+			HalvingLevel := (blockHeight-config.WorldlandBlock.Uint64()) / HALVING_INTERVAL
 
-			blockReward.Rsh(blockReward, uint(halvings))
-
-			log.Println("halvings:", halvings)
+			blockReward.Rsh(blockReward, uint(HalvingLevel))
 			log.Println("halvingblockReward:", blockReward)
 
-		} 
+		} else if config.IsWorldLandMaturity(header.Number){
+			blockHeight := header.Number.Uint64()
+			MaturityLevel := (blockHeight-config.HalvingEndTime.Uint64()) / MATURITY_INTERVAL
 
-		if config.IsWorldLandMaturity(header.Number){
-			blockReward = big.NewIng(WorldLandInitialBlockReward.Int64())
-			for i :=1; i<MaxHalving; i++{
+			blockReward.Rsh(blockReward, uint(MaxHalving)-1)			
+
+			for i := 0; i <= int(MaturityLevel); i++ {
 				blockReward.Mul(blockReward, big.NewInt(104))
 				blockReward.Div(blockReward, big.NewInt(100))
 			}

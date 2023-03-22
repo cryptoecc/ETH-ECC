@@ -355,9 +355,9 @@ var (
 		MuirGlacierBlock:              big.NewInt(0),
 		BerlinBlock:                   big.NewInt(0),
 		LondonBlock:                   big.NewInt(0),
-		WorldlandBlock:        	       big.NewInt(3),
+		WorldlandBlock:        	       big.NewInt(10),
 		WorldlandForkSupport:    true,
-		HalvingEndTime:		 		   big.NewInt(12),
+		HalvingEndTime:		 		   big.NewInt(50),
 
 		Eccpow: 				 new(EccpowConfig),
 	}
