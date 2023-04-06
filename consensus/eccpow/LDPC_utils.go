@@ -30,6 +30,7 @@ type Parameters struct {
 
 // setParameters sets n, wc, wr, m, seed return parameters and difficulty level
 func setParameters(header *types.Header) (Parameters, int) {
+
 	level := SearchLevel(header.Difficulty)
 
 	parameters := Parameters{
@@ -111,7 +112,7 @@ func generateH(parameters Parameters) [][]int {
 		rnd := rand.New(src)
 		rnd.Seed(hSeed)
 		rnd.Shuffle(len(colOrder), func(i, j int) {
-			colOrder[i],colOrder[j] = colOrder[j], colOrder[i]
+			colOrder[i], colOrder[j] = colOrder[j], colOrder[i]
 		})
 		hSeed--
 
