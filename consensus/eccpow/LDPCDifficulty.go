@@ -32,7 +32,7 @@ import (
 // Some weird constants to avoid constant memory allocs for them.
 var (
 	MinimumDifficulty   = ProbToDifficulty(Table[0].miningProb)
-	BlockGenerationTime = big.NewInt(36) // 36) // 10 ) // 36)
+	BlockGenerationTime = big.NewInt(10) // 36) // 10 ) // 36)
 	Sensitivity         = big.NewInt(8)  // 8 ) // 1 ) // 8)
 )
 
