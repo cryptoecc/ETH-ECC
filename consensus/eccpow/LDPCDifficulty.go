@@ -33,7 +33,24 @@ import (
 var (
 	MinimumDifficulty   = ProbToDifficulty(Table[0].miningProb)
 	BlockGenerationTime = big.NewInt(10) // 36) // 10 ) // 36)
-	Sensitivity         = big.NewInt(8)  // 8 ) // 1 ) // 8)
+	Sensitivity         = big.NewInt(8)
+
+	stTime      int = 12
+	avgTimeList     = [100]int{stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime,
+		stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime,
+		stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime,
+		stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime,
+		stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime,
+		stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime,
+		stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime,
+		stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime,
+		stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime,
+		stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime}
+
+	initDiff = big.NewInt(1)
+	minDiff  = big.NewInt(5)
+
+	count int = 0
 )
 
 // MakeLDPCDifficultyCalculator calculate difficulty using difficulty table
@@ -47,21 +64,36 @@ func MakeLDPCDifficultyCalculator() func(time uint64, parent *types.Header) *big
 
 		diff := new(big.Int)
 
-		// 이전블록이 제니시스 블록인 경우 난이도를 100으로 조정.
+		if count > 1000 {
+			count = count - 1000
+		}
+		count = count + 1
+
 		if (parent.Difficulty).Cmp(big.NewInt(500000)) > 0 {
-			diff = big.NewInt(10)
-
-		} else {
-
-			if x.Cmp(BlockGenerationTime) < 0 { // 36초 보다 빠르게 생성
-				diff.Add(parent.Difficulty, big.NewInt(1)) // 난이도 1 증가
-			} else {
-				diff.Sub(parent.Difficulty, big.NewInt(1)) // 아니면, 난이도 1 감소
-			}
-
+			diff = big.NewInt(120)
+			return diff
 		}
 
-		// fix 최소 난이도 추가해야함
+		bIndex := (parent.Number).Uint64() % 100
+		avgTimeList[bIndex] = int(x.Uint64())
+
+		totalTime := 0
+		for i := 0; i < 100; i++ {
+			totalTime += avgTimeList[i]
+		}
+		avgTime := totalTime / 100
+
+		if count%100 == 42 {
+			if avgTime < stTime {
+				diff.Add(parent.Difficulty, big.NewInt(1))
+			} else {
+				if (parent.Difficulty).Cmp(minDiff) > 0 {
+					diff.Sub(parent.Difficulty, big.NewInt(1))
+				}
+			}
+		} else {
+			diff = parent.Difficulty
+		}
 
 		return diff
 	}
@@ -70,35 +102,11 @@ func MakeLDPCDifficultyCalculator() func(time uint64, parent *types.Header) *big
 // SearchLevel return next level by using currentDifficulty of header
 // Type of Ethereum difficulty is *bit.Int so arg is *big.int
 func SearchLevel(difficulty *big.Int) int {
-	// foo := MakeLDPCDifficultyCalculator()
-	// Next level := SearchNextLevel(foo(currentBlock's time stamp, parentBlock))
-
-	// var currentProb = DifficultyToProb(difficulty)
-	// var level int
-
-	// 이전블록이 제니시스 블록인 경우 난이도를 100으로 조정.
 	if difficulty.Cmp(big.NewInt(500000)) > 0 {
-		difficulty = big.NewInt(10)
+		difficulty = big.NewInt(120)
 	}
 
 	var level int = int(difficulty.Uint64())
-	// if difficulty.Cmp(big.NewInt(2)) < 0 {
-	// 	level = level + 1
-	// } else {bl
-	// 	if level != 0 {
-	// 		level = level - 1
-	// 	}
-	// }
-
-	// distance := 1.0
-	// for i := range Table {
-	// 	if math.Abs(currentProb-Table[i].miningProb) <= distance {
-	// 		level = Table[i].level
-	// 		distance = math.Abs(currentProb - Table[i].miningProb)
-	// 	} else {
-	// 		break
-	// 	}
-	// }
 
 	return level
 }
