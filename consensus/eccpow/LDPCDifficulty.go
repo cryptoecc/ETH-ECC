@@ -1,7 +1,7 @@
 package eccpow
 
 import (
-	"math"
+	"fmt"
 	"math/big"
 
 	"github.com/ethereum/go-ethereum/core/types"
@@ -34,7 +34,24 @@ import (
 var (
 	MinimumDifficulty   = ProbToDifficulty(Table[0].miningProb)
 	BlockGenerationTime = big.NewInt(10) // 36) // 10 ) // 36)
-	Sensitivity         = big.NewInt(8) // 8 ) // 1 ) // 8)
+	Sensitivity         = big.NewInt(8)
+
+	stTime      int = 12
+	avgTimeList     = [100]int{stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime,
+		stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime,
+		stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime,
+		stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime,
+		stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime,
+		stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime,
+		stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime,
+		stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime,
+		stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime,
+		stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime}
+
+	initDiff = big.NewInt(1)
+	minDiff  = big.NewInt(5)
+
+	count int = 0
 )
 
 // MakeLDPCDifficultyCalculator calculate difficulty using difficulty table
@@ -43,71 +60,57 @@ func MakeLDPCDifficultyCalculator() func(time uint64, parent *types.Header) *big
 		bigTime := new(big.Int).SetUint64(time)
 		bigParentTime := new(big.Int).SetUint64(parent.Time)
 
-		// holds intermediate values to make the algo easier to read & audit
 		x := new(big.Int)
-		y := new(big.Int)
-
-		// (2 if len(parent_uncles) else 1) - (block_timestamp - parent_timestamp) // BlockGenerationTime
 		x.Sub(bigTime, bigParentTime)
-		//fmt.Printf("block_timestamp - parent_timestamp : %v\n", x)
 
-		x.Div(x, BlockGenerationTime)
-		//fmt.Printf("(block_timestamp - parent_timestamp) / BlockGenerationTime : %v\n", x)
+		diff := new(big.Int)
 
-		if parent.UncleHash == types.EmptyUncleHash {
-			//fmt.Printf("No uncle\n")
-			x.Sub(big1, x)
+		if count > 1000 {
+			count = count - 1000
+		}
+		count = count + 1
+
+		if (parent.Difficulty).Cmp(big.NewInt(500000)) > 0 {
+			diff = big.NewInt(10)
+			return diff
+		}
+
+		bIndex := (parent.Number).Uint64() % 100
+		avgTimeList[bIndex] = int(x.Uint64())
+
+		totalTime := 0
+		for i := 0; i < 100; i++ {
+			totalTime += avgTimeList[i]
+		}
+		avgTime := totalTime / 100
+
+		if count%100 == 42 {
+			if avgTime < stTime {
+				diff.Add(parent.Difficulty, big.NewInt(1))
+			} else {
+				if (parent.Difficulty).Cmp(minDiff) > 0 {
+					diff.Sub(parent.Difficulty, big.NewInt(1))
+				}
+			}
 		} else {
-			//fmt.Printf("Uncle block exists")
-			x.Sub(big2, x)
+			diff = parent.Difficulty
 		}
-		//fmt.Printf("(2 if len(parent_uncles) else 1) - (block_timestamp - parent_timestamp) / BlockGenerationTime : %v\n", x)
 
-		// max((2 if len(parent_uncles) else 1) - (block_timestamp - parent_timestamp) // 9, -99)
-		if x.Cmp(bigMinus99) < 0 {
-			x.Set(bigMinus99)
-		}
-		//fmt.Printf("max(1 - (block_timestamp - parent_timestamp) / BlockGenerationTime, -99) : %v\n", x)
+		fmt.Println("Difficulty: ", diff)
+		fmt.Println("Average Time: ", avgTime, "s")
 
-		// parent_diff + (parent_diff / Sensitivity * max((2 if len(parent.uncles) else 1) - ((timestamp - parent.timestamp) // BlockGenerationTime), -99))
-		y.Div(parent.Difficulty, Sensitivity)
-		//fmt.Printf("parent.Difficulty / 8 : %v\n", y)
-
-		x.Mul(y, x)
-		//fmt.Printf("parent.Difficulty / 8 * max(1 - (block_timestamp - parent_timestamp) / BlockGenerationTime, -99) : %v\n", x)
-
-		x.Add(parent.Difficulty, x)
-		//fmt.Printf("parent.Difficulty - parent.Difficulty / 8 * max(1 - (block_timestamp - parent_timestamp) / BlockGenerationTime, -99) : %v\n", x)
-
-		// minimum difficulty can ever be (before exponential factor)
-		if x.Cmp(MinimumDifficulty) < 0 {
-			x.Set(MinimumDifficulty)
-		}
-		
-		//fmt.Printf("x : %v, Minimum difficulty : %v\n", x, MinimumDifficulty)
-
-		return x
+		return diff
 	}
 }
 
 // SearchLevel return next level by using currentDifficulty of header
 // Type of Ethereum difficulty is *bit.Int so arg is *big.int
 func SearchLevel(difficulty *big.Int) int {
-	// foo := MakeLDPCDifficultyCalculator()
-	// Next level := SearchNextLevel(foo(currentBlock's time stamp, parentBlock))
-
-	var currentProb = DifficultyToProb(difficulty)
-	var level int
-
-	distance := 1.0
-	for i := range Table {
-		if math.Abs(currentProb-Table[i].miningProb) <= distance {
-			level = Table[i].level
-			distance = math.Abs(currentProb - Table[i].miningProb)
-		} else {
-			break
-		}
+	if difficulty.Cmp(big.NewInt(500000)) > 0 {
+		difficulty = big.NewInt(10)
 	}
+
+	var level int = int(difficulty.Uint64())
 
 	return level
 }
