@@ -23,7 +23,7 @@ import (
 	"math/big"
 	"runtime"
 	"time"
-
+	"log"
 	mapset "github.com/deckarep/golang-set"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/consensus"
@@ -38,16 +38,19 @@ import (
 
 // ecc proof-of-work protocol constants.
 var (
-	FrontierBlockReward       = big.NewInt(5e+18) // Block reward in wei for successfully mining a block
-	ByzantiumBlockReward      = big.NewInt(3e+18) // Block reward in wei for successfully mining a block upward from Byzantium
-	ConstantinopleBlockReward = big.NewInt(2e+18) // Block reward in wei for successfully mining a block upward from Constantinople
-	WorldLandBlockReward      = big.NewInt(4e+18) //Block reward in wei for successfully mining a block upward from WorldLand
-	WorldLandFirstBlockReward = big.NewInt(9e+18) //Block reward in wei for successfully mining a genesisblock upward from WorldLand
-	//eth chain genesis block 과의 혼동 막기 위해 WorldLandFirstBlockReward로 설정
-	//uncle, ghostprotocol reward 도 고려해야함
+	FrontierBlockReward       		= big.NewInt(5e+18) // Block reward in wei for successfully mining a block
+	WorldLandInitialBlockReward	  	= big.NewInt(8e+18)	//Block reward in wei for successfully mining a block upward from WorldLand
+	WorldLandFirstBlockReward	  	= big.NewInt(9e+18)	//Block reward in wei for successfully mining a genesisblock upward from WorldLand
 
-	maxUncles                     = 2         // Maximum number of uncles allowed in a single block
-	allowedFutureBlockTimeSeconds = int64(15) // Max seconds from current time allowed for blocks, before they're considered future blocks
+	HALVING_INTERVAL		  		= uint64(10)
+	MATURITY_INTERVAL		  		= uint64(10)
+
+	SumRewardUntilMaturity			= big.NewInt(196)
+	MaxHalving				  		= int64(4)
+
+	maxUncles                 		= 2                // Maximum number of uncles allowed in a single block
+	allowedFutureBlockTimeSeconds   = int64(15)   // Max seconds from current time allowed for blocks, before they're considered future blocks
+
 
 )
 
@@ -457,25 +460,52 @@ var (
 // included uncles. The coinbase of each uncle block is also rewarded.
 func accumulateRewards(config *params.ChainConfig, state *state.StateDB, header *types.Header, uncles []*types.Header) {
 	// Select the correct block reward based on chain progression
-	blockReward := FrontierBlockReward
-	if config.IsByzantium(header.Number) {
-		blockReward = ByzantiumBlockReward
-	}
-	if config.IsConstantinople(header.Number) {
-		blockReward = ConstantinopleBlockReward
-	}
-	if config.IsWorldland(header.Number) {
-		blockReward = WorldLandBlockReward
-		if config.IsWorldlandMerge(header.Number) {
-			blockReward = WorldLandFirstBlockReward
+	var blockReward = big.NewInt(FrontierBlockReward.Int64())
+	
+	if config.IsWorldland(header.Number){
+		blockReward = big.NewInt(WorldLandInitialBlockReward.Int64())
+
+		if config.IsWorldLandHalving(header.Number) {
+			blockHeight := header.Number.Uint64()
+			HalvingLevel := (blockHeight-config.WorldlandBlock.Uint64()) / HALVING_INTERVAL
+
+			blockReward.Rsh(blockReward, uint(HalvingLevel))
+			log.Println("halvingblockReward:", blockReward)
+
+			
+		} else if config.IsWorldLandMaturity(header.Number){
+			blockHeight := header.Number.Uint64()
+			MaturityLevel := (blockHeight-config.HalvingEndTime.Uint64()) / MATURITY_INTERVAL
+			blockReward.Rsh(blockReward, uint(MaxHalving-1))
+			log.Println("maturityblockReward 0:", blockReward)  
+			// r is 1.04 currently
+			blockReward.Mul(blockReward, SumRewardUntilMaturity)
+			blockReward.Div(blockReward, new(big.Int).SetUint64(MATURITY_INTERVAL)) //Maturity Ineterval, Halving Interval Uint로 할 이유가 있는지?
+			
+			blockReward.Mul(blockReward, big.NewInt(4))
+			blockReward.Div(blockReward, big.NewInt(100))
+			log.Println("maturityblockReward 1:", blockReward)
+			for i := 0; i < int(MaturityLevel); i++ {
+				blockReward.Mul(blockReward, big.NewInt(104))
+				blockReward.Div(blockReward, big.NewInt(100))
+			}
+			log.Println("maturityblockReward 2:", blockReward)
+		}
+		
+		if config.IsWorldlandMerge(header.Number){
+			blockReward = WorldLandFirstBlockReward	
+
+			log.Println("mergeblockReward:", blockReward)
 		}
 	}
+	
+	log.Println("after func blockReward:", blockReward)
 
 	// Accumulate the rewards for the miner and any included uncles
 	reward := new(big.Int).Set(blockReward)
 	r := new(big.Int)
 	for _, uncle := range uncles {
-		r.Add(uncle.Number, big8)
+	r.Add(uncle.Number, big8)
 		r.Sub(r, header.Number)
 		r.Mul(r, blockReward)
 		r.Div(r, big8)
@@ -485,4 +515,4 @@ func accumulateRewards(config *params.ChainConfig, state *state.StateDB, header 
 		reward.Add(reward, r)
 	}
 	state.AddBalance(header.Coinbase, reward)
-}
+}	
