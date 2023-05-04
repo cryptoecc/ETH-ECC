@@ -34,8 +34,9 @@ var (
 	GoerliGenesisHash  = common.HexToHash("0xbf7e331f7f7c1dd2e05159666b3bf8bc7a8a3a9eb1d518969eab529dd9b88c1a")
 	KilnGenesisHash    = common.HexToHash("0x51c7fe41be669f69c45c33a56982cbde405313342d9e2b00d7c91a7b284dd4f8")
 
-	LveGenesisHash = common.HexToHash("0x7c5cb1a45d2424a2be1155c22979bbe384aff07810260041d5609a87bc3c58cc")
-	LvetestGenesisHash = common.HexToHash("0xd4e56740f876aef8c010b86a40d5f56745a118d0906a34e69aec8c0db1cb8fa3")
+	LveGenesisHash           = common.HexToHash("0x7c5cb1a45d2424a2be1155c22979bbe384aff07810260041d5609a87bc3c58cc")
+	LvetestGenesisHash       = common.HexToHash("0xd4e56740f876aef8c010b86a40d5f56745a118d0906a34e69aec8c0db1cb8fa3")
+	WLseoulGenesisHash       = common.HexToHash("0xd4e56740f876aef8c010b86a40d5f56745a118d0906a34e69aec8c0db1cb8fa3")
 	WorldlandtestGenesisHash = common.HexToHash("0xd4e56740f876aef8c010b86a40d5f56745a118d0906a34e69aec8c0db1cb8fa3")
 )
 
@@ -50,6 +51,7 @@ var TrustedCheckpoints = map[common.Hash]*TrustedCheckpoint{
 
 	//LveGenesisHash:  LveTrustedCheckpoint,
 	//LvetestGenesisHash:  LvetestTrustedCheckpoint,
+	//WLseoulGenesisHash:  WLseoulTrustedCheckpoint,
 	//WorldlandtestGenesisHash:  WorldlandtestTrustedCheckpoint,
 }
 
@@ -64,38 +66,38 @@ var CheckpointOracles = map[common.Hash]*CheckpointOracleConfig{
 	//update
 	//LveGenesisHash:  LveCheckpointOracle,
 	//LvetestGenesisHash:  LvetestCheckpointOracle,
-	WorldlandtestGenesisHash:  WorldlandtestCheckpointOracle,
+	//WLseoulGenesisHash:  WLseoulCheckpointOracle,
+	WorldlandtestGenesisHash: WorldlandtestCheckpointOracle,
 }
 
 var (
 	MainnetTerminalTotalDifficulty, _ = new(big.Int).SetString("58_750_000_000_000_000_000_000", 0)
 	// MainnetChainConfig is the chain parameters to run a node on the main network.
 	MainnetChainConfig = &ChainConfig{
-		ChainID:                 big.NewInt(1),
-		HomesteadBlock:          big.NewInt(1_150_000),
-		DAOForkBlock:            big.NewInt(1_920_000),
-		DAOForkSupport:          true,
-		EIP150Block:             big.NewInt(2_463_000),
-		EIP150Hash:              common.HexToHash("0x2086799aeebeae135c246c65021c82b4e15a2c451340993aacfd2751886514f0"),
-		EIP155Block:             big.NewInt(2_675_000),
-		EIP158Block:             big.NewInt(2_675_000),
-		ByzantiumBlock:          big.NewInt(4_370_000),
-		ConstantinopleBlock:     big.NewInt(7_280_000),
-		PetersburgBlock:         big.NewInt(7_280_000),
-		IstanbulBlock:           big.NewInt(9_069_000),
-		MuirGlacierBlock:        big.NewInt(9_200_000),
-		BerlinBlock:             big.NewInt(12_244_000),
-		LondonBlock:             big.NewInt(12_965_000),
-		ArrowGlacierBlock:       big.NewInt(13_773_000),
+		ChainID:             big.NewInt(1),
+		HomesteadBlock:      big.NewInt(1_150_000),
+		DAOForkBlock:        big.NewInt(1_920_000),
+		DAOForkSupport:      true,
+		EIP150Block:         big.NewInt(2_463_000),
+		EIP150Hash:          common.HexToHash("0x2086799aeebeae135c246c65021c82b4e15a2c451340993aacfd2751886514f0"),
+		EIP155Block:         big.NewInt(2_675_000),
+		EIP158Block:         big.NewInt(2_675_000),
+		ByzantiumBlock:      big.NewInt(4_370_000),
+		ConstantinopleBlock: big.NewInt(7_280_000),
+		PetersburgBlock:     big.NewInt(7_280_000),
+		IstanbulBlock:       big.NewInt(9_069_000),
+		MuirGlacierBlock:    big.NewInt(9_200_000),
+		BerlinBlock:         big.NewInt(12_244_000),
+		LondonBlock:         big.NewInt(12_965_000),
+		ArrowGlacierBlock:   big.NewInt(13_773_000),
 		//GrayGlacierBlock:        big.NewInt(15_050_000),
-		WorldlandBlock:        	 big.NewInt(15_500_000),
-		WorldlandForkSupport:    true,
+		WorldlandBlock:       big.NewInt(15_500_000),
+		WorldlandForkSupport: true,
 
 		TerminalTotalDifficulty: MainnetTerminalTotalDifficulty, // 58_750_000_000_000_000_000_000
 		Ethash:                  new(EthashConfig),
 		//working...
-		Eccpow: 				 new(EccpowConfig),
-		
+		Eccpow: new(EccpowConfig),
 	}
 
 	// MainnetTrustedCheckpoint contains the light client trusted checkpoint for the main network.
@@ -299,30 +301,30 @@ var (
 		LondonBlock:         big.NewInt(0),
 		ArrowGlacierBlock:   nil,
 		GrayGlacierBlock:    nil,
-		Eccpow: new(EccpowConfig),
+		Eccpow:              new(EccpowConfig),
 	}
-	
+
 	/*
-	// LveTrustedCheckpoint contains the light client trusted checkpoint for the Görli test network.
-	LveTrustedCheckpoint = &TrustedCheckpoint{
-		SectionIndex: 32,
-		SectionHead:  common.HexToHash("0x50eaedd8361fa9edd0ac2dec410310b9bdf67b963b60f3b1dce47f84b30670f9"),
-		CHTRoot:      common.HexToHash("0x6504db73139f75ffa9102ae980e41b361cf3d5b66cea06c79cde9f457368820c"),
-		BloomRoot:    common.HexToHash("0x7551ae027bb776252a20ded51ee2ff0cbfbd1d8d57261b9161cc1f2f80237001"),
-	}
-	
-	// LveCheckpointOracle contains a set of configs for the Lve test network oracle.
-	LveCheckpointOracle = &CheckpointOracleConfig{
-		Address: common.HexToAddress("0x18CA0E045F0D772a851BC7e48357Bcaab0a0795D"),
-		Signers: []common.Address{
-			common.HexToAddress("0x4769bcaD07e3b938B7f43EB7D278Bc7Cb9efFb38"), // Peter
-			common.HexToAddress("0x78d1aD571A1A09D60D9BBf25894b44e4C8859595"), // Martin
-			common.HexToAddress("0x286834935f4A8Cfb4FF4C77D5770C2775aE2b0E7"), // Zsolt
-			common.HexToAddress("0xb86e2B0Ab5A4B1373e40c51A7C712c70Ba2f9f8E"), // Gary
-			common.HexToAddress("0x0DF8fa387C602AE62559cC4aFa4972A7045d6707"), // Guillaume
-		},
-			Threshold: 2,
-	}*/
+		// LveTrustedCheckpoint contains the light client trusted checkpoint for the Görli test network.
+		LveTrustedCheckpoint = &TrustedCheckpoint{
+			SectionIndex: 32,
+			SectionHead:  common.HexToHash("0x50eaedd8361fa9edd0ac2dec410310b9bdf67b963b60f3b1dce47f84b30670f9"),
+			CHTRoot:      common.HexToHash("0x6504db73139f75ffa9102ae980e41b361cf3d5b66cea06c79cde9f457368820c"),
+			BloomRoot:    common.HexToHash("0x7551ae027bb776252a20ded51ee2ff0cbfbd1d8d57261b9161cc1f2f80237001"),
+		}
+
+		// LveCheckpointOracle contains a set of configs for the Lve test network oracle.
+		LveCheckpointOracle = &CheckpointOracleConfig{
+			Address: common.HexToAddress("0x18CA0E045F0D772a851BC7e48357Bcaab0a0795D"),
+			Signers: []common.Address{
+				common.HexToAddress("0x4769bcaD07e3b938B7f43EB7D278Bc7Cb9efFb38"), // Peter
+				common.HexToAddress("0x78d1aD571A1A09D60D9BBf25894b44e4C8859595"), // Martin
+				common.HexToAddress("0x286834935f4A8Cfb4FF4C77D5770C2775aE2b0E7"), // Zsolt
+				common.HexToAddress("0xb86e2B0Ab5A4B1373e40c51A7C712c70Ba2f9f8E"), // Gary
+				common.HexToAddress("0x0DF8fa387C602AE62559cC4aFa4972A7045d6707"), // Guillaume
+			},
+				Threshold: 2,
+		}*/
 
 	// LvetestChainConfig contains the chain parameters to run a node on the Görli test network.
 	/*LvetestChainConfig = &ChainConfig{
@@ -341,27 +343,49 @@ var (
 	}*/
 
 	LvetestChainConfig = &ChainConfig{
-		ChainID:                       big.NewInt(123456),
-		HomesteadBlock:                big.NewInt(0),
-		DAOForkBlock:                  nil,
-		DAOForkSupport:                true,
-		EIP150Block:                   big.NewInt(0),
-		EIP155Block:                   big.NewInt(0),
-		EIP158Block:                   big.NewInt(0),
-		ByzantiumBlock:                big.NewInt(0),
-		ConstantinopleBlock:           big.NewInt(0),
-		PetersburgBlock:               big.NewInt(0),
-		IstanbulBlock:                 big.NewInt(0),
-		MuirGlacierBlock:              big.NewInt(0),
-		BerlinBlock:                   big.NewInt(0),
-		LondonBlock:                   big.NewInt(0),
-		WorldlandBlock:        	       big.NewInt(10),
-		WorldlandForkSupport:    true,
-		HalvingEndTime:		 		   big.NewInt(50),
+		ChainID:              big.NewInt(123456),
+		HomesteadBlock:       big.NewInt(0),
+		DAOForkBlock:         nil,
+		DAOForkSupport:       true,
+		EIP150Block:          big.NewInt(0),
+		EIP155Block:          big.NewInt(0),
+		EIP158Block:          big.NewInt(0),
+		ByzantiumBlock:       big.NewInt(0),
+		ConstantinopleBlock:  big.NewInt(0),
+		PetersburgBlock:      big.NewInt(0),
+		IstanbulBlock:        big.NewInt(0),
+		MuirGlacierBlock:     big.NewInt(0),
+		BerlinBlock:          big.NewInt(0),
+		LondonBlock:          big.NewInt(0),
+		WorldlandBlock:       big.NewInt(10),
+		WorldlandForkSupport: true,
+		HalvingEndTime:       big.NewInt(50),
 
-		Eccpow: 				 new(EccpowConfig),
+		Eccpow: new(EccpowConfig),
 	}
-	
+
+	WLseoulChainConfig = &ChainConfig{
+		ChainID:              big.NewInt(2237),
+		HomesteadBlock:       big.NewInt(0),
+		DAOForkBlock:         nil,
+		DAOForkSupport:       true,
+		EIP150Block:          big.NewInt(0),
+		EIP155Block:          big.NewInt(0),
+		EIP158Block:          big.NewInt(0),
+		ByzantiumBlock:       big.NewInt(0),
+		ConstantinopleBlock:  big.NewInt(0),
+		PetersburgBlock:      big.NewInt(0),
+		IstanbulBlock:        big.NewInt(0),
+		MuirGlacierBlock:     big.NewInt(0),
+		BerlinBlock:          big.NewInt(0),
+		LondonBlock:          big.NewInt(0),
+		WorldlandBlock:       big.NewInt(0),
+		WorldlandForkSupport: true,
+		HalvingEndTime:       big.NewInt(50),
+
+		Eccpow: new(EccpowConfig),
+	}
+
 	/* LvetestTrustedCheckpoint contains the light client trusted checkpoint for the Görli test network.
 	LvetestTrustedCheckpoint = &TrustedCheckpoint{
 		SectionIndex: 32,
@@ -369,7 +393,7 @@ var (
 		CHTRoot:      common.HexToHash("0x6504db73139f75ffa9102ae980e41b361cf3d5b66cea06c79cde9f457368820c"),
 		BloomRoot:    common.HexToHash("0x7551ae027bb776252a20ded51ee2ff0cbfbd1d8d57261b9161cc1f2f80237001"),
 	}
-	
+
 		// LvetestCheckpointOracle contains a set of configs for the Lve test network oracle.
 	LvetestCheckpointOracle = &CheckpointOracleConfig{
 		Address: common.HexToAddress("0x18CA0E045F0D772a851BC7e48357Bcaab0a0795D"),
@@ -384,27 +408,27 @@ var (
 	}*/
 
 	WorldlandtestChainConfig = &ChainConfig{
-		ChainID:                 big.NewInt(1), //10001
-		HomesteadBlock:          big.NewInt(1_150_000),
-		DAOForkBlock:            big.NewInt(1_920_000),
-		DAOForkSupport:          true,
-		EIP150Block:             big.NewInt(2_463_000),
-		EIP150Hash:              common.HexToHash("0x2086799aeebeae135c246c65021c82b4e15a2c451340993aacfd2751886514f0"),
-		EIP155Block:             big.NewInt(2_675_000),
-		EIP158Block:             big.NewInt(2_675_000),
-		ByzantiumBlock:          big.NewInt(4_370_000),
-		ConstantinopleBlock:     big.NewInt(7_280_000),
-		PetersburgBlock:         big.NewInt(7_280_000),
-		IstanbulBlock:           big.NewInt(9_069_000),
-		MuirGlacierBlock:        big.NewInt(9_200_000),
-		BerlinBlock:             big.NewInt(12_244_000),
-		LondonBlock:             big.NewInt(12_965_000),
-		ArrowGlacierBlock:       big.NewInt(13_773_000),
-		GrayGlacierBlock:        big.NewInt(15_050_000),
+		ChainID:             big.NewInt(1), //10001
+		HomesteadBlock:      big.NewInt(1_150_000),
+		DAOForkBlock:        big.NewInt(1_920_000),
+		DAOForkSupport:      true,
+		EIP150Block:         big.NewInt(2_463_000),
+		EIP150Hash:          common.HexToHash("0x2086799aeebeae135c246c65021c82b4e15a2c451340993aacfd2751886514f0"),
+		EIP155Block:         big.NewInt(2_675_000),
+		EIP158Block:         big.NewInt(2_675_000),
+		ByzantiumBlock:      big.NewInt(4_370_000),
+		ConstantinopleBlock: big.NewInt(7_280_000),
+		PetersburgBlock:     big.NewInt(7_280_000),
+		IstanbulBlock:       big.NewInt(9_069_000),
+		MuirGlacierBlock:    big.NewInt(9_200_000),
+		BerlinBlock:         big.NewInt(12_244_000),
+		LondonBlock:         big.NewInt(12_965_000),
+		ArrowGlacierBlock:   big.NewInt(13_773_000),
+		GrayGlacierBlock:    big.NewInt(15_050_000),
 		//EthPoWForkBlock:         big.NewInt(15_537_394),
 		//EthPoWForkSupport:       true,
 		//ChainID_ALT:             big.NewInt(10001), //10001
-		TerminalTotalDifficulty: nil,               // 58_750_000_000_000_000_000_000
+		TerminalTotalDifficulty: nil, // 58_750_000_000_000_000_000_000
 		Ethash:                  new(EthashConfig),
 	}
 
@@ -443,20 +467,21 @@ var (
 	// adding flags to the config to also have to set these fields.
 	AllCliqueProtocolChanges = &ChainConfig{big.NewInt(1337), big.NewInt(0), nil, false, big.NewInt(0), common.Hash{}, big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), nil, nil, nil, nil, nil, nil, false, nil, nil, false, nil, &CliqueConfig{Period: 0, Epoch: 30000}, nil}
 
-	TestChainConfig    = &ChainConfig{big.NewInt(1), big.NewInt(0), nil, false, big.NewInt(0), common.Hash{}, big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), nil, nil, nil, nil, false, nil, nil, false, new(EthashConfig), nil, nil}
+	TestChainConfig = &ChainConfig{big.NewInt(1), big.NewInt(0), nil, false, big.NewInt(0), common.Hash{}, big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), nil, nil, nil, nil, false, nil, nil, false, new(EthashConfig), nil, nil}
 	//NonActivatedConfig = &ChainConfig{big.NewInt(1), nil, nil, false, nil, common.Hash{}, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, false, new(EthashConfig), nil, nil}
-	TestRules          = TestChainConfig.Rules(new(big.Int), false)
+	TestRules = TestChainConfig.Rules(new(big.Int), false)
 )
 
 // NetworkNames are user friendly names to use in the chain spec banner.
 var NetworkNames = map[string]string{
-	MainnetChainConfig.ChainID.String(): "mainnet",
-	RopstenChainConfig.ChainID.String(): "ropsten",
-	RinkebyChainConfig.ChainID.String(): "rinkeby",
-	GoerliChainConfig.ChainID.String():  "goerli",
-	SepoliaChainConfig.ChainID.String(): "sepolia",
-	LveChainConfig.ChainID.String():  "lve",
-	LvetestChainConfig.ChainID.String(): "lvetest",
+	MainnetChainConfig.ChainID.String():       "mainnet",
+	RopstenChainConfig.ChainID.String():       "ropsten",
+	RinkebyChainConfig.ChainID.String():       "rinkeby",
+	GoerliChainConfig.ChainID.String():        "goerli",
+	SepoliaChainConfig.ChainID.String():       "sepolia",
+	LveChainConfig.ChainID.String():           "lve",
+	LvetestChainConfig.ChainID.String():       "lvetest",
+	WLseoulChainConfig.ChainID.String():       "wlseoul",
 	WorldlandtestChainConfig.ChainID.String(): "lvetest",
 }
 
@@ -540,10 +565,10 @@ type ChainConfig struct {
 	MergeNetsplitBlock  *big.Int `json:"mergeNetsplitBlock,omitempty"`  // Virtual fork after The Merge to use as a network splitter
 	ShanghaiBlock       *big.Int `json:"shanghaiBlock,omitempty"`       // Shanghai switch block (nil = no fork, 0 = already on shanghai)
 	CancunBlock         *big.Int `json:"cancunBlock,omitempty"`         // Cancun switch block (nil = no fork, 0 = already on cancun)
-	
-	WorldlandBlock      *big.Int `json:"worldlandBlock,omitempty"`      // worldrand switch block (nil = no fork, 0 = already on worldland)
-	WorldlandForkSupport bool    `json:"WorldlandForkSupport,omitempty"` // Whether the nodes supports or opposes the Worldland hard-fork
-	HalvingEndTime		*big.Int `json:"HalvingEndTime,omitempty"` 
+
+	WorldlandBlock       *big.Int `json:"worldlandBlock,omitempty"`       // worldrand switch block (nil = no fork, 0 = already on worldland)
+	WorldlandForkSupport bool     `json:"WorldlandForkSupport,omitempty"` // Whether the nodes supports or opposes the Worldland hard-fork
+	HalvingEndTime       *big.Int `json:"HalvingEndTime,omitempty"`
 
 	// TerminalTotalDifficulty is the amount of total difficulty reached by
 	// the network that triggers the consensus upgrade.
@@ -562,6 +587,7 @@ type ChainConfig struct {
 
 // EthashConfig is the consensus engine configs for proof-of-work based sealing.
 type EthashConfig struct{}
+
 // EccpowConfig is the consensus engine configs for proof-of-work based sealing.
 type EccpowConfig struct{}
 
@@ -574,7 +600,6 @@ func (c *EthashConfig) String() string {
 func (c *EccpowConfig) String() string {
 	return "eccpow"
 }
-
 
 // CliqueConfig is the consensus engine configs for proof-of-authority based sealing.
 type CliqueConfig struct {
@@ -789,8 +814,6 @@ func (c *ChainConfig) IsWorldLandHalving(num *big.Int) bool {
 func (c *ChainConfig) IsWorldLandMaturity(num *big.Int) bool {
 	return isMatured(c.HalvingEndTime, num)
 }
-
-
 
 // CheckCompatible checks whether scheduled fork transitions have been imported
 // with a mismatching chain configuration.
@@ -1016,7 +1039,7 @@ type Rules struct {
 	IsByzantium, IsConstantinople, IsPetersburg, IsIstanbul bool
 	IsBerlin, IsLondon                                      bool
 	IsMerge, IsShanghai, isCancun                           bool
-	IsWorldland                         					bool
+	IsWorldland                                             bool
 }
 
 // Rules ensures c's ChainID is not nil.

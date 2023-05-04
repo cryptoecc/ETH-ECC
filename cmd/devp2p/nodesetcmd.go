@@ -241,6 +241,8 @@ func ethFilter(args []string) (nodeFilter, error) {
 		filter = forkid.NewStaticFilter(params.LveChainConfig, params.LveGenesisHash)
 	case "lvetest":
 		filter = forkid.NewStaticFilter(params.LvetestChainConfig, params.LvetestGenesisHash)
+	case "wlseoul":
+		filter = forkid.NewStaticFilter(params.WLseoulChainConfig, params.WLseoulGenesisHash)
 	case "worldlandtest":
 		filter = forkid.NewStaticFilter(params.WorldlandtestChainConfig, params.WorldlandtestGenesisHash)
 	default:
