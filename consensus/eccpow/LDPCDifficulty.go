@@ -71,7 +71,7 @@ func MakeLDPCDifficultyCalculator() func(time uint64, parent *types.Header) *big
 		count = count + 1
 
 		if (parent.Difficulty).Cmp(big.NewInt(500000)) > 0 {
-			diff = big.NewInt(10)
+			diff = big.NewInt(20)
 			return diff
 		}
 
@@ -107,7 +107,7 @@ func MakeLDPCDifficultyCalculator() func(time uint64, parent *types.Header) *big
 // Type of Ethereum difficulty is *bit.Int so arg is *big.int
 func SearchLevel(difficulty *big.Int) int {
 	if difficulty.Cmp(big.NewInt(500000)) > 0 {
-		difficulty = big.NewInt(10)
+		difficulty = big.NewInt(20)
 	}
 
 	var level int = int(difficulty.Uint64())

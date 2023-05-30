@@ -39,13 +39,13 @@ import (
 // ecc proof-of-work protocol constants.
 var (
 	FrontierBlockReward       		= big.NewInt(5e+18) // Block reward in wei for successfully mining a block
-	WorldLandInitialBlockReward	  	= big.NewInt(8e+18)	//Block reward in wei for successfully mining a block upward from WorldLand
+	WorldLandBlockReward	  	= big.NewInt(3e+18)	//Block reward in wei for successfully mining a block upward from WorldLand
 	WorldLandFirstBlockReward	  	= big.NewInt(9e+18)	//Block reward in wei for successfully mining a genesisblock upward from WorldLand
 
-	HALVING_INTERVAL		  		= uint64(10)
-	MATURITY_INTERVAL		  		= uint64(10)
+	HALVING_INTERVAL		  		= uint64(6307200) //Block per year * 2year
+	MATURITY_INTERVAL		  		= uint64(3153600) //Block per year
 
-	SumRewardUntilMaturity			= big.NewInt(196)
+	SumRewardUntilMaturity			= big.NewInt(39420000) //Total supply of token until maturity
 	MaxHalving				  		= int64(4)
 
 	maxUncles                 		= 2                // Maximum number of uncles allowed in a single block
@@ -463,7 +463,7 @@ func accumulateRewards(config *params.ChainConfig, state *state.StateDB, header 
 	var blockReward = big.NewInt(FrontierBlockReward.Int64())
 	
 	if config.IsWorldland(header.Number){
-		blockReward = big.NewInt(WorldLandInitialBlockReward.Int64())
+		blockReward = big.NewInt(WorldLandBlockReward.Int64())
 
 		if config.IsWorldLandHalving(header.Number) {
 			blockHeight := header.Number.Uint64()

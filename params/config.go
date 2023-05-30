@@ -381,7 +381,7 @@ var (
 		LondonBlock:          big.NewInt(0),
 		WorldlandBlock:       big.NewInt(0),
 		WorldlandForkSupport: true,
-		HalvingEndTime:       big.NewInt(50),
+		HalvingEndTime:       big.NewInt(25228800),
 
 		Eccpow: new(EccpowConfig),
 	}
