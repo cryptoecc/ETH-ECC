@@ -20,10 +20,11 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"log"
 	"math/big"
 	"runtime"
 	"time"
-	"log"
+
 	mapset "github.com/deckarep/golang-set"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/consensus"
@@ -38,19 +39,18 @@ import (
 
 // ecc proof-of-work protocol constants.
 var (
-	FrontierBlockReward       		= big.NewInt(5e+18) // Block reward in wei for successfully mining a block
-	WorldLandBlockReward	  	= big.NewInt(3e+18)	//Block reward in wei for successfully mining a block upward from WorldLand
-	WorldLandFirstBlockReward	  	= big.NewInt(9e+18)	//Block reward in wei for successfully mining a genesisblock upward from WorldLand
+	FrontierBlockReward       = big.NewInt(5e+18) // Block reward in wei for successfully mining a block
+	WorldLandBlockReward      = big.NewInt(3e+18) //Block reward in wei for successfully mining a block upward from WorldLand
+	WorldLandFirstBlockReward = big.NewInt(9e+18) //Block reward in wei for successfully mining a genesisblock upward from WorldLand
 
-	HALVING_INTERVAL		  		= uint64(6307200) //Block per year * 2year
-	MATURITY_INTERVAL		  		= uint64(3153600) //Block per year
+	HALVING_INTERVAL  = uint64(6307200) //Block per year * 2year
+	MATURITY_INTERVAL = uint64(3153600) //Block per year
 
-	SumRewardUntilMaturity			= big.NewInt(39420000) //Total supply of token until maturity
-	MaxHalving				  		= int64(4)
+	SumRewardUntilMaturity = big.NewInt(39420000) //Total supply of token until maturity
+	MaxHalving             = int64(4)
 
-	maxUncles                 		= 2                // Maximum number of uncles allowed in a single block
-	allowedFutureBlockTimeSeconds   = int64(15)   // Max seconds from current time allowed for blocks, before they're considered future blocks
-
+	maxUncles                     = 2         // Maximum number of uncles allowed in a single block
+	allowedFutureBlockTimeSeconds = int64(15) // Max seconds from current time allowed for blocks, before they're considered future blocks
 
 )
 
@@ -116,10 +116,10 @@ func (ecc *ECC) VerifyHeaders(chain consensus.ChainHeaderReader, headers []*type
 
 	// Create a task channel and spawn the verifiers
 	var (
-		inputs = make(chan int)
-		done   = make(chan int, workers)
-		errors = make([]error, len(headers))
-		abort  = make(chan struct{})
+		inputs  = make(chan int)
+		done    = make(chan int, workers)
+		errors  = make([]error, len(headers))
+		abort   = make(chan struct{})
 		unixNow = time.Now().Unix()
 	)
 	for i := 0; i < workers; i++ {
@@ -316,8 +316,10 @@ func (ecc *ECC) CalcDifficulty(chain consensus.ChainHeaderReader, time uint64, p
 // the difficulty that a new block should have when created at time
 // given the parent block's time and difficulty.
 func CalcDifficulty(config *params.ChainConfig, time uint64, parent *types.Header) *big.Int {
-	//next := new(big.Int).Add(parent.Number, big1)
+	next := new(big.Int).Add(parent.Number, big1)
 	switch {
+	case config.IsSeoul(next):
+		return calcDifficultySeoul(time, parent)
 	default:
 		return calcDifficultyFrontier(time, parent)
 	}
@@ -345,6 +347,11 @@ func makeDifficultyCalculator(bombDelay *big.Int) func(time uint64, parent *type
 // block's time and difficulty. The calculation uses the Frontier rules.
 func calcDifficultyFrontier(time uint64, parent *types.Header) *big.Int {
 	difficultyCalculator := MakeLDPCDifficultyCalculator()
+	return difficultyCalculator(time, parent)
+}
+
+func calcDifficultySeoul(time uint64, parent *types.Header) *big.Int {
+	difficultyCalculator := MakeLDPCDifficultyCalculator_Seoul()
 	return difficultyCalculator(time, parent)
 }
 
@@ -441,9 +448,9 @@ func (ecc *ECC) SealHash(header *types.Header) (hash common.Hash) {
 		enc = append(enc, header.BaseFee)
 	}
 	/*
-	if header.Codeword != nil {
-		enc = append(enc, header.Codeword)
-	}*/
+		if header.Codeword != nil {
+			enc = append(enc, header.Codeword)
+		}*/
 	rlp.Encode(hasher, enc)
 	hasher.Sum(hash[:0])
 	return hash
@@ -461,27 +468,26 @@ var (
 func accumulateRewards(config *params.ChainConfig, state *state.StateDB, header *types.Header, uncles []*types.Header) {
 	// Select the correct block reward based on chain progression
 	var blockReward = big.NewInt(FrontierBlockReward.Int64())
-	
-	if config.IsWorldland(header.Number){
+
+	if config.IsWorldland(header.Number) {
 		blockReward = big.NewInt(WorldLandBlockReward.Int64())
 
 		if config.IsWorldLandHalving(header.Number) {
 			blockHeight := header.Number.Uint64()
-			HalvingLevel := (blockHeight-config.WorldlandBlock.Uint64()) / HALVING_INTERVAL
+			HalvingLevel := (blockHeight - config.WorldlandBlock.Uint64()) / HALVING_INTERVAL
 
 			blockReward.Rsh(blockReward, uint(HalvingLevel))
 			log.Println("halvingblockReward:", blockReward)
 
-			
-		} else if config.IsWorldLandMaturity(header.Number){
+		} else if config.IsWorldLandMaturity(header.Number) {
 			blockHeight := header.Number.Uint64()
-			MaturityLevel := (blockHeight-config.HalvingEndTime.Uint64()) / MATURITY_INTERVAL
+			MaturityLevel := (blockHeight - config.HalvingEndTime.Uint64()) / MATURITY_INTERVAL
 			blockReward.Rsh(blockReward, uint(MaxHalving-1))
-			log.Println("maturityblockReward 0:", blockReward)  
+			log.Println("maturityblockReward 0:", blockReward)
 			// r is 1.04 currently
 			blockReward.Mul(blockReward, SumRewardUntilMaturity)
 			blockReward.Div(blockReward, new(big.Int).SetUint64(MATURITY_INTERVAL)) //Maturity Ineterval, Halving Interval Uint로 할 이유가 있는지?
-			
+
 			blockReward.Mul(blockReward, big.NewInt(4))
 			blockReward.Div(blockReward, big.NewInt(100))
 			log.Println("maturityblockReward 1:", blockReward)
@@ -491,21 +497,21 @@ func accumulateRewards(config *params.ChainConfig, state *state.StateDB, header 
 			}
 			log.Println("maturityblockReward 2:", blockReward)
 		}
-		
-		if config.IsWorldlandMerge(header.Number){
-			blockReward = WorldLandFirstBlockReward	
+
+		if config.IsWorldlandMerge(header.Number) {
+			blockReward = WorldLandFirstBlockReward
 
 			log.Println("mergeblockReward:", blockReward)
 		}
 	}
-	
+
 	log.Println("after func blockReward:", blockReward)
 
 	// Accumulate the rewards for the miner and any included uncles
 	reward := new(big.Int).Set(blockReward)
 	r := new(big.Int)
 	for _, uncle := range uncles {
-	r.Add(uncle.Number, big8)
+		r.Add(uncle.Number, big8)
 		r.Sub(r, header.Number)
 		r.Mul(r, blockReward)
 		r.Div(r, big8)
@@ -515,4 +521,4 @@ func accumulateRewards(config *params.ChainConfig, state *state.StateDB, header 
 		reward.Add(reward, r)
 	}
 	state.AddBalance(header.Coinbase, reward)
-}	
+}

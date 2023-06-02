@@ -299,6 +299,7 @@ var (
 		MuirGlacierBlock:    nil,
 		BerlinBlock:         big.NewInt(0),
 		LondonBlock:         big.NewInt(0),
+		SeoulBlock:          big.NewInt(220000),
 		ArrowGlacierBlock:   nil,
 		GrayGlacierBlock:    nil,
 		Eccpow:              new(EccpowConfig),
@@ -358,6 +359,7 @@ var (
 		BerlinBlock:          big.NewInt(0),
 		LondonBlock:          big.NewInt(0),
 		WorldlandBlock:       big.NewInt(10),
+		SeoulBlock:           big.NewInt(220000),
 		WorldlandForkSupport: true,
 		HalvingEndTime:       big.NewInt(50),
 
@@ -380,6 +382,7 @@ var (
 		BerlinBlock:          big.NewInt(0),
 		LondonBlock:          big.NewInt(0),
 		WorldlandBlock:       big.NewInt(0),
+		SeoulBlock:           big.NewInt(0),
 		WorldlandForkSupport: true,
 		HalvingEndTime:       big.NewInt(25228800),
 
@@ -458,16 +461,16 @@ var (
 	//
 	// This configuration is intentionally not using keyed fields to force anyone
 	// adding flags to the config to also have to set these fields.
-	AllEthashProtocolChanges = &ChainConfig{big.NewInt(1337), big.NewInt(0), nil, false, big.NewInt(0), common.Hash{}, big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), nil, nil, nil, nil, false, nil, nil, false, new(EthashConfig), nil, nil}
+	AllEthashProtocolChanges = &ChainConfig{big.NewInt(1337), big.NewInt(0), nil, false, big.NewInt(0), common.Hash{}, big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), nil, nil, nil, nil, false, nil, nil, nil, false, new(EthashConfig), nil, nil}
 
 	// AllCliqueProtocolChanges contains every protocol change (EIPs) introduced
 	// and accepted by the Ethereum core developers into the Clique consensus.
 	//
 	// This configuration is intentionally not using keyed fields to force anyone
 	// adding flags to the config to also have to set these fields.
-	AllCliqueProtocolChanges = &ChainConfig{big.NewInt(1337), big.NewInt(0), nil, false, big.NewInt(0), common.Hash{}, big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), nil, nil, nil, nil, nil, nil, false, nil, nil, false, nil, &CliqueConfig{Period: 0, Epoch: 30000}, nil}
+	AllCliqueProtocolChanges = &ChainConfig{big.NewInt(1337), big.NewInt(0), nil, false, big.NewInt(0), common.Hash{}, big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), nil, nil, nil, nil, nil, nil, false, nil, nil, nil, false, nil, &CliqueConfig{Period: 0, Epoch: 30000}, nil}
 
-	TestChainConfig = &ChainConfig{big.NewInt(1), big.NewInt(0), nil, false, big.NewInt(0), common.Hash{}, big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), nil, nil, nil, nil, false, nil, nil, false, new(EthashConfig), nil, nil}
+	TestChainConfig = &ChainConfig{big.NewInt(1), big.NewInt(0), nil, false, big.NewInt(0), common.Hash{}, big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), big.NewInt(0), nil, nil, nil, nil, false, nil, nil, nil, false, new(EthashConfig), nil, nil}
 	//NonActivatedConfig = &ChainConfig{big.NewInt(1), nil, nil, false, nil, common.Hash{}, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, false, new(EthashConfig), nil, nil}
 	TestRules = TestChainConfig.Rules(new(big.Int), false)
 )
@@ -569,6 +572,7 @@ type ChainConfig struct {
 	WorldlandBlock       *big.Int `json:"worldlandBlock,omitempty"`       // worldrand switch block (nil = no fork, 0 = already on worldland)
 	WorldlandForkSupport bool     `json:"WorldlandForkSupport,omitempty"` // Whether the nodes supports or opposes the Worldland hard-fork
 	HalvingEndTime       *big.Int `json:"HalvingEndTime,omitempty"`
+	SeoulBlock           *big.Int `json:"seoulBlock,omitempty"`
 
 	// TerminalTotalDifficulty is the amount of total difficulty reached by
 	// the network that triggers the consensus upgrade.
@@ -690,6 +694,9 @@ func (c *ChainConfig) String() string {
 	}
 	if c.WorldlandBlock != nil {
 		banner += fmt.Sprintf(" - Worldland:                      %-8v\n", c.WorldlandBlock)
+	}
+	if c.SeoulBlock != nil {
+		banner += fmt.Sprintf(" - Seoul:                      %-8v\n", c.SeoulBlock)
 	}
 	banner += "\n"
 
@@ -815,6 +822,11 @@ func (c *ChainConfig) IsWorldLandMaturity(num *big.Int) bool {
 	return isMatured(c.HalvingEndTime, num)
 }
 
+// IsSeoul returns whether num is either equ`al to the Seoul fork block or greater.
+func (c *ChainConfig) IsSeoul(num *big.Int) bool {
+	return isForked(c.SeoulBlock, num)
+}
+
 // CheckCompatible checks whether scheduled fork transitions have been imported
 // with a mismatching chain configuration.
 func (c *ChainConfig) CheckCompatible(newcfg *ChainConfig, height uint64) *ConfigCompatError {
@@ -861,6 +873,7 @@ func (c *ChainConfig) CheckConfigForkOrder() error {
 		{name: "shanghaiBlock", block: c.ShanghaiBlock, optional: true},
 		{name: "cancunBlock", block: c.CancunBlock, optional: true},
 		{name: "worldlandBlock", block: c.WorldlandBlock, optional: true},
+		{name: "seoulBlock", block: c.SeoulBlock, optional: true},
 	} {
 		if lastFork.name != "" {
 			// Next one must be higher number
@@ -947,6 +960,9 @@ func (c *ChainConfig) checkCompatible(newcfg *ChainConfig, head *big.Int) *Confi
 	}
 	if isForkIncompatible(c.WorldlandBlock, newcfg.WorldlandBlock, head) && c.WorldlandForkSupport != newcfg.WorldlandForkSupport {
 		return newCompatError("Worldland fork block", c.WorldlandBlock, newcfg.WorldlandBlock)
+	}
+	if isForkIncompatible(c.SeoulBlock, newcfg.SeoulBlock, head) {
+		return newCompatError("Seoul fork block", c.SeoulBlock, newcfg.SeoulBlock)
 	}
 	return nil
 }
@@ -1040,6 +1056,7 @@ type Rules struct {
 	IsBerlin, IsLondon                                      bool
 	IsMerge, IsShanghai, isCancun                           bool
 	IsWorldland                                             bool
+	IsSeoul                                                 bool
 }
 
 // Rules ensures c's ChainID is not nil.
@@ -1064,5 +1081,6 @@ func (c *ChainConfig) Rules(num *big.Int, isMerge bool) Rules {
 		IsShanghai:       c.IsShanghai(num),
 		isCancun:         c.IsCancun(num),
 		IsWorldland:      c.IsWorldland(num),
+		IsSeoul:          c.IsSeoul(num),
 	}
 }
