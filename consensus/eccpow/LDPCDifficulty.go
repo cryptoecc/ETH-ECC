@@ -2,6 +2,7 @@ package eccpow
 
 import (
 	"fmt"
+	"math"
 	"math/big"
 
 	"github.com/ethereum/go-ethereum/core/types"
@@ -48,10 +49,11 @@ var (
 		stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime,
 		stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime}
 
-	initDiff = big.NewInt(1)
-	minDiff  = big.NewInt(5)
+	initLevel int = 30
+	minLevel  int = 5
 
-	count int = 0
+	count  int = -1
+	init_c int = 2
 )
 
 // MakeLDPCDifficultyCalculator calculate difficulty using difficulty table
@@ -63,19 +65,24 @@ func MakeLDPCDifficultyCalculator() func(time uint64, parent *types.Header) *big
 		x := new(big.Int)
 		x.Sub(bigTime, bigParentTime)
 
+		level := SearchLevel(parent.Difficulty)
 		diff := new(big.Int)
 
-		if count > 1000 {
-			count = count - 1000
-		}
 		count = count + 1
 
-		if (parent.Difficulty).Cmp(big.NewInt(500000)) > 0 {
-			diff = big.NewInt(20)
-			return diff
+		if count < 1 {
+			level = initLevel
+		} else if count > 1000 {
+			count = count - 1000
 		}
 
-		bIndex := (parent.Number).Uint64() % 100
+		if init_c < 5 {
+			level = initLevel
+			x = big.NewInt(12)
+			init_c += 1
+		}
+
+		bIndex := count % 100
 		avgTimeList[bIndex] = int(x.Uint64())
 
 		totalTime := 0
@@ -84,20 +91,22 @@ func MakeLDPCDifficultyCalculator() func(time uint64, parent *types.Header) *big
 		}
 		avgTime := totalTime / 100
 
-		if count%100 == 42 {
+		if count%100 == 90 {
 			if avgTime < stTime {
-				diff.Add(parent.Difficulty, big.NewInt(1))
+				level += 1
 			} else {
-				if (parent.Difficulty).Cmp(minDiff) > 0 {
-					diff.Sub(parent.Difficulty, big.NewInt(1))
+				if level > minLevel {
+					level -= 1
 				}
 			}
-		} else {
-			diff = parent.Difficulty
 		}
 
-		fmt.Println("Difficulty: ", diff)
+		diff = ProbToDifficulty(Table[level].miningProb)
+
+		fmt.Println("Index: ", bIndex)
+		fmt.Println("Level: ", level)
 		fmt.Println("Average Time: ", avgTime, "s")
+		fmt.Println("Time List: ", avgTimeList)
 
 		return diff
 	}
@@ -106,11 +115,19 @@ func MakeLDPCDifficultyCalculator() func(time uint64, parent *types.Header) *big
 // SearchLevel return next level by using currentDifficulty of header
 // Type of Ethereum difficulty is *bit.Int so arg is *big.int
 func SearchLevel(difficulty *big.Int) int {
-	if difficulty.Cmp(big.NewInt(500000)) > 0 {
-		difficulty = big.NewInt(20)
-	}
 
-	var level int = int(difficulty.Uint64())
+	var currentProb = DifficultyToProb(difficulty)
+	var level int
+
+	distance := 1.0
+	for i := range Table {
+		if math.Abs(currentProb-Table[i].miningProb) <= distance {
+			level = Table[i].level
+			distance = math.Abs(currentProb - Table[i].miningProb)
+		} else {
+			break
+		}
+	}
 
 	return level
 }
