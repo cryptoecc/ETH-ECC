@@ -260,7 +260,7 @@ func (ecc *ECC) verifyHeader(chain consensus.ChainHeaderReader, header, parent *
 	expectDiff := ecc.CalcDifficulty(chain, header.Time, parent)
 
 	if expectDiff.Cmp(header.Difficulty) != 0 {
-		return fmt.Errorf("invalid difficulty: have %v, want %v", header.Difficulty, expectDiff)
+		return fmt.Errorf("invalid ecc difficulty: have %v, want %v", header.Difficulty, expectDiff)
 	}
 
 	// Verify that the gas limit is <= 2^63-1
@@ -321,6 +321,7 @@ func CalcDifficulty(config *params.ChainConfig, time uint64, parent *types.Heade
 	case config.IsSeoul(next):
 		return calcDifficultySeoul(time, parent)
 	default:
+		//fmt.Println("frontier")
 		return calcDifficultyFrontier(time, parent)
 	}
 }

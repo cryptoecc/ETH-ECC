@@ -1,10 +1,9 @@
 package eccpow
 
 import (
-	"fmt"
 	"math"
 	"math/big"
-
+	"log"
 	"github.com/ethereum/go-ethereum/core/types"
 )
 
@@ -39,6 +38,7 @@ var (
 
 	// BlockGenerationTime for Seoul
 	stTime      int = 10
+
 	avgTimeList     = [100]int{stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime,
 		stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime,
 		stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime,
@@ -49,11 +49,14 @@ var (
 		stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime,
 		stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime,
 		stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime}
+	
+	//100번 전 부모의 타임스탬프.
+	GrandParentTime = new(big.Int).SetUint64(0)
+	
+	//initLevel int = 10
+	minLevel  int = 10
 
-	initLevel int = 30
-	minLevel  int = 5
-
-	count  int = -1
+	//count  int = -1
 	init_c int = 2
 )
 
@@ -114,6 +117,57 @@ func MakeLDPCDifficultyCalculator_Seoul() func(time uint64, parent *types.Header
 	return func(time uint64, parent *types.Header) *big.Int {
 		bigTime := new(big.Int).SetUint64(time)
 		bigParentTime := new(big.Int).SetUint64(parent.Time)
+		x := new(big.Int)
+		diff := new(big.Int)
+		index := int(parent.Number.Uint64()) % 100
+
+		if index == 0 { // 난이도 변경 시점인 경우.
+			
+			level := SearchLevel(parent.Difficulty)
+
+			//처음인 경우.
+			if GrandParentTime.Uint64() == 0 {
+				GrandParentTime = bigParentTime
+				diff = ProbToDifficulty(Table[level].miningProb)
+				return diff
+			} 
+
+			x.Sub(bigTime, GrandParentTime)
+			avgTime := int(x.Uint64()) / 100
+
+			if avgTime < stTime {
+				level += 1
+			} else {
+				if level > minLevel {
+					level -= 1
+				}
+			}
+			diff = ProbToDifficulty(Table[level].miningProb)
+			//할아버지 시간 갱신.
+			GrandParentTime = bigParentTime
+
+			//테스트 출력.
+			log.Println("Level: ", level)
+			log.Println("Average Time: ", avgTime, "s")
+			log.Println("Time List: ", avgTimeList)
+		} else { // 난이도 변경 시점이 아닌 경우.
+			diff = parent.Difficulty
+		}
+		
+		//분포 측정을 위한 코드.
+		blocktime := new(big.Int)
+		blocktime.Sub(bigTime, bigParentTime)
+		avgTimeList[index] = int(blocktime.Uint64())
+
+		return diff
+	}
+}
+
+/*
+func MakeLDPCDifficultyCalculator_Seoul2() func(time uint64, parent *types.Header) *big.Int {
+	return func(time uint64, parent *types.Header) *big.Int {
+		bigTime := new(big.Int).SetUint64(time)
+		bigParentTime := new(big.Int).SetUint64(parent.Time)
 
 		x := new(big.Int)
 		x.Sub(bigTime, bigParentTime)
@@ -163,7 +217,7 @@ func MakeLDPCDifficultyCalculator_Seoul() func(time uint64, parent *types.Header
 
 		return diff
 	}
-}
+}*/
 
 // SearchLevel return next level by using currentDifficulty of header
 // Type of Ethereum difficulty is *bit.Int so arg is *big.int

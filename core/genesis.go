@@ -1130,7 +1130,7 @@ func DefaultWLseoulGenesisBlock() *Genesis {
 		Timestamp:  1683184480,
 		ExtraData:  hexutil.MustDecode("0x0000000000000000000000000000000000000000000000000000000000000000"),
 		GasLimit:   4700000,
-		Difficulty: big.NewInt(10),
+		Difficulty: big.NewInt(951158),
 		Mixhash:    common.HexToHash("0x0000000000000000000000000000000000000000000000000000000000000000"),
 		Coinbase:   common.HexToAddress("0x0000000000000000000000000000000000000000"),
 		Number:     0,
