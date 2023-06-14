@@ -5,6 +5,7 @@ import (
 	"math/big"
 	"log"
 	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/ethereum/go-ethereum/consensus"
 )
 
 /*
@@ -49,15 +50,14 @@ var (
 		stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime,
 		stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime,
 		stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime}
-	
-	//100번 전 부모의 타임스탬프.
-	GrandParentTime = new(big.Int).SetUint64(0)
+
 	
 	//initLevel int = 10
 	minLevel  int = 10
+	diff_interval = 100
 
 	//count  int = -1
-	init_c int = 2
+	//init_c int = 2
 )
 
 // MakeLDPCDifficultyCalculator calculate difficulty using difficulty table
@@ -113,26 +113,25 @@ func MakeLDPCDifficultyCalculator() func(time uint64, parent *types.Header) *big
 	}
 }
 
-func MakeLDPCDifficultyCalculator_Seoul() func(time uint64, parent *types.Header) *big.Int {
-	return func(time uint64, parent *types.Header) *big.Int {
+func MakeLDPCDifficultyCalculator_Seoul() func(chain consensus.ChainHeaderReader, time uint64, parent *types.Header) *big.Int {
+	return func(chain consensus.ChainHeaderReader, time uint64, parent *types.Header) *big.Int {
+
+		if parent.Number.Uint64() < uint64(diff_interval){
+			return parent.Difficulty
+		}
+
 		bigTime := new(big.Int).SetUint64(time)
 		bigParentTime := new(big.Int).SetUint64(parent.Time)
 		x := new(big.Int)
 		diff := new(big.Int)
-		index := int(parent.Number.Uint64()) % 100
-
+		index := int(parent.Number.Uint64()) % diff_interval
+		
 		if index == 0 { // 난이도 변경 시점인 경우.
-			
 			level := SearchLevel(parent.Difficulty)
-
-			//처음인 경우.
-			if GrandParentTime.Uint64() == 0 {
-				GrandParentTime = bigParentTime
-				diff = ProbToDifficulty(Table[level].miningProb)
-				return diff
-			} 
-
-			x.Sub(bigTime, GrandParentTime)
+			grandParent := chain.GetHeaderByNumber(parent.Number.Uint64() - uint64(diff_interval))
+			grandParentTime := new(big.Int).SetUint64(grandParent.Time)
+			
+			x.Sub(bigTime, grandParentTime)
 			avgTime := int(x.Uint64()) / 100
 
 			if avgTime < stTime {
@@ -143,8 +142,6 @@ func MakeLDPCDifficultyCalculator_Seoul() func(time uint64, parent *types.Header
 				}
 			}
 			diff = ProbToDifficulty(Table[level].miningProb)
-			//할아버지 시간 갱신.
-			GrandParentTime = bigParentTime
 
 			//테스트 출력.
 			log.Println("Level: ", level)

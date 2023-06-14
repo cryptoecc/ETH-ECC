@@ -249,6 +249,9 @@ func (ecc *ECC) verifyHeader(chain consensus.ChainHeaderReader, header, parent *
 	// Verify the header's timestamp
 	if !uncle {
 		if header.Time > uint64(unixNow+allowedFutureBlockTimeSeconds) {
+			//log.Println(unixNow)
+			//log.Println(allowedFutureBlockTimeSeconds)
+			//log.Println(header.Time)
 			return consensus.ErrFutureBlock
 		}
 	}
@@ -309,13 +312,22 @@ func (ecc *ECC) verifyHeader(chain consensus.ChainHeaderReader, header, parent *
 // the difficulty that a new block should have when created at time
 // given the parent block's time and difficulty.
 func (ecc *ECC) CalcDifficulty(chain consensus.ChainHeaderReader, time uint64, parent *types.Header) *big.Int {
-	return CalcDifficulty(chain.Config(), time, parent)
+	next := new(big.Int).Add(parent.Number, big1)
+	switch {
+	case chain.Config().IsSeoul(next):
+		return calcDifficultySeoul(chain, time, parent)
+	default:
+		//fmt.Println("frontier")
+		return calcDifficultyFrontier(time, parent)
+	}
+	
+	//return CalcDifficulty(chain.Config(), time, parent)
 }
 
 // CalcDifficulty is the difficulty adjustment algorithm. It returns
 // the difficulty that a new block should have when created at time
 // given the parent block's time and difficulty.
-func CalcDifficulty(config *params.ChainConfig, time uint64, parent *types.Header) *big.Int {
+/*func CalcDifficulty(config *params.ChainConfig, time uint64, parent *types.Header) *big.Int {
 	next := new(big.Int).Add(parent.Number, big1)
 	switch {
 	case config.IsSeoul(next):
@@ -324,7 +336,7 @@ func CalcDifficulty(config *params.ChainConfig, time uint64, parent *types.Heade
 		//fmt.Println("frontier")
 		return calcDifficultyFrontier(time, parent)
 	}
-}
+}*/
 
 // Some weird constants to avoid constant memory allocs for them.
 var (
@@ -351,9 +363,9 @@ func calcDifficultyFrontier(time uint64, parent *types.Header) *big.Int {
 	return difficultyCalculator(time, parent)
 }
 
-func calcDifficultySeoul(time uint64, parent *types.Header) *big.Int {
+func calcDifficultySeoul(chain consensus.ChainHeaderReader, time uint64, parent *types.Header) *big.Int {
 	difficultyCalculator := MakeLDPCDifficultyCalculator_Seoul()
-	return difficultyCalculator(time, parent)
+	return difficultyCalculator(chain, time, parent)
 }
 
 // Exported for fuzzing
