@@ -160,10 +160,10 @@ func CommitGenesisState(db ethdb.Database, hash common.Hash) error {
 			genesis = DefaultGoerliGenesisBlock()
 		case params.SepoliaGenesisHash:
 			genesis = DefaultSepoliaGenesisBlock()
-		case params.LveGenesisHash:
-			genesis = DefaultLveGenesisBlock()
-		case params.LvetestGenesisHash:
-			genesis = DefaultLvetestGenesisBlock()
+		case params.GwangjuGenesisHash:
+			genesis = DefaultGwangjuGenesisBlock()
+		case params.SeoulGenesisHash:
+			genesis = DefaultSeoulGenesisBlock()
 		case params.WorldlandtestGenesisHash:
 			genesis = DefaultWorldlandtestGenesisBlock()
 		}
@@ -404,10 +404,10 @@ func (g *Genesis) configOrDefault(ghash common.Hash) *params.ChainConfig {
 		return params.GoerliChainConfig
 	case ghash == params.KilnGenesisHash:
 		return DefaultKilnGenesisBlock().Config
-	case ghash == params.LveGenesisHash:
-		return params.LveChainConfig
-	case ghash == params.LvetestGenesisHash:
-		return params.LvetestChainConfig
+	case ghash == params.GwangjuGenesisHash:
+		return params.GwangjuChainConfig
+	case ghash == params.SeoulGenesisHash:
+		return params.SeoulChainConfig
 	case ghash == params.WorldlandtestGenesisHash:
 		return params.WorldlandtestChainConfig
 	default:
@@ -566,11 +566,11 @@ func DefaultKilnGenesisBlock() *Genesis {
 	return g
 }
 
-// DefaultlveGenesisBlock returns the LVE network genesis block.
+// DefaultGwangjuGenesisBlock returns the Gwangju network genesis block.
 //change!!
-func DefaultLveGenesisBlock() *Genesis {
+func DefaultGwangjuGenesisBlock() *Genesis {
 	return &Genesis{
-		Config:     params.LveChainConfig,
+		Config:     params.GwangjuChainConfig,
 		Nonce: 0,
 		Timestamp:  1651123670,
 		ExtraData:  hexutil.MustDecode("0x0000000000000000000000000000000000000000000000000000000000000000"),
@@ -843,10 +843,10 @@ func DefaultLveGenesisBlock() *Genesis {
 	}
 }
 
-// DefaultLveGenesisBlock returns the LVE TEST network genesis block.
-func DefaultLvetestGenesisBlock() *Genesis {
+// DefaultSeoulGenesisBlock returns the Seoul network genesis block.
+func DefaultSeoulGenesisBlock() *Genesis {
 	return &Genesis{
-		Config:     params.LvetestChainConfig,
+		Config:     params.SeoulChainConfig,
 		Timestamp:  1643853426,
 		ExtraData:  hexutil.MustDecode("0x0000000000000000000000000000000000000000000000000000000000000000"),
 		GasLimit:   4700000,

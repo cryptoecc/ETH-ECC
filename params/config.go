@@ -34,8 +34,8 @@ var (
 	GoerliGenesisHash  = common.HexToHash("0xbf7e331f7f7c1dd2e05159666b3bf8bc7a8a3a9eb1d518969eab529dd9b88c1a")
 	KilnGenesisHash    = common.HexToHash("0x51c7fe41be669f69c45c33a56982cbde405313342d9e2b00d7c91a7b284dd4f8")
 
-	LveGenesisHash = common.HexToHash("0x7c5cb1a45d2424a2be1155c22979bbe384aff07810260041d5609a87bc3c58cc")
-	LvetestGenesisHash = common.HexToHash("0xd4e56740f876aef8c010b86a40d5f56745a118d0906a34e69aec8c0db1cb8fa3")
+	GwangjuGenesisHash = common.HexToHash("0x7c5cb1a45d2424a2be1155c22979bbe384aff07810260041d5609a87bc3c58cc")
+	SeoulGenesisHash = common.HexToHash("0xd4e56740f876aef8c010b86a40d5f56745a118d0906a34e69aec8c0db1cb8fa3")
 	WorldlandtestGenesisHash = common.HexToHash("0xd4e56740f876aef8c010b86a40d5f56745a118d0906a34e69aec8c0db1cb8fa3")
 )
 
@@ -48,8 +48,8 @@ var TrustedCheckpoints = map[common.Hash]*TrustedCheckpoint{
 	RinkebyGenesisHash: RinkebyTrustedCheckpoint,
 	GoerliGenesisHash:  GoerliTrustedCheckpoint,
 
-	//LveGenesisHash:  LveTrustedCheckpoint,
-	//LvetestGenesisHash:  LvetestTrustedCheckpoint,
+	//GwangjuGenesisHash:  GwangjuTrustedCheckpoint,
+	//SeoulGenesisHash:  SeoulTrustedCheckpoint,
 	//WorldlandtestGenesisHash:  WorldlandtestTrustedCheckpoint,
 }
 
@@ -62,8 +62,8 @@ var CheckpointOracles = map[common.Hash]*CheckpointOracleConfig{
 	GoerliGenesisHash:  GoerliCheckpointOracle,
 
 	//update
-	//LveGenesisHash:  LveCheckpointOracle,
-	//LvetestGenesisHash:  LvetestCheckpointOracle,
+	//GwangjuGenesisHash:  GwangjuCheckpointOracle,
+	//SeoulGenesisHash:  SeoulCheckpointOracle,
 	WorldlandtestGenesisHash:  WorldlandtestCheckpointOracle,
 }
 
@@ -282,8 +282,8 @@ var (
 		Threshold: 2,
 	}
 
-	// LveChainConfig contains the chain parameters to run a node on the Görli test network.
-	LveChainConfig = &ChainConfig{
+	// GwangjuChainConfig contains the chain parameters to run a node on the Gwangju test network.
+	GwangjuChainConfig = &ChainConfig{
 		ChainID:             big.NewInt(12345),
 		HomesteadBlock:      big.NewInt(0),
 		EIP150Block:         big.NewInt(0),
@@ -303,16 +303,16 @@ var (
 	}
 	
 	/*
-	// LveTrustedCheckpoint contains the light client trusted checkpoint for the Görli test network.
-	LveTrustedCheckpoint = &TrustedCheckpoint{
+	// GwangjuTrustedCheckpoint contains the light client trusted checkpoint for the Gwangju network.
+	GwangjuTrustedCheckpoint = &TrustedCheckpoint{
 		SectionIndex: 32,
 		SectionHead:  common.HexToHash("0x50eaedd8361fa9edd0ac2dec410310b9bdf67b963b60f3b1dce47f84b30670f9"),
 		CHTRoot:      common.HexToHash("0x6504db73139f75ffa9102ae980e41b361cf3d5b66cea06c79cde9f457368820c"),
 		BloomRoot:    common.HexToHash("0x7551ae027bb776252a20ded51ee2ff0cbfbd1d8d57261b9161cc1f2f80237001"),
 	}
 	
-	// LveCheckpointOracle contains a set of configs for the Lve test network oracle.
-	LveCheckpointOracle = &CheckpointOracleConfig{
+	// GwangjuCheckpointOracle contains a set of configs for the Gwangju network oracle.
+	GwangjuCheckpointOracle = &CheckpointOracleConfig{
 		Address: common.HexToAddress("0x18CA0E045F0D772a851BC7e48357Bcaab0a0795D"),
 		Signers: []common.Address{
 			common.HexToAddress("0x4769bcaD07e3b938B7f43EB7D278Bc7Cb9efFb38"), // Peter
@@ -324,23 +324,8 @@ var (
 			Threshold: 2,
 	}*/
 
-	// LvetestChainConfig contains the chain parameters to run a node on the Görli test network.
-	/*LvetestChainConfig = &ChainConfig{
-		ChainID:             big.NewInt(12346),
-		HomesteadBlock:      big.NewInt(0),
-		DAOForkBlock:        nil,
-		DAOForkSupport:      true,
-		EIP150Block:         big.NewInt(0),
-		EIP155Block:         big.NewInt(0),
-		EIP158Block:         big.NewInt(0),
-		ByzantiumBlock:      big.NewInt(0),
-		ConstantinopleBlock: big.NewInt(0),
-		PetersburgBlock:     big.NewInt(0),
-		IstanbulBlock:       nil,
-		Eccpow: new(EccpowConfig),
-	}*/
-
-	LvetestChainConfig = &ChainConfig{
+	// SeoulChainConfig contains the chain parameters to run a node on the Seoul test network.
+	SeoulChainConfig = &ChainConfig{
 		ChainID:                       big.NewInt(123456),
 		HomesteadBlock:                big.NewInt(0),
 		DAOForkBlock:                  nil,
@@ -363,16 +348,16 @@ var (
 		Eccpow: 				 new(EccpowConfig),
 	}
 	
-	/* LvetestTrustedCheckpoint contains the light client trusted checkpoint for the Görli test network.
-	LvetestTrustedCheckpoint = &TrustedCheckpoint{
+	/* SeoulTrustedCheckpoint contains the light client trusted checkpoint for the Seoul test network.
+	SeoulTrustedCheckpoint = &TrustedCheckpoint{
 		SectionIndex: 32,
 		SectionHead:  common.HexToHash("0x50eaedd8361fa9edd0ac2dec410310b9bdf67b963b60f3b1dce47f84b30670f9"),
 		CHTRoot:      common.HexToHash("0x6504db73139f75ffa9102ae980e41b361cf3d5b66cea06c79cde9f457368820c"),
 		BloomRoot:    common.HexToHash("0x7551ae027bb776252a20ded51ee2ff0cbfbd1d8d57261b9161cc1f2f80237001"),
 	}
 	
-		// LvetestCheckpointOracle contains a set of configs for the Lve test network oracle.
-	LvetestCheckpointOracle = &CheckpointOracleConfig{
+		// SeoulCheckpointOracle contains a set of configs for the Seoul network oracle.
+	SeoulCheckpointOracle = &CheckpointOracleConfig{
 		Address: common.HexToAddress("0x18CA0E045F0D772a851BC7e48357Bcaab0a0795D"),
 		Signers: []common.Address{
 			common.HexToAddress("0x4769bcaD07e3b938B7f43EB7D278Bc7Cb9efFb38"), // Peter
@@ -456,9 +441,9 @@ var NetworkNames = map[string]string{
 	RinkebyChainConfig.ChainID.String(): "rinkeby",
 	GoerliChainConfig.ChainID.String():  "goerli",
 	SepoliaChainConfig.ChainID.String(): "sepolia",
-	LveChainConfig.ChainID.String():  "lve",
-	LvetestChainConfig.ChainID.String(): "lvetest",
-	WorldlandtestChainConfig.ChainID.String(): "lvetest",
+	GwangjuChainConfig.ChainID.String():  "gwangju",
+	SeoulChainConfig.ChainID.String(): "seoul",
+	WorldlandtestChainConfig.ChainID.String(): "seoul",
 }
 
 // TrustedCheckpoint represents a set of post-processed trie roots (CHT and

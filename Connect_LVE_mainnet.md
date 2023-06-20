@@ -1,4 +1,4 @@
-# ETH-ECC client launch and LVE mainnet connection
+# ETH-ECC client launch and Gwangju mainnet connection
 Project PI : Heung-No Lee
 
 Email : heungno@gist.ac.krk

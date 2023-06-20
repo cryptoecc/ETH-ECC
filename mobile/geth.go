@@ -188,15 +188,15 @@ func NewNode(datadir string, config *NodeConfig) (stack *Node, _ error) {
 			}
 		}
 
-		if config.EthereumGenesis == LveGenesis() {
-			genesis.Config = params.LveChainConfig
+		if config.EthereumGenesis == GwangjuGenesis() {
+			genesis.Config = params.GwangjuChainConfig
 			if config.EthereumNetworkID == 1 {
-				config.EthereumNetworkID = 12345
+				config.EthereumNetworkID = 103
 			}
 		}
 
-		if config.EthereumGenesis == LvetestGenesis() {
-			genesis.Config = params.LvetestChainConfig
+		if config.EthereumGenesis == SeoulGenesis() {
+			genesis.Config = params.SeoulChainConfig
 			if config.EthereumNetworkID == 1 {
 				config.EthereumNetworkID = 12346
 			}
