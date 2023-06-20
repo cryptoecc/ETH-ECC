@@ -22,7 +22,7 @@ Contents
 1. [Environment](#1-environment)
    1. [Download](#11-downloading)
    2. [Installation](#12-installation)
-2. [Running ETH-ECC and connecting to LVE mainnet](#2-running-eth-ecc-and-connecting-to-lve-mainnet)
+2. [Running ETH-ECC and connecting to Gwangju mainnet](#2-running-eth-ecc-and-connecting-to-Gwangju-mainnet)
 
 3. [Testing ETH-ECC](#3-testing-eth-ecc)
    1. [Basic tests](#31-basic-tests)
@@ -77,24 +77,24 @@ or, to build the full suite of utilities:
 $ make all
 ```
 
-## 2. Running ETH-ECC and connecting to LVE mainnet
+## 2. Running ETH-ECC and connecting to Gwangju mainnet
 
 First, you'll need to make a directory to store block information. For example `ETHECC_TEST` directory. Then move to `/ETH-ECC/build/bin`, and follow this.
 
 ```
-$ ./geth --lve --datadir [Your_own_storage] console
+$ ./geth --gwangju --datadir [Your_own_storage] console
 ```
 
 In my case,
 
 ```
-(EXAMPLE) $ ./geth --lve --datadir /home/Documents/ETHECC_TEST console
+(EXAMPLE) $ ./geth --gwangju --datadir /home/Documents/ETHECC_TEST console
 ```
 
 it returns data that looks like:
 
 ```
-INFO [01-02|14:59:12.563] Starting Geth on Lve ... 
+INFO [01-02|14:59:12.563] Starting Geth on Gwangju ... 
 INFO [01-02|14:59:12.565] Maximum peer count                       ETH=50 LES=0 total=50
 INFO [01-02|14:59:12.566] Smartcard socket not found, disabling    err="stat /run/pcscd/pcscd.comm: no such file or directory"
 INFO [01-02|14:59:12.568] Set global gas cap                       cap=50,000,000
@@ -108,12 +108,12 @@ INFO [01-02|14:59:12.677] Writing custom genesis block
 INFO [01-02|14:59:12.703] Persisted trie from memory database      nodes=354 size=50.23KiB time=2.70146ms gcnodes=0 gcsize=0.00B gctime=0s livenodes=1 livesize=0.00B
 INFO [01-02|14:59:12.706]  
 INFO [01-02|14:59:12.706] --------------------------------------------------------------------------------------------------------------------------------------------------------- 
-INFO [01-02|14:59:12.706] Chain ID:  12345 (lve) 
+INFO [01-02|14:59:12.706] Chain ID:  12345 (gwangju) 
 ```
 
 You can check ChainID is 12345.
 
-You are now connected to the LVE network!
+You are now connected to the Gwangju network!
 
 ## 3. Testing ETH-ECC
 
