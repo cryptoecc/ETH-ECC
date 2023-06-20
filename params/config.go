@@ -284,7 +284,7 @@ var (
 
 	// GwangjuChainConfig contains the chain parameters to run a node on the Gwangju test network.
 	GwangjuChainConfig = &ChainConfig{
-		ChainID:             big.NewInt(12345),
+		ChainID:             big.NewInt(103),
 		HomesteadBlock:      big.NewInt(0),
 		EIP150Block:         big.NewInt(0),
 		EIP150Hash:          common.HexToHash("0x0000000000000000000000000000000000000000000000000000000000000000"),
