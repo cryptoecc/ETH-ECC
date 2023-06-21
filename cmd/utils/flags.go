@@ -1776,7 +1776,7 @@ func CheckExclusive(ctx *cli.Context, args ...interface{}) {
 // SetEthConfig applies eth-related command line flags to the config.
 func SetEthConfig(ctx *cli.Context, stack *node.Node, cfg *ethconfig.Config) {
 	// Avoid conflicting network flags
-	CheckExclusive(ctx, MainnetFlag, DeveloperFlag, RopstenFlag, RinkebyFlag, GoerliFlag, SepoliaFlag, KilnFlag, LveFlag, SeoulFlag, WorldlandtestFlag)
+	CheckExclusive(ctx, MainnetFlag, DeveloperFlag, RopstenFlag, RinkebyFlag, GoerliFlag, SepoliaFlag, KilnFlag, LveFlag, SeoulFlag, GwangjuFlag, WorldlandtestFlag)
 	CheckExclusive(ctx, LightServeFlag, SyncModeFlag, "light")
 	CheckExclusive(ctx, DeveloperFlag, ExternalSignerFlag) // Can't use both ephemeral unlocked and external signer
 	if ctx.String(GCModeFlag.Name) == "archive" && ctx.Uint64(TxLookupLimitFlag.Name) != 0 {
@@ -1968,6 +1968,12 @@ func SetEthConfig(ctx *cli.Context, stack *node.Node, cfg *ethconfig.Config) {
 			cfg.NetworkId = 103
 		}
 		cfg.Genesis = core.DefaultSeoulGenesisBlock()
+		SetDNSDiscoveryDefaults(cfg, params.SeoulGenesisHash)
+	case ctx.Bool(GwangjuFlag.Name):
+		if !ctx.IsSet(NetworkIdFlag.Name) {
+			cfg.NetworkId = 103
+		}
+		cfg.Genesis = core.DefaultGwangjuGenesisBlock()
 		SetDNSDiscoveryDefaults(cfg, params.SeoulGenesisHash)
 	case ctx.Bool(WorldlandtestFlag.Name):
 		if !ctx.IsSet(NetworkIdFlag.Name) {
