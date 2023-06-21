@@ -70,7 +70,7 @@ var RinkebyBootnodes = []string{
 
 // LveBootnodes are the enode URLs of the P2P bootstrap nodes running on the
 // Lve network.
-var GwangjuBootnodes = []string{
+var LveBootnodes = []string{
 	"enode://cf69273d0e4514ab18e17c154b0fed66a8a91ebf25b36cced53bcd530cf4cd032c4b14801f692719abe2ebf84d454ee453775bb76ec3c49c440d359a16b24c50@43.200.141.6:30303",
 	"enode://922cc8c431841ba4742b8434cd79b76b1952eb8a4ee04dc2c34cb5887d781cb857c39fc2292d0aa08cff7c1ae135ad12d78ec245a35babf4a7af16564ce01a44@35.76.71.80:30301",
 	"enode://11d3dafc1773cdf6cea238dc649ea6f9b4b3b793315b71b8f37814510413ab6778dc5b1a67b904336fda3e9886248c7a4312911fea79e35763db44b50d1ed0a6@3.39.197.118:30303",
@@ -80,9 +80,9 @@ var GwangjuBootnodes = []string{
 	"enode://adbe0b88a3cb886583ab77e2d7ec96110642bd163f76303e82a7f5355a707d970e906308fde226c2d98ce8057f22bb40adb2f270df357428f78668d25e5366ec@13.215.97.146:30303",
 }
 
-// SeoulBootnodes are the enode URLs of the P2P bootstrap nodes running on the
-// Seoul network.
-var SeoulBootnodes = []string{
+// LvetestBootnodes are the enode URLs of the P2P bootstrap nodes running on the
+// Lve test network.
+var LvetestBootnodes = []string{
 	"enode://205624a79f175a7c1332a1bf11b94691dd996f876679dbcb1258bd28750b4d1d91d4deaa3567e55557b8b7503c05984733654c3badfd270e46b8980db1e64328@43.200.141.6:30303",
 }
 
@@ -161,10 +161,10 @@ func KnownDNSNetwork(genesis common.Hash, protocol string) string {
 		net = "goerli"
 	case SepoliaGenesisHash:
 		net = "sepolia"
-	case GwangjuGenesisHash:
-		net = "gwangju"
-	case SeoulGenesisHash:
-		net = "Seoul"
+	case LveGenesisHash:
+		net = "lve"
+	case LvetestGenesisHash:
+		net = "lvetest"
 	case WorldlandtestGenesisHash:
 		net = "wordlalndtest"
 	default:

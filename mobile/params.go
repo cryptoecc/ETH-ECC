@@ -68,18 +68,18 @@ func GoerliGenesis() string {
 	return string(enc)
 }
 
-// GwangjuGenesis returns the JSON spec to use for the Gwangju network
-func GwangjuGenesis() string {
-	enc, err := json.Marshal(core.DefaultGwangjuGenesisBlock())
+// LveGenesis returns the JSON spec to use for the LVE network
+func LveGenesis() string {
+	enc, err := json.Marshal(core.DefaultLveGenesisBlock())
 	if err != nil {
 		panic(err)
 	}
 	return string(enc)
 }
 
-// SeoulGenesis returns the JSON spec to use for the Seoul network
-func SeoulGenesis() string {
-	enc, err := json.Marshal(core.DefaultSeoulGenesisBlock())
+// LvetestGenesis returns the JSON spec to use for the LVE TEST network
+func LvetestGenesis() string {
+	enc, err := json.Marshal(core.DefaultLvetestGenesisBlock())
 	if err != nil {
 		panic(err)
 	}
