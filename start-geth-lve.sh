@@ -8,7 +8,7 @@
 --http.addr "0.0.0.0" \
 --gcmode "full" \
 --syncmode "full" \
---gwangju \
+--lve \
 --ws --ws.port 8546 --ws.api eth,net,web3 --ws.origins '*' --ws.addr 0.0.0.0 \
 console
 
