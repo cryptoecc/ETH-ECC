@@ -66,10 +66,16 @@ var LveBootnodes = []string{
 
 }
 
-// LvetestBootnodes are the enode URLs of the P2P bootstrap nodes running on the
-// Lve test network.
-var LvetestBootnodes = []string{
-	"enode://205624a79f175a7c1332a1bf11b94691dd996f876679dbcb1258bd28750b4d1d91d4deaa3567e55557b8b7503c05984733654c3badfd270e46b8980db1e64328@43.200.141.6:30303",
+// SeoulBootnodes are the enode URLs of the P2P bootstrap nodes running on the
+// Seoul network.
+var SeoulBootnodes = []string{
+
+}
+
+// Gwangju Bootnodes are the enode URLs of the P2P bootstrap nodes running on the
+// Gwangju network.
+var GwangjuBootnodes = []string{
+
 }
 
 var WorldlandtestBootnodes = []string{
@@ -150,8 +156,10 @@ func KnownDNSNetwork(genesis common.Hash, protocol string) string {
 		net = "sepolia"
 	case LveGenesisHash:
 		net = "lve"
-	case LvetestGenesisHash:
-		net = "lvetest"
+	case GwangjuGenesisHash:
+		net = "gwangju"
+	case SeoulGenesisHash:
+		net = "seoul"
 	case WorldlandtestGenesisHash:
 		net = "wordlalndtest"
 	default:

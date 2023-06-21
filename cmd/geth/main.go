@@ -293,8 +293,12 @@ func prepare(ctx *cli.Context) {
 	case ctx.IsSet(utils.LveFlag.Name):
 		log.Info("Starting Geth on Lve ...")
 
-	case ctx.IsSet(utils.LvetestFlag.Name):
-		log.Info("Starting Geth on Lve testnet...")
+	case ctx.IsSet(utils.SeoulFlag.Name):
+		log.Info("Starting Geth on Seoul ...")
+
+	case ctx.IsSet(utils.GwangjuFlag.Name):
+		log.Info("Starting Geth on Gwangju testnet...")
+
 
 	case ctx.IsSet(utils.WorldlandtestFlag.Name):
 		log.Info("Starting Geth on Worldland testnet...")
@@ -329,7 +333,8 @@ func prepare(ctx *cli.Context) {
 			!ctx.IsSet(utils.GoerliFlag.Name) &&
 			!ctx.IsSet(utils.KilnFlag.Name) &&
 			!ctx.IsSet(utils.LveFlag.Name) &&
-			!ctx.IsSet(utils.LvetestFlag.Name) &&
+			!ctx.IsSet(utils.SeoulFlag.Name) &&
+			!ctx.IsSet(utils.GwangjuFlag.Name) &&
 			!ctx.IsSet(utils.WorldlandtestFlag.Name) &&
 			!ctx.IsSet(utils.DeveloperFlag.Name) {
 			// Nope, we're really on mainnet. Bump that cache up!
