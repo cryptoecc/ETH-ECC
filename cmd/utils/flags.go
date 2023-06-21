@@ -157,14 +157,9 @@ var (
 		Name:  "lve",
 		Usage: "LVE Network: Error-Correction Codes Proof-of-Work Main Network",
 	}
-	// Worldland settings
-	SeoulFlag = &cli.BoolFlag{
-		Name:  "Seoul",
-		Usage: "Seoul Network: Error-Correction Codes Proof-of-Work Main Network",
-	}
-	GwangjuFlag = &cli.BoolFlag{
-		Name:  "Gwangju",
-		Usage: "Gwangju network: Error-Correction Codes Proof-of-Work Test Network",
+	LvetestFlag = &cli.BoolFlag{
+		Name:  "lvetest",
+		Usage: "LVE test network: Error-Correction Codes Proof-of-Work Test Network",
 	}
 	WLseoulFlag = &cli.BoolFlag{
 		Name:  "wlseoul",
@@ -1008,14 +1003,13 @@ var (
 		GoerliFlag,
 		SepoliaFlag,
 		KilnFlag,
-		GwangjuFlag,
+		LvetestFlag,
 		WorldlandtestFlag,
 	}
 	// NetworkFlags is the flag group of all built-in supported networks.
 	NetworkFlags = append([]cli.Flag{
 		MainnetFlag,
 		LveFlag,
-		SeoulFlag,
 	}, TestnetFlags...)
 
 	// DatabasePathFlags is the flag group of all database path flags.
@@ -1051,11 +1045,8 @@ func MakeDataDir(ctx *cli.Context) string {
 		if ctx.Bool(LveFlag.Name) {
 			return filepath.Join(path, "lve")
 		}
-		if ctx.Bool(SeoulFlag.Name) {
-			return filepath.Join(path, "seoul")
-		}
-		if ctx.Bool(GwangjuFlag.Name) {
-			return filepath.Join(path, "gwangju")
+		if ctx.Bool(LvetestFlag.Name) {
+			return filepath.Join(path, "lvetest")
 		}
 		if ctx.Bool(WLseoulFlag.Name) {
 			return filepath.Join(path, "WLseoul")
@@ -1966,9 +1957,9 @@ func SetEthConfig(ctx *cli.Context, stack *node.Node, cfg *ethconfig.Config) {
 		}
 		cfg.Genesis = core.DefaultLveGenesisBlock()
 		SetDNSDiscoveryDefaults(cfg, params.LveGenesisHash)
-	case ctx.Bool(SeoulFlag.Name):
+	case ctx.Bool(LvetestFlag.Name):
 		if !ctx.IsSet(NetworkIdFlag.Name) {
-			cfg.NetworkId = 103
+			cfg.NetworkId = 12346
 		}
 		cfg.Genesis = core.DefaultLvetestGenesisBlock()
 		SetDNSDiscoveryDefaults(cfg, params.LvetestGenesisHash)

@@ -77,18 +77,9 @@ func LveGenesis() string {
 	return string(enc)
 }
 
-// SeoulGenesis returns the JSON spec to use for the LVE TEST network
-func SeoulGenesis() string {
-	enc, err := json.Marshal(core.DefaultSeoulGenesisBlock())
-	if err != nil {
-		panic(err)
-	}
-	return string(enc)
-}
-
-// GwangjuGenesis returns the JSON spec to use for the LVE TEST network
-func GwangjuGenesis() string {
-	enc, err := json.Marshal(core.DefaultGwangjuGenesisBlock())
+// LvetestGenesis returns the JSON spec to use for the LVE TEST network
+func LvetestGenesis() string {
+	enc, err := json.Marshal(core.DefaultLvetestGenesisBlock())
 	if err != nil {
 		panic(err)
 	}

@@ -89,8 +89,7 @@ var (
 	sepoliaFlag = flag.Bool("sepolia", false, "Initializes the faucet with Sepolia network config")
 
 	//lveFlag  = flag.Bool("lve", false, "Initializes the faucet with Lve network config")
-	//GwnagjutestFlag  = flag.Bool("gwangju", false, "Initializes the faucet with Gwangju network config")
-	//SeoulFlag  = flag.Bool("seoul", false, "Initializes the faucet with Seoul network config")
+	//lvetestFlag  = flag.Bool("lvetest", false, "Initializes the faucet with Lvetest network config")
 	//WorldlandtestFlag  = flag.Bool("worldlandtest", false, "Initializes the faucet with worldlandtest network config")
 )
 
