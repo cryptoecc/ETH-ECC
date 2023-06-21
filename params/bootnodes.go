@@ -63,7 +63,6 @@ var RinkebyBootnodes = []string{
 var LveBootnodes = []string{
 	"enode://cf69273d0e4514ab18e17c154b0fed66a8a91ebf25b36cced53bcd530cf4cd032c4b14801f692719abe2ebf84d454ee453775bb76ec3c49c440d359a16b24c50@43.200.141.6:30303",
 	"enode://922cc8c431841ba4742b8434cd79b76b1952eb8a4ee04dc2c34cb5887d781cb857c39fc2292d0aa08cff7c1ae135ad12d78ec245a35babf4a7af16564ce01a44@35.76.71.80:30301",
-
 }
 
 // SeoulBootnodes are the enode URLs of the P2P bootstrap nodes running on the
@@ -77,6 +76,8 @@ var SeoulBootnodes = []string{
 var GwangjuBootnodes = []string{
 
 }
+
+var WLseoulBootnodes = []string{}
 
 var WorldlandtestBootnodes = []string{
 	// Ethereum Foundation Go Bootnodes
@@ -92,7 +93,6 @@ var WorldlandtestBootnodes = []string{
 	"enode://c6bdbf1d7eb319f6ea54df20a270fb6bc15d31f7b8b9dcaf918f8161277769038df7834d0dc94b250b1e92017b477fd2c19ce920c7a30b1dbb9eea3769108c61@3.38.46.69:30303",
 	"enode://dafb0b584ba443219fea0bd172e9d3457eabd8c913e7aed7ab9627577850355903b85c64611de056433458d89a4e39c5d48fb44f18181d650fedf43808368d70@44.230.118.175:30303",
 }
-
 
 // GoerliBootnodes are the enode URLs of the P2P bootstrap nodes running on the
 // Görli test network.

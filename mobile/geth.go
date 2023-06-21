@@ -209,6 +209,13 @@ func NewNode(datadir string, config *NodeConfig) (stack *Node, _ error) {
 			}
 		}
 
+		if config.EthereumGenesis == WLseoulGenesis() {
+			genesis.Config = params.WLseoulChainConfig
+			if config.EthereumNetworkID == 1 {
+				config.EthereumNetworkID = 2237
+			}
+		}
+
 		if config.EthereumGenesis == WorldlandtestGenesis() {
 			genesis.Config = params.WorldlandtestChainConfig
 			if config.EthereumNetworkID == 1 {

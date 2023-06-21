@@ -20,6 +20,7 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"log"
 	"math/big"
 	"runtime"
 	"time"
@@ -39,13 +40,17 @@ import (
 // ecc proof-of-work protocol constants.
 var (
 	FrontierBlockReward       = big.NewInt(5e+18) // Block reward in wei for successfully mining a block
-	WorldLandInitialBlockReward	  = big.NewInt(8e+18)	//Block reward in wei for successfully mining a block upward from WorldLand
-	WorldLandFirstBlockReward	  = big.NewInt(9e+18)	//Block reward in wei for successfully mining a genesisblock upward from WorldLand
+	WorldLandBlockReward      = big.NewInt(3e+18) //Block reward in wei for successfully mining a block upward from WorldLand
+	WorldLandFirstBlockReward = big.NewInt(9e+18) //Block reward in wei for successfully mining a genesisblock upward from WorldLand
 
-	HALVING_INTERVAL		  = uint64(3)
+	HALVING_INTERVAL  = uint64(6307200) //Block per year * 2year
+	MATURITY_INTERVAL = uint64(3153600) //Block per year
 
-	maxUncles                 = 2                // Maximum number of uncles allowed in a single block
-	allowedFutureBlockTimeSeconds    = int64(15)   // Max seconds from current time allowed for blocks, before they're considered future blocks
+	SumRewardUntilMaturity = big.NewInt(39420000) //Total supply of token until maturity
+	MaxHalving             = int64(4)
+
+	maxUncles                     = 2         // Maximum number of uncles allowed in a single block
+	allowedFutureBlockTimeSeconds = int64(15) // Max seconds from current time allowed for blocks, before they're considered future blocks
 
 )
 
@@ -111,10 +116,10 @@ func (ecc *ECC) VerifyHeaders(chain consensus.ChainHeaderReader, headers []*type
 
 	// Create a task channel and spawn the verifiers
 	var (
-		inputs = make(chan int)
-		done   = make(chan int, workers)
-		errors = make([]error, len(headers))
-		abort  = make(chan struct{})
+		inputs  = make(chan int)
+		done    = make(chan int, workers)
+		errors  = make([]error, len(headers))
+		abort   = make(chan struct{})
 		unixNow = time.Now().Unix()
 	)
 	for i := 0; i < workers; i++ {
@@ -244,6 +249,9 @@ func (ecc *ECC) verifyHeader(chain consensus.ChainHeaderReader, header, parent *
 	// Verify the header's timestamp
 	if !uncle {
 		if header.Time > uint64(unixNow+allowedFutureBlockTimeSeconds) {
+			//log.Println(unixNow)
+			//log.Println(allowedFutureBlockTimeSeconds)
+			//log.Println(header.Time)
 			return consensus.ErrFutureBlock
 		}
 	}
@@ -255,7 +263,7 @@ func (ecc *ECC) verifyHeader(chain consensus.ChainHeaderReader, header, parent *
 	expectDiff := ecc.CalcDifficulty(chain, header.Time, parent)
 
 	if expectDiff.Cmp(header.Difficulty) != 0 {
-		return fmt.Errorf("invalid difficulty: have %v, want %v", header.Difficulty, expectDiff)
+		return fmt.Errorf("invalid ecc difficulty: have %v, want %v", header.Difficulty, expectDiff)
 	}
 
 	// Verify that the gas limit is <= 2^63-1
@@ -304,19 +312,31 @@ func (ecc *ECC) verifyHeader(chain consensus.ChainHeaderReader, header, parent *
 // the difficulty that a new block should have when created at time
 // given the parent block's time and difficulty.
 func (ecc *ECC) CalcDifficulty(chain consensus.ChainHeaderReader, time uint64, parent *types.Header) *big.Int {
-	return CalcDifficulty(chain.Config(), time, parent)
+	next := new(big.Int).Add(parent.Number, big1)
+	switch {
+	case chain.Config().IsSeoul(next):
+		return calcDifficultySeoul(chain, time, parent)
+	default:
+		//fmt.Println("frontier")
+		return calcDifficultyFrontier(time, parent)
+	}
+	
+	//return CalcDifficulty(chain.Config(), time, parent)
 }
 
 // CalcDifficulty is the difficulty adjustment algorithm. It returns
 // the difficulty that a new block should have when created at time
 // given the parent block's time and difficulty.
-func CalcDifficulty(config *params.ChainConfig, time uint64, parent *types.Header) *big.Int {
-	//next := new(big.Int).Add(parent.Number, big1)
+/*func CalcDifficulty(config *params.ChainConfig, time uint64, parent *types.Header) *big.Int {
+	next := new(big.Int).Add(parent.Number, big1)
 	switch {
+	case config.IsSeoul(next):
+		return calcDifficultySeoul(time, parent)
 	default:
+		//fmt.Println("frontier")
 		return calcDifficultyFrontier(time, parent)
 	}
-}
+}*/
 
 // Some weird constants to avoid constant memory allocs for them.
 var (
@@ -341,6 +361,11 @@ func makeDifficultyCalculator(bombDelay *big.Int) func(time uint64, parent *type
 func calcDifficultyFrontier(time uint64, parent *types.Header) *big.Int {
 	difficultyCalculator := MakeLDPCDifficultyCalculator()
 	return difficultyCalculator(time, parent)
+}
+
+func calcDifficultySeoul(chain consensus.ChainHeaderReader, time uint64, parent *types.Header) *big.Int {
+	difficultyCalculator := MakeLDPCDifficultyCalculator_Seoul()
+	return difficultyCalculator(chain, time, parent)
 }
 
 // Exported for fuzzing
@@ -435,6 +460,10 @@ func (ecc *ECC) SealHash(header *types.Header) (hash common.Hash) {
 	if header.BaseFee != nil {
 		enc = append(enc, header.BaseFee)
 	}
+	/*
+		if header.Codeword != nil {
+			enc = append(enc, header.Codeword)
+		}*/
 	rlp.Encode(hasher, enc)
 	hasher.Sum(hash[:0])
 	return hash
@@ -451,31 +480,45 @@ var (
 // included uncles. The coinbase of each uncle block is also rewarded.
 func accumulateRewards(config *params.ChainConfig, state *state.StateDB, header *types.Header, uncles []*types.Header) {
 	// Select the correct block reward based on chain progression
-	blockReward := FrontierBlockReward
-	
-	if config.IsWorldland(header.Number){
-		blockReward = WorldLandInitialBlockReward
+	var blockReward = big.NewInt(FrontierBlockReward.Int64())
 
-		if config.IsWorldLandHalving(header.Number){
+	if config.IsWorldland(header.Number) {
+		blockReward = big.NewInt(WorldLandBlockReward.Int64())
+
+		if config.IsWorldLandHalving(header.Number) {
 			blockHeight := header.Number.Uint64()
-		
-			halvings := blockHeight / HALVING_INTERVAL
-		
-			for i := uint64(0); i < halvings; i++ {
-				if i%2 == 0 {
-					blockReward.Div(blockReward, big.NewInt(2))
-				}
-			}
-		} else if config.IsWorldLandMaturity(header.Number){
-			blockReward = new(big.Int).Mul(blockReward, big.NewInt(104))
+			HalvingLevel := (blockHeight - config.WorldlandBlock.Uint64()) / HALVING_INTERVAL
+
+			blockReward.Rsh(blockReward, uint(HalvingLevel))
+			log.Println("halvingblockReward:", blockReward)
+
+		} else if config.IsWorldLandMaturity(header.Number) {
+			blockHeight := header.Number.Uint64()
+			MaturityLevel := (blockHeight - config.HalvingEndTime.Uint64()) / MATURITY_INTERVAL
+			blockReward.Rsh(blockReward, uint(MaxHalving-1))
+			log.Println("maturityblockReward 0:", blockReward)
+			// r is 1.04 currently
+			blockReward.Mul(blockReward, SumRewardUntilMaturity)
+			blockReward.Div(blockReward, new(big.Int).SetUint64(MATURITY_INTERVAL)) //Maturity Ineterval, Halving Interval Uint로 할 이유가 있는지?
+
+			blockReward.Mul(blockReward, big.NewInt(4))
 			blockReward.Div(blockReward, big.NewInt(100))
+			log.Println("maturityblockReward 1:", blockReward)
+			for i := 0; i < int(MaturityLevel); i++ {
+				blockReward.Mul(blockReward, big.NewInt(104))
+				blockReward.Div(blockReward, big.NewInt(100))
+			}
+			log.Println("maturityblockReward 2:", blockReward)
 		}
-		
-		if config.IsWorldlandMerge(header.Number){
-			blockReward = WorldLandFirstBlockReward	
+
+		if config.IsWorldlandMerge(header.Number) {
+			blockReward = WorldLandFirstBlockReward
+
+			log.Println("mergeblockReward:", blockReward)
 		}
 	}
 
+	log.Println("after func blockReward:", blockReward)
 
 	// Accumulate the rewards for the miner and any included uncles
 	reward := new(big.Int).Set(blockReward)

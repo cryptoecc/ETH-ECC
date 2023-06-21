@@ -24,6 +24,7 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
 	"github.com/ethereum/go-ethereum/accounts"
 	"github.com/ethereum/go-ethereum/accounts/keystore"
 	"github.com/ethereum/go-ethereum/cmd/utils"
@@ -44,7 +45,6 @@ import (
 	_ "github.com/ethereum/go-ethereum/eth/tracers/native"
 
 	"github.com/urfave/cli/v2"
-
 )
 
 const (
@@ -300,6 +300,9 @@ func prepare(ctx *cli.Context) {
 		log.Info("Starting Geth on Gwangju testnet...")
 
 
+	case ctx.IsSet(utils.WLseoulFlag.Name):
+		log.Info("Starting Geth on Lve testnet...")
+
 	case ctx.IsSet(utils.WorldlandtestFlag.Name):
 		log.Info("Starting Geth on Worldland testnet...")
 
@@ -365,8 +368,8 @@ func geth(ctx *cli.Context) error {
 
 	prepare(ctx)
 	stack, backend := makeFullNode(ctx)
-	defer stack.Close()	
-	startNode( ctx, stack , backend , false )	
+	defer stack.Close()
+	startNode(ctx, stack, backend, false)
 	stack.Wait()
 	return nil
 }
@@ -469,7 +472,7 @@ func startNode(ctx *cli.Context, stack *node.Node, backend ethapi.Backend, isCon
 		}
 	}
 
-} 
+}
 
 // unlockAccounts unlocks any account specifically requested.
 func unlockAccounts(ctx *cli.Context, stack *node.Node) {

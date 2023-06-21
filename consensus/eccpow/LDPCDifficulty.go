@@ -3,7 +3,7 @@ package eccpow
 import (
 	"math"
 	"math/big"
-
+	"log"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/holiman/uint256"
 )
@@ -34,8 +34,30 @@ import (
 // Some weird constants to avoid constant memory allocs for them.
 var (
 	MinimumDifficulty   = ProbToDifficulty(Table[0].miningProb)
-	BlockGenerationTime = big.NewInt(10) // 36) // 10 ) // 36)
-	Sensitivity         = big.NewInt(8) // 8 ) // 1 ) // 8)
+	BlockGenerationTime = big.NewInt(36) // 36) // 10 ) // 36)
+	Sensitivity         = big.NewInt(8)
+
+	// BlockGenerationTime for Seoul
+	stTime      int = 10
+
+	avgTimeList     = [100]int{stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime,
+		stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime,
+		stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime,
+		stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime,
+		stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime,
+		stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime,
+		stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime,
+		stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime,
+		stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime,
+		stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime}
+
+	
+	//initLevel int = 10
+	minLevel  int = 10
+	diff_interval = 100
+
+	//count  int = -1
+	//init_c int = 2
 )
 
 const (
@@ -98,17 +120,120 @@ func MakeLDPCDifficultyCalculator() func(time uint64, parent *types.Header) *big
 		if x.Cmp(MinimumDifficulty) < 0 {
 			x.Set(MinimumDifficulty)
 		}
-		
+
 		//fmt.Printf("x : %v, Minimum difficulty : %v\n", x, MinimumDifficulty)
 
 		return x
 	}
 }
 
+func MakeLDPCDifficultyCalculator_Seoul() func(chain consensus.ChainHeaderReader, time uint64, parent *types.Header) *big.Int {
+	return func(chain consensus.ChainHeaderReader, time uint64, parent *types.Header) *big.Int {
+
+		if parent.Number.Uint64() < uint64(diff_interval){
+			return parent.Difficulty
+		}
+
+		bigTime := new(big.Int).SetUint64(time)
+		bigParentTime := new(big.Int).SetUint64(parent.Time)
+		x := new(big.Int)
+		diff := new(big.Int)
+		index := int(parent.Number.Uint64()) % diff_interval
+		
+		if index == 0 { // 난이도 변경 시점인 경우.
+			level := SearchLevel(parent.Difficulty)
+			grandParent := chain.GetHeaderByNumber(parent.Number.Uint64() - uint64(diff_interval))
+			grandParentTime := new(big.Int).SetUint64(grandParent.Time)
+			
+			x.Sub(bigTime, grandParentTime)
+			avgTime := int(x.Uint64()) / 100
+
+			if avgTime < stTime {
+				level += 1
+			} else {
+				if level > minLevel {
+					level -= 1
+				}
+			}
+			diff = ProbToDifficulty(Table[level].miningProb)
+
+			//테스트 출력.
+			log.Println("Level: ", level)
+			log.Println("Average Time: ", avgTime, "s")
+			log.Println("Time List: ", avgTimeList)
+		} else { // 난이도 변경 시점이 아닌 경우.
+			diff = parent.Difficulty
+		}
+		
+		//분포 측정을 위한 코드.
+		blocktime := new(big.Int)
+		blocktime.Sub(bigTime, bigParentTime)
+		avgTimeList[index] = int(blocktime.Uint64())
+
+		return diff
+	}
+}
+
+/*
+func MakeLDPCDifficultyCalculator_Seoul2() func(time uint64, parent *types.Header) *big.Int {
+	return func(time uint64, parent *types.Header) *big.Int {
+		bigTime := new(big.Int).SetUint64(time)
+		bigParentTime := new(big.Int).SetUint64(parent.Time)
+
+		x := new(big.Int)
+		x.Sub(bigTime, bigParentTime)
+
+		level := SearchLevel(parent.Difficulty)
+		diff := new(big.Int)
+
+		count = count + 1
+
+		if count < 1 {
+			level = initLevel
+		} else if count > 1000 {
+			count = count - 1000
+		}
+
+		if init_c < 5 {
+			level = initLevel
+			x = big.NewInt(12)
+			init_c += 1
+		}
+
+		bIndex := count % 100
+		avgTimeList[bIndex] = int(x.Uint64())
+
+		totalTime := 0
+		for i := 0; i < 100; i++ {
+			totalTime += avgTimeList[i]
+		}
+		avgTime := totalTime / 100
+
+		if count%100 == 90 {
+			if avgTime < stTime {
+				level += 1
+			} else {
+				if level > minLevel {
+					level -= 1
+				}
+			}
+		}
+
+		diff = ProbToDifficulty(Table[level].miningProb)
+
+		fmt.Println("Index: ", bIndex)
+		fmt.Println("Level: ", level)
+		fmt.Println("Average Time: ", avgTime, "s")
+		fmt.Println("Time List: ", avgTimeList)
+
+		return diff
+	}
+}*/
+
 // SearchLevel return next level by using currentDifficulty of header
 // Type of Ethereum difficulty is *bit.Int so arg is *big.int
 func SearchLevel(difficulty *big.Int) int {
-	// foo := MakeLDPCDifficultyCalculator2()
+	// foo := MakeLDPCDifficultyCalculator()
 	// Next level := SearchNextLevel(foo(currentBlock's time stamp, parentBlock))
 
 	var currentProb = DifficultyToProb(difficulty)
