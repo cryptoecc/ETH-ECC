@@ -95,7 +95,7 @@ func TestDecodingVerification(t *testing.T) {
 		header.Difficulty = ProbToDifficulty(Table[0].miningProb)
 		hash := ecc.SealHash(header).Bytes()
 
-		hashVector, outputWord, LDPCNonce, digest := RunOptimizedConcurrencyLDPC(header, hash)
+		_, hashVector, outputWord, LDPCNonce, digest := RunOptimizedConcurrencyLDPC(header, hash)
 
 		headerForTest := types.CopyHeader(header)
 		headerForTest.MixDigest = common.BytesToHash(digest)

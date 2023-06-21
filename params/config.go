@@ -341,7 +341,6 @@ var (
 	}*/
 
 	LvetestChainConfig = &ChainConfig{
-<<<<<<< HEAD
 		ChainID:                       big.NewInt(123456),
 		HomesteadBlock:                big.NewInt(0),
 		DAOForkBlock:                  nil,
@@ -358,28 +357,7 @@ var (
 		LondonBlock:                   big.NewInt(0),
 		WorldlandBlock:        	       big.NewInt(0),
 		WorldlandForkSupport:    true,
-
 		Eccpow: 				 new(EccpowConfig),
-=======
-		ChainID:             big.NewInt(12345),
-		HomesteadBlock:      big.NewInt(0),
-		EIP150Block:         big.NewInt(0),
-		EIP150Hash:          common.HexToHash("0x0000000000000000000000000000000000000000000000000000000000000000"),
-		EIP155Block:         big.NewInt(0),
-		EIP158Block:         big.NewInt(0),
-		ByzantiumBlock:      big.NewInt(0),
-		ConstantinopleBlock: big.NewInt(0),
-		PetersburgBlock:     big.NewInt(0),
-		IstanbulBlock:       big.NewInt(0),
-		MuirGlacierBlock:    nil,
-		BerlinBlock:         big.NewInt(0),
-		LondonBlock:         big.NewInt(0),
-		ArrowGlacierBlock:   nil,
-		GrayGlacierBlock:    nil,
-		WorldlandBlock:		 big.NewInt(3),
-		HalvingEndTime:		 big.NewInt(12),
-		Eccpow: new(EccpowConfig),
->>>>>>> 97932c9d60fe7bb37cd9c0d098f012664b3c62de
 	}
 	
 	/* LvetestTrustedCheckpoint contains the light client trusted checkpoint for the Görli test network.

@@ -141,6 +141,7 @@ func (ecc *ECC) mine(block *types.Block, id int, seed uint64, abort chan struct{
 	)
 	// Start generating random nonces until we abort or find a good one
 	var (
+		total_attempts = int64(0)
 		attempts = int64(0)
 		nonce    = seed
 	)
@@ -157,7 +158,8 @@ search:
 
 		default:
 			// We don't have to update hash rate on every nonce, so update after after 2^X nonces
-			attempts++
+			total_attempts = total_attempts + 64
+			attempts = attempts + 64
 			if (attempts % (1 << 15)) == 0 {
 				ecc.hashrate.Mark(attempts)
 				attempts = 0
@@ -168,6 +170,10 @@ search:
 
 			// Correct nonce found, create a new header with it
 			if flag == true {
+				level := SearchLevel(header.Difficulty)
+				fmt.Printf("level: %v\n", level)
+				fmt.Printf("total attempts: %v\n", total_attempts)
+				fmt.Printf("hashrate: %v\n", ecc.Hashrate())
 				fmt.Printf("Codeword found with nonce = %d\n", LDPCNonce)
 				fmt.Printf("Codeword : %d\n", outputWord)
 
@@ -190,8 +196,8 @@ search:
 				}
 				header.Codeword = make([]byte, len(codeword))
 				copy(header.Codeword, codeword)
-				fmt.Printf("header hash : %v\n", header.Hash)
-				fmt.Printf("header Codeword : %v\n", header.Codeword)
+				//fmt.Printf("header: %v\n", header)
+				//fmt.Printf("header Codeword : %v\n", header.Codeword)
 
 				// Seal and return a block (if still needed)
 				select {

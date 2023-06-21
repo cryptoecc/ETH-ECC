@@ -7,6 +7,7 @@ import (
 	"hash"
 	"sync"
 	"time"
+	"fmt"
 
 	"github.com/ethereum/go-ethereum/consensus"
 	"github.com/ethereum/go-ethereum/core/types"
@@ -144,7 +145,7 @@ func RunOptimizedConcurrencyLDPC(header *types.Header, hash []byte) (bool, []int
 }
 
 //MakeDecision check outputWord is valid or not using colInRow
-func MakeDecision(header *types.Header, colInRow [][]int, outputWord []int) bool {
+func MakeDecision(header *types.Header, colInRow [][]int, outputWord []int) bool{
 	parameters, difficultyLevel := setParameters(header)
 	for i := 0; i < parameters.m; i++ {
 		sum := 0
@@ -165,6 +166,7 @@ func MakeDecision(header *types.Header, colInRow [][]int, outputWord []int) bool
 	if numOfOnes >= Table[difficultyLevel].decisionFrom &&
 		numOfOnes <= Table[difficultyLevel].decisionTo &&
 		numOfOnes%Table[difficultyLevel].decisionStep == 0 {
+		fmt.Printf("hamming weight: %v\n", numOfOnes)
 		return true
 	}
 

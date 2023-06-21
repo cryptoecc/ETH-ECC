@@ -63,12 +63,21 @@ func OptimizedDecoding(parameters Parameters, hashVector []int, H, rowInCol, col
 				LRpt[t] += LRrtl[t][rowInCol[k][t]]
 				LRpt[t] = infinityTest(LRpt[t])
 			}
-
+			
+			/*
 			if LRpt[t] >= 0 {
 				outputWord[t] = 1
 			} else {
 				outputWord[t] = 0
-			}
+			}*/
+		}
+	}
+	
+	for t := 0; t < parameters.n; t++ {
+		if LRpt[t] >= 0 {
+			outputWord[t] = 1
+		} else {
+			outputWord[t] = 0
 		}
 	}
 

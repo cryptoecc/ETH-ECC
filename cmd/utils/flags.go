@@ -2237,12 +2237,15 @@ func MakeChain(ctx *cli.Context, stack *node.Node) (*core.BlockChain, ethdb.Data
 	if err != nil {
 		Fatalf("%v", err)
 	}
+	eccpowConfig, err := core.LoadEccpowConfig(chainDb, gspec)
+	if err != nil {
+		Fatalf("%v", err)
+	}
 	ethashConfig := ethconfig.Defaults.Ethash
-	eccpowConfig := ethconfig.Defaults.Eccpow
 	if ctx.Bool(FakePoWFlag.Name) {
 		ethashConfig.PowMode = ethash.ModeFake
 	}
-	engine := ethconfig.CreateConsensusEngine(stack, &ethashConfig, cliqueConfig, &eccpowConfig, nil, false, chainDb)
+	engine := ethconfig.CreateConsensusEngine(stack, &ethashConfig, cliqueConfig, eccpowConfig, nil, false, chainDb)
 	if gcmode := ctx.String(GCModeFlag.Name); gcmode != "full" && gcmode != "archive" {
 		Fatalf("--%s must be either 'full' or 'archive'", GCModeFlag.Name)
 	}
