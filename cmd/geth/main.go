@@ -299,10 +299,6 @@ func prepare(ctx *cli.Context) {
 	case ctx.IsSet(utils.GwangjuFlag.Name):
 		log.Info("Starting Geth on Gwangju testnet...")
 
-
-	case ctx.IsSet(utils.WLseoulFlag.Name):
-		log.Info("Starting Geth on Lve testnet...")
-
 	case ctx.IsSet(utils.WorldlandtestFlag.Name):
 		log.Info("Starting Geth on Worldland testnet...")
 

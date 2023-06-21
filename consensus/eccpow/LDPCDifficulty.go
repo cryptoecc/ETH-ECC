@@ -6,6 +6,7 @@ import (
 	"log"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/holiman/uint256"
+	"github.com/ethereum/go-ethereum/consensus"
 )
 
 /*

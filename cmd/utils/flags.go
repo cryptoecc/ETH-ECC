@@ -159,16 +159,12 @@ var (
 	}
 	// Worldland settings
 	SeoulFlag = &cli.BoolFlag{
-		Name:  "Seoul",
+		Name:  "seoul",
 		Usage: "Seoul Network: Error-Correction Codes Proof-of-Work Main Network",
 	}
 	GwangjuFlag = &cli.BoolFlag{
-		Name:  "Gwangju",
+		Name:  "gwangju",
 		Usage: "Gwangju network: Error-Correction Codes Proof-of-Work Test Network",
-	}
-	WLseoulFlag = &cli.BoolFlag{
-		Name:  "wlseoul",
-		Usage: "WorldLand Seoul network: Error-Correction Codes Proof-of-Work Test Network",
 	}
 	WorldlandtestFlag = &cli.BoolFlag{
 		Name:  "worldlandtest",
@@ -1057,9 +1053,6 @@ func MakeDataDir(ctx *cli.Context) string {
 		if ctx.Bool(GwangjuFlag.Name) {
 			return filepath.Join(path, "gwangju")
 		}
-		if ctx.Bool(WLseoulFlag.Name) {
-			return filepath.Join(path, "WLseoul")
-		}
 		if ctx.Bool(WorldlandtestFlag.Name) {
 			return filepath.Join(path, "worldlandtest")
 		}
@@ -1121,8 +1114,10 @@ func setBootstrapNodes(ctx *cli.Context, cfg *p2p.Config) {
 		urls = params.KilnBootnodes
 	case ctx.Bool(LveFlag.Name):
 		urls = params.LveBootnodes
-	case ctx.Bool(LvetestFlag.Name):
-		urls = params.LvetestBootnodes
+	case ctx.Bool(SeoulFlag.Name):
+		urls = params.SeoulBootnodes
+	case ctx.Bool(GwangjuFlag.Name):
+		urls = params.GwangjuBootnodes
 	case ctx.Bool(WorldlandtestFlag.Name):
 		urls = params.WorldlandtestBootnodes
 	}
@@ -1585,8 +1580,10 @@ func SetDataDir(ctx *cli.Context, cfg *node.Config) {
 		cfg.DataDir = filepath.Join(node.DefaultDataDir(), "kiln")
 	case ctx.Bool(LveFlag.Name) && cfg.DataDir == node.DefaultDataDir():
 		cfg.DataDir = filepath.Join(node.DefaultDataDir(), "lve")
-	case ctx.Bool(LvetestFlag.Name) && cfg.DataDir == node.DefaultDataDir():
-		cfg.DataDir = filepath.Join(node.DefaultDataDir(), "lvetest")
+	case ctx.Bool(SeoulFlag.Name) && cfg.DataDir == node.DefaultDataDir():
+		cfg.DataDir = filepath.Join(node.DefaultDataDir(), "seoul")
+	case ctx.Bool(GwangjuFlag.Name) && cfg.DataDir == node.DefaultDataDir():
+		cfg.DataDir = filepath.Join(node.DefaultDataDir(), "gwangju")
 	case ctx.Bool(WorldlandtestFlag.Name) && cfg.DataDir == node.DefaultDataDir():
 		cfg.DataDir = filepath.Join(node.DefaultDataDir(), "worldlandtest")
 	}
@@ -1779,7 +1776,7 @@ func CheckExclusive(ctx *cli.Context, args ...interface{}) {
 // SetEthConfig applies eth-related command line flags to the config.
 func SetEthConfig(ctx *cli.Context, stack *node.Node, cfg *ethconfig.Config) {
 	// Avoid conflicting network flags
-	CheckExclusive(ctx, MainnetFlag, DeveloperFlag, RopstenFlag, RinkebyFlag, GoerliFlag, SepoliaFlag, KilnFlag, LveFlag, LvetestFlag, WorldlandtestFlag)
+	CheckExclusive(ctx, MainnetFlag, DeveloperFlag, RopstenFlag, RinkebyFlag, GoerliFlag, SepoliaFlag, KilnFlag, LveFlag, SeoulFlag, WorldlandtestFlag)
 	CheckExclusive(ctx, LightServeFlag, SyncModeFlag, "light")
 	CheckExclusive(ctx, DeveloperFlag, ExternalSignerFlag) // Can't use both ephemeral unlocked and external signer
 	if ctx.String(GCModeFlag.Name) == "archive" && ctx.Uint64(TxLookupLimitFlag.Name) != 0 {
@@ -1970,8 +1967,8 @@ func SetEthConfig(ctx *cli.Context, stack *node.Node, cfg *ethconfig.Config) {
 		if !ctx.IsSet(NetworkIdFlag.Name) {
 			cfg.NetworkId = 103
 		}
-		cfg.Genesis = core.DefaultLvetestGenesisBlock()
-		SetDNSDiscoveryDefaults(cfg, params.LvetestGenesisHash)
+		cfg.Genesis = core.DefaultSeoulGenesisBlock()
+		SetDNSDiscoveryDefaults(cfg, params.SeoulGenesisHash)
 	case ctx.Bool(WorldlandtestFlag.Name):
 		if !ctx.IsSet(NetworkIdFlag.Name) {
 			cfg.NetworkId = 10001
@@ -2231,8 +2228,8 @@ func MakeGenesis(ctx *cli.Context) *core.Genesis {
 		genesis = core.DefaultKilnGenesisBlock()
 	case ctx.Bool(LveFlag.Name):
 		genesis = core.DefaultLveGenesisBlock()
-	case ctx.Bool(LvetestFlag.Name):
-		genesis = core.DefaultLvetestGenesisBlock()
+	case ctx.Bool(SeoulFlag.Name):
+		genesis = core.DefaultSeoulGenesisBlock()
 	case ctx.Bool(WorldlandtestFlag.Name):
 		genesis = core.DefaultWorldlandtestGenesisBlock()
 	case ctx.Bool(DeveloperFlag.Name):

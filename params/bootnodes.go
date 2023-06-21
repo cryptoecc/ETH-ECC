@@ -77,8 +77,6 @@ var GwangjuBootnodes = []string{
 
 }
 
-var WLseoulBootnodes = []string{}
-
 var WorldlandtestBootnodes = []string{
 	// Ethereum Foundation Go Bootnodes
 	"enode://3f87316c80ee6ec015e21ce7e2cd5b1067d946a52e87ae83aacc03fa050379c1c3c5412fc31a7092e210636848e2d57db28453779aa1ce7da7113bcd80060adf@65.109.62.117:30303",

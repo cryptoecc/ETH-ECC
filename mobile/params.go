@@ -95,14 +95,6 @@ func GwangjuGenesis() string {
 	return string(enc)
 }
 
-func WLseoulGenesis() string {
-	enc, err := json.Marshal(core.DefaultWLseoulGenesisBlock())
-	if err != nil {
-		panic(err)
-	}
-	return string(enc)
-}
-
 func WorldlandtestGenesis() string {
 	enc, err := json.Marshal(core.DefaultWorldlandtestGenesisBlock())
 	if err != nil {
