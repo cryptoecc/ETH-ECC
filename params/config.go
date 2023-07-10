@@ -38,7 +38,6 @@ var (
 	//need to update
 	SeoulGenesisHash = common.HexToHash("0x7c5cb1a45d2424a2be1155c22979bbe384aff07810260041d5609a87bc3c58cc")
 	GwangjuGenesisHash = common.HexToHash("0xd4e56740f876aef8c010b86a40d5f56745a118d0906a34e69aec8c0db1cb8fa3")
-	WorldlandtestGenesisHash = common.HexToHash("0xd4e56740f876aef8c010b86a40d5f56745a118d0906a34e69aec8c0db1cb8fa3")
 )
 
 // TrustedCheckpoints associates each known checkpoint with the genesis hash of
@@ -52,7 +51,7 @@ var TrustedCheckpoints = map[common.Hash]*TrustedCheckpoint{
 
 	//LveGenesisHash:  LveTrustedCheckpoint,
 	//SeoulGenesisHash:  SeoulTrustedCheckpoint,
-	//WorldlandtestGenesisHash:  WorldlandtestTrustedCheckpoint,
+	//GwangjuGenesisHash:  GwangjuTrustedCheckpoint,
 }
 
 // CheckpointOracles associates each known checkpoint oracles with the genesis hash of
@@ -66,7 +65,7 @@ var CheckpointOracles = map[common.Hash]*CheckpointOracleConfig{
 	//update
 	//LveGenesisHash:  LveCheckpointOracle,
 	//SeoulGenesisHash:  SeoulCheckpointOracle,
-	WorldlandtestGenesisHash:  WorldlandtestCheckpointOracle,
+	//GwangjuGenesisHash:  GwangjuCheckpointOracle,
 }
 
 var (
@@ -298,7 +297,7 @@ var (
 		MuirGlacierBlock:    nil,
 		BerlinBlock:         big.NewInt(0),
 		LondonBlock:         big.NewInt(0),
-		SeoulBlock:          big.NewInt(220000),
+		//SeoulBlock:          big.NewInt(220000),
 		ArrowGlacierBlock:   nil,
 		GrayGlacierBlock:    nil,
 		Eccpow:              new(EccpowConfig),
@@ -408,7 +407,7 @@ var (
 		},
 		Threshold: 2,
 	}*/
-
+	/*
 	WorldlandtestChainConfig = &ChainConfig{
 		ChainID:             big.NewInt(1), //10001
 		HomesteadBlock:      big.NewInt(1_150_000),
@@ -453,7 +452,7 @@ var (
 			common.HexToAddress("0x0DF8fa387C602AE62559cC4aFa4972A7045d6707"), // Guillaume
 		},
 		Threshold: 2,
-	}
+	}*/
 
 	// AllEthashProtocolChanges contains every protocol change (EIPs) introduced
 	// and accepted by the Ethereum core developers into the Ethash consensus.
@@ -484,7 +483,6 @@ var NetworkNames = map[string]string{
 	LveChainConfig.ChainID.String():  "lve",
 	SeoulChainConfig.ChainID.String():  "seoul",
 	GwangjuChainConfig.ChainID.String():  "gwangju",
-	WorldlandtestChainConfig.ChainID.String(): "worldland",
 }
 
 // TrustedCheckpoint represents a set of post-processed trie roots (CHT and

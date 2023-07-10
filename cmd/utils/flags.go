@@ -166,10 +166,6 @@ var (
 		Name:  "gwangju",
 		Usage: "Gwangju network: Error-Correction Codes Proof-of-Work Test Network",
 	}
-	WorldlandtestFlag = &cli.BoolFlag{
-		Name:  "worldlandtest",
-		Usage: "Worldland test network: Worldland Test Network",
-	}
 
 	// Dev mode
 	DeveloperFlag = &cli.BoolFlag{
@@ -1005,7 +1001,6 @@ var (
 		SepoliaFlag,
 		KilnFlag,
 		GwangjuFlag,
-		WorldlandtestFlag,
 	}
 	// NetworkFlags is the flag group of all built-in supported networks.
 	NetworkFlags = append([]cli.Flag{
@@ -1052,9 +1047,6 @@ func MakeDataDir(ctx *cli.Context) string {
 		}
 		if ctx.Bool(GwangjuFlag.Name) {
 			return filepath.Join(path, "gwangju")
-		}
-		if ctx.Bool(WorldlandtestFlag.Name) {
-			return filepath.Join(path, "worldlandtest")
 		}
 		return path
 	}
@@ -1118,10 +1110,7 @@ func setBootstrapNodes(ctx *cli.Context, cfg *p2p.Config) {
 		urls = params.SeoulBootnodes
 	case ctx.Bool(GwangjuFlag.Name):
 		urls = params.GwangjuBootnodes
-	case ctx.Bool(WorldlandtestFlag.Name):
-		urls = params.WorldlandtestBootnodes
 	}
-
 	// don't apply defaults if BootstrapNodes is already set
 	if cfg.BootstrapNodes != nil {
 		return
@@ -1584,8 +1573,6 @@ func SetDataDir(ctx *cli.Context, cfg *node.Config) {
 		cfg.DataDir = filepath.Join(node.DefaultDataDir(), "seoul")
 	case ctx.Bool(GwangjuFlag.Name) && cfg.DataDir == node.DefaultDataDir():
 		cfg.DataDir = filepath.Join(node.DefaultDataDir(), "gwangju")
-	case ctx.Bool(WorldlandtestFlag.Name) && cfg.DataDir == node.DefaultDataDir():
-		cfg.DataDir = filepath.Join(node.DefaultDataDir(), "worldlandtest")
 	}
 }
 
@@ -1776,7 +1763,7 @@ func CheckExclusive(ctx *cli.Context, args ...interface{}) {
 // SetEthConfig applies eth-related command line flags to the config.
 func SetEthConfig(ctx *cli.Context, stack *node.Node, cfg *ethconfig.Config) {
 	// Avoid conflicting network flags
-	CheckExclusive(ctx, MainnetFlag, DeveloperFlag, RopstenFlag, RinkebyFlag, GoerliFlag, SepoliaFlag, KilnFlag, LveFlag, SeoulFlag, GwangjuFlag, WorldlandtestFlag)
+	CheckExclusive(ctx, MainnetFlag, DeveloperFlag, RopstenFlag, RinkebyFlag, GoerliFlag, SepoliaFlag, KilnFlag, LveFlag, SeoulFlag, GwangjuFlag)
 	CheckExclusive(ctx, LightServeFlag, SyncModeFlag, "light")
 	CheckExclusive(ctx, DeveloperFlag, ExternalSignerFlag) // Can't use both ephemeral unlocked and external signer
 	if ctx.String(GCModeFlag.Name) == "archive" && ctx.Uint64(TxLookupLimitFlag.Name) != 0 {
@@ -1971,16 +1958,16 @@ func SetEthConfig(ctx *cli.Context, stack *node.Node, cfg *ethconfig.Config) {
 		SetDNSDiscoveryDefaults(cfg, params.SeoulGenesisHash)
 	case ctx.Bool(GwangjuFlag.Name):
 		if !ctx.IsSet(NetworkIdFlag.Name) {
-			cfg.NetworkId = 103
+			cfg.NetworkId = 10395
 		}
 		cfg.Genesis = core.DefaultGwangjuGenesisBlock()
 		SetDNSDiscoveryDefaults(cfg, params.SeoulGenesisHash)
-	case ctx.Bool(WorldlandtestFlag.Name):
+	case ctx.Bool(SeoulFlag.Name):
 		if !ctx.IsSet(NetworkIdFlag.Name) {
-			cfg.NetworkId = 10001
+			cfg.NetworkId = 103
 		}
-		cfg.Genesis = core.DefaultWorldlandtestGenesisBlock()
-		SetDNSDiscoveryDefaults(cfg, params.WorldlandtestGenesisHash)
+		cfg.Genesis = core.DefaultSeoulGenesisBlock()
+		SetDNSDiscoveryDefaults(cfg, params.SeoulGenesisHash)
 	case ctx.Bool(DeveloperFlag.Name):
 		if !ctx.IsSet(NetworkIdFlag.Name) {
 			cfg.NetworkId = 1337
@@ -2236,8 +2223,6 @@ func MakeGenesis(ctx *cli.Context) *core.Genesis {
 		genesis = core.DefaultLveGenesisBlock()
 	case ctx.Bool(SeoulFlag.Name):
 		genesis = core.DefaultSeoulGenesisBlock()
-	case ctx.Bool(WorldlandtestFlag.Name):
-		genesis = core.DefaultWorldlandtestGenesisBlock()
 	case ctx.Bool(DeveloperFlag.Name):
 		Fatalf("Developer chains are ephemeral")
 	}
@@ -2254,15 +2239,22 @@ func MakeChain(ctx *cli.Context, stack *node.Node) (*core.BlockChain, ethdb.Data
 	if err != nil {
 		Fatalf("%v", err)
 	}
-	eccpowConfig, err := core.LoadEccpowConfig(chainDb, gspec)
+	/*eccpowConfig, err := core.LoadEccpowConfig(chainDb, gspec)
 	if err != nil {
 		Fatalf("%v", err)
-	}
+	}*/
+
 	ethashConfig := ethconfig.Defaults.Ethash
 	if ctx.Bool(FakePoWFlag.Name) {
 		ethashConfig.PowMode = ethash.ModeFake
 	}
-	engine := ethconfig.CreateConsensusEngine(stack, &ethashConfig, cliqueConfig, eccpowConfig, nil, false, chainDb)
+
+	eccpowConfig := ethconfig.Defaults.Eccpow
+	if ctx.Bool(FakePoWFlag.Name) {
+		ethashConfig.PowMode = ethash.ModeFake
+	}
+
+	engine := ethconfig.CreateConsensusEngine(stack, &ethashConfig, cliqueConfig, &eccpowConfig, nil, false, chainDb)
 	if gcmode := ctx.String(GCModeFlag.Name); gcmode != "full" && gcmode != "archive" {
 		Fatalf("--%s must be either 'full' or 'archive'", GCModeFlag.Name)
 	}

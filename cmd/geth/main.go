@@ -299,9 +299,6 @@ func prepare(ctx *cli.Context) {
 	case ctx.IsSet(utils.GwangjuFlag.Name):
 		log.Info("Starting Geth on Gwangju testnet...")
 
-	case ctx.IsSet(utils.WorldlandtestFlag.Name):
-		log.Info("Starting Geth on Worldland testnet...")
-
 	case ctx.IsSet(utils.DeveloperFlag.Name):
 		log.Info("Starting Geth in ephemeral dev mode...")
 		log.Warn(`You are running Geth in --dev mode. Please note the following:
@@ -334,7 +331,6 @@ func prepare(ctx *cli.Context) {
 			!ctx.IsSet(utils.LveFlag.Name) &&
 			!ctx.IsSet(utils.SeoulFlag.Name) &&
 			!ctx.IsSet(utils.GwangjuFlag.Name) &&
-			!ctx.IsSet(utils.WorldlandtestFlag.Name) &&
 			!ctx.IsSet(utils.DeveloperFlag.Name) {
 			// Nope, we're really on mainnet. Bump that cache up!
 			log.Info("Bumping default cache on mainnet", "provided", ctx.Int(utils.CacheFlag.Name), "updated", 4096)

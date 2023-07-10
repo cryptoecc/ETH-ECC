@@ -40,6 +40,8 @@ import (
 // ecc proof-of-work protocol constants.
 var (
 	FrontierBlockReward       = big.NewInt(5e+18) // Block reward in wei for successfully mining a block
+	ByzantiumBlockReward      = big.NewInt(3e+18) // Block reward in wei for successfully mining a block upward from Byzantium
+	ConstantinopleBlockReward = big.NewInt(2e+18) // Block reward in wei for successfully mining a block upward from Constantinople
 	WorldLandBlockReward      = big.NewInt(3e+18) //Block reward in wei for successfully mining a block upward from WorldLand
 	WorldLandFirstBlockReward = big.NewInt(9e+18) //Block reward in wei for successfully mining a genesisblock upward from WorldLand
 
@@ -482,6 +484,14 @@ func accumulateRewards(config *params.ChainConfig, state *state.StateDB, header 
 	// Select the correct block reward based on chain progression
 	var blockReward = big.NewInt(FrontierBlockReward.Int64())
 
+	//blockReward := FrontierBlockReward
+	if config.IsByzantium(header.Number) {
+		blockReward = ByzantiumBlockReward
+	}
+	if config.IsConstantinople(header.Number) {
+		blockReward = ConstantinopleBlockReward
+	}
+
 	if config.IsWorldland(header.Number) {
 		blockReward = big.NewInt(WorldLandBlockReward.Int64())
 
@@ -518,7 +528,7 @@ func accumulateRewards(config *params.ChainConfig, state *state.StateDB, header 
 		}
 	}
 
-	log.Println("after func blockReward:", blockReward)
+	//log.Println("after func blockReward:", blockReward)
 
 	// Accumulate the rewards for the miner and any included uncles
 	reward := new(big.Int).Set(blockReward)
