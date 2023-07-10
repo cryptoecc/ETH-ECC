@@ -397,16 +397,36 @@ func (ecc *ECC) verifySeal(chain consensus.ChainHeaderReader, header *types.Head
 
 	var (
 		digest []byte
+		flag bool
 	)
-
-	flag, _, _, digest := VerifyOptimizedDecoding(header, ecc.SealHash(header).Bytes())
-
+	if chain.Config().IsSeoul(header.Number){
+		flag, _, _, digest = VerifyOptimizedDecodingSeoul(header, ecc.SealHash(header).Bytes())
+	} else{
+		flag, _, _, digest = VerifyOptimizedDecoding(header, ecc.SealHash(header).Bytes())
+	}
+	
 	encodedDigest := common.BytesToHash(digest)
 	if !bytes.Equal(header.MixDigest[:], encodedDigest[:]) {
 		return errInvalidMixDigest
 	}
 
 	if flag == false {
+		
+		/*var codeword []byte
+		var codeVal byte
+		for i, v := range Codeword {
+			codeVal |= byte(v) << (7 - i%8)
+			if i%8 == 7 {
+				codeword = append(codeword, codeVal)
+				codeVal = 0
+				}
+			}
+		if len(Codeword)%8 != 0 {
+			codeword = append(codeword, codeVal)
+		}
+
+		fmt.Printf("ver codeword: %v",codeword)
+		fmt.Printf("header codeword: %v",header.Codeword) */
 		return errInvalidPoW
 	}
 

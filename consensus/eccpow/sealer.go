@@ -101,7 +101,11 @@ func (ecc *ECC) Seal(chain consensus.ChainHeaderReader, block *types.Block, resu
 		go func(id int, nonce uint64) {
 			defer pend.Done()
 			//ecc.mine(block, id, nonce, abort, locals)
-			ecc.mine_seoul(block, id, nonce, abort, locals)
+			if chain.Config().IsSeoul(block.Header().Number){
+				ecc.mine_seoul(block, id, nonce, abort, locals)
+			} else{
+				ecc.mine(block, id, nonce, abort, locals)
+			}
 		}(i, uint64(ecc.rand.Int63()))
 	}
 

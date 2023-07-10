@@ -2,7 +2,6 @@ package eccpow
 
 import (
 	"encoding/binary"
-	"fmt"
 	"hash"
 	"math/big"
 	"math/rand"
@@ -168,7 +167,7 @@ func MakeDecision(header *types.Header, colInRow [][]int, outputWord []int) (boo
 	if numOfOnes >= Table[difficultyLevel].decisionFrom &&
 		numOfOnes <= Table[difficultyLevel].decisionTo &&
 		numOfOnes%Table[difficultyLevel].decisionStep == 0 {
-		fmt.Printf("hamming weight: %v\n", numOfOnes)
+		//fmt.Printf("hamming weight: %v\n", numOfOnes)
 		return true, numOfOnes
 	}
 

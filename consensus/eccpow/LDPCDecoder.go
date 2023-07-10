@@ -174,6 +174,31 @@ func VerifyOptimizedDecoding(header *types.Header, hash []byte) (bool, []int, []
 
 	hashVector := generateHv(parameters, seed)
 	hashVectorOfVerification, outputWordOfVerification, _ := OptimizedDecoding(parameters, hashVector, H, rowInCol, colInRow)
+	//hashVectorOfVerification, outputWordOfVerification, _ := OptimizedDecodingSeoul(parameters, hashVector, H, rowInCol, colInRow)
+
+	flag , _ := MakeDecision(header, colInRow, outputWordOfVerification)
+	
+	if  flag {
+		return true, hashVectorOfVerification, outputWordOfVerification, seed
+	}
+
+	return false, hashVectorOfVerification, outputWordOfVerification, seed
+}
+
+//VerifyOptimizedDecoding return bool, hashVector, outputword, digest which are used for validation
+func VerifyOptimizedDecodingSeoul(header *types.Header, hash []byte) (bool, []int, []int, []byte) {
+	parameters, _ := setParameters(header)
+	H := generateH(parameters)
+	colInRow, rowInCol := generateQ(parameters, H)
+
+	seed := make([]byte, 40)
+	copy(seed, hash)
+	binary.LittleEndian.PutUint64(seed[32:], header.Nonce.Uint64())
+	seed = crypto.Keccak512(seed)
+
+	hashVector := generateHv(parameters, seed)
+	//hashVectorOfVerification, outputWordOfVerification, _ := OptimizedDecoding(parameters, hashVector, H, rowInCol, colInRow)
+	hashVectorOfVerification, outputWordOfVerification, _ := OptimizedDecodingSeoul(parameters, hashVector, H, rowInCol, colInRow)
 
 	flag , _ := MakeDecision(header, colInRow, outputWordOfVerification)
 	
