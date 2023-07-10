@@ -175,62 +175,6 @@ func MakeLDPCDifficultyCalculator_Seoul() func(chain consensus.ChainHeaderReader
 	}
 }
 
-/*
-func MakeLDPCDifficultyCalculator_Seoul2() func(time uint64, parent *types.Header) *big.Int {
-	return func(time uint64, parent *types.Header) *big.Int {
-		bigTime := new(big.Int).SetUint64(time)
-		bigParentTime := new(big.Int).SetUint64(parent.Time)
-
-		x := new(big.Int)
-		x.Sub(bigTime, bigParentTime)
-
-		level := SearchLevel(parent.Difficulty)
-		diff := new(big.Int)
-
-		count = count + 1
-
-		if count < 1 {
-			level = initLevel
-		} else if count > 1000 {
-			count = count - 1000
-		}
-
-		if init_c < 5 {
-			level = initLevel
-			x = big.NewInt(12)
-			init_c += 1
-		}
-
-		bIndex := count % 100
-		avgTimeList[bIndex] = int(x.Uint64())
-
-		totalTime := 0
-		for i := 0; i < 100; i++ {
-			totalTime += avgTimeList[i]
-		}
-		avgTime := totalTime / 100
-
-		if count%100 == 90 {
-			if avgTime < stTime {
-				level += 1
-			} else {
-				if level > minLevel {
-					level -= 1
-				}
-			}
-		}
-
-		diff = ProbToDifficulty(Table[level].miningProb)
-
-		fmt.Println("Index: ", bIndex)
-		fmt.Println("Level: ", level)
-		fmt.Println("Average Time: ", avgTime, "s")
-		fmt.Println("Time List: ", avgTimeList)
-
-		return diff
-	}
-}*/
-
 // SearchLevel return next level by using currentDifficulty of header
 // Type of Ethereum difficulty is *bit.Int so arg is *big.int
 func SearchLevel(difficulty *big.Int) int {

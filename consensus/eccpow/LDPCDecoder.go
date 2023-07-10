@@ -85,7 +85,7 @@ func OptimizedDecoding(parameters Parameters, hashVector []int, H, rowInCol, col
 }
 
 //OptimizedDecoding return hashVector, outputWord, LRrtl
-func OptimizedDecoding_Seoul(parameters Parameters, hashVector []int, H, rowInCol, colInRow [][]int) ([]int, []int, [][]float64) {
+func OptimizedDecodingSeoul(parameters Parameters, hashVector []int, H, rowInCol, colInRow [][]int) ([]int, []int, [][]float64) {
 	outputWord := make([]int, parameters.n)
 	LRqtl := make([][]float64, parameters.n)
 	LRrtl := make([][]float64, parameters.n)
@@ -140,22 +140,22 @@ func OptimizedDecoding_Seoul(parameters Parameters, hashVector []int, H, rowInCo
 				LRpt[t] = infinityTest(LRpt[t])
 			}
 			
-			/*
+			
 			if LRpt[t] >= 0 {
 				outputWord[t] = 1
 			} else {
 				outputWord[t] = 0
-			}*/
+			}
 		}
 	}
-	
+	/*
 	for t := 0; t < parameters.n; t++ {
 		if LRpt[t] >= 0 {
 			outputWord[t] = 1
 		} else {
 			outputWord[t] = 0
 		}
-	}
+	}*/
 
 	return hashVector, outputWord, LRrtl
 }
@@ -175,7 +175,9 @@ func VerifyOptimizedDecoding(header *types.Header, hash []byte) (bool, []int, []
 	hashVector := generateHv(parameters, seed)
 	hashVectorOfVerification, outputWordOfVerification, _ := OptimizedDecoding(parameters, hashVector, H, rowInCol, colInRow)
 
-	if MakeDecision(header, colInRow, outputWordOfVerification) {
+	flag , _ := MakeDecision(header, colInRow, outputWordOfVerification)
+	
+	if  flag {
 		return true, hashVectorOfVerification, outputWordOfVerification, seed
 	}
 

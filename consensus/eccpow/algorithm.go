@@ -2,17 +2,17 @@ package eccpow
 
 import (
 	"encoding/binary"
+	"fmt"
+	"hash"
 	"math/big"
 	"math/rand"
-	"hash"
 	"sync"
 	"time"
-	"fmt"
 
 	"github.com/ethereum/go-ethereum/consensus"
 	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/ethereum/go-ethereum/log"
 	"github.com/ethereum/go-ethereum/crypto"
+	"github.com/ethereum/go-ethereum/log"
 	"github.com/ethereum/go-ethereum/metrics"
 	"github.com/ethereum/go-ethereum/rpc"
 	"golang.org/x/crypto/sha3"
@@ -128,10 +128,12 @@ func RunOptimizedConcurrencyLDPC(header *types.Header, hash []byte) (bool, []int
 		copy(seed, hash)
 		binary.LittleEndian.PutUint64(seed[32:], goRoutineNonce)
 		seed = crypto.Keccak512(seed)
+		//fmt.Printf("nonce: %v\n", seed)
 
 		goRoutineHashVector = generateHv(parameters, seed)
 		goRoutineHashVector, goRoutineOutputWord, _ = OptimizedDecoding(parameters, goRoutineHashVector, H, rowInCol, colInRow)
-		flag = MakeDecision(header, colInRow, goRoutineOutputWord)
+		
+		flag, _ = MakeDecision(header, colInRow, goRoutineOutputWord)
 
 		if flag {
 			hashVector = goRoutineHashVector
@@ -145,7 +147,7 @@ func RunOptimizedConcurrencyLDPC(header *types.Header, hash []byte) (bool, []int
 }
 
 //MakeDecision check outputWord is valid or not using colInRow
-func MakeDecision(header *types.Header, colInRow [][]int, outputWord []int) bool{
+func MakeDecision(header *types.Header, colInRow [][]int, outputWord []int) (bool, int){
 	parameters, difficultyLevel := setParameters(header)
 	for i := 0; i < parameters.m; i++ {
 		sum := 0
@@ -154,7 +156,7 @@ func MakeDecision(header *types.Header, colInRow [][]int, outputWord []int) bool
 			sum = sum + outputWord[colInRow[j][i]]
 		}
 		if sum%2 == 1 {
-			return false
+			return false, -1
 		}
 	}
 
@@ -167,10 +169,10 @@ func MakeDecision(header *types.Header, colInRow [][]int, outputWord []int) bool
 		numOfOnes <= Table[difficultyLevel].decisionTo &&
 		numOfOnes%Table[difficultyLevel].decisionStep == 0 {
 		fmt.Printf("hamming weight: %v\n", numOfOnes)
-		return true
+		return true, numOfOnes
 	}
 
-	return false
+	return false, numOfOnes
 }
 
 //func isRegular(nSize, wCol, wRow int) bool {

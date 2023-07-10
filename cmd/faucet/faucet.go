@@ -91,7 +91,6 @@ var (
 	//lveFlag  = flag.Bool("lve", false, "Initializes the faucet with Lve network config")
 	//SeoulFlag  = flag.Bool("seoul", false, "Initializes the faucet with Seoul network config")
 	//GwangjuFlag  = flag.Bool("gwangju", false, "Initializes the faucet with Gwangju network config")
-	//WorldlandtestFlag  = flag.Bool("worldlandtest", false, "Initializes the faucet with worldlandtest network config")
 )
 
 var (

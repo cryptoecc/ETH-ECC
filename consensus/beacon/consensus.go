@@ -113,8 +113,7 @@ func (beacon *Beacon) VerifyHeader(chain consensus.ChainHeaderReader, header *ty
 // VerifyHeaders expect the headers to be ordered and continuous.
 // have to update
 func (beacon *Beacon) VerifyHeaders(chain consensus.ChainHeaderReader, headers []*types.Header, seals []bool) (chan<- struct{}, <-chan error) {
-		//wordland hardfork
-
+	//wordland hardfork
 	//VerifyHeaders expect the headers to be ordered
 	if !beacon.IsPoSHeader(headers[len(headers)-1]) {
 		if !chain.Config().IsWorldland(headers[len(headers)-1].Number) {

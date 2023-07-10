@@ -258,5 +258,4 @@ func CreateConsensusEngine(stack *node.Node, ethashConfig *ethash.Config, clique
 	
 
 	//return beacon.New(engine, nil)
-
 }
