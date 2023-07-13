@@ -401,7 +401,7 @@ func (ecc *ECC) verifySeal(chain consensus.ChainHeaderReader, header *types.Head
 		flag bool
 	)
 	if chain.Config().IsSeoul(header.Number){
-		fmt.Println("Seoul")
+		//fmt.Println("Seoul")
 		flag, _, _, digest = VerifyOptimizedDecodingSeoul(header, ecc.SealHash(header).Bytes())
 	} else{
 		fmt.Println("Gwangju")
