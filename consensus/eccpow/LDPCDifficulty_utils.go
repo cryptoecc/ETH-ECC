@@ -63,7 +63,7 @@ func ProbToDifficulty(miningProb float64) *big.Int {
 
 
 func getTable(level int ) difficulty {
-	n := 32 + level
+	n := 64 + level * 4
 	return difficulty{level, n, 3, 4, 1/4 * n, 3/4 * n, 1, 0, 0}
 }
 	

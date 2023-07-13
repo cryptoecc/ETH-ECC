@@ -145,6 +145,51 @@ func RunOptimizedConcurrencyLDPC(header *types.Header, hash []byte) (bool, []int
 	return flag, hashVector, outputWord, LDPCNonce, digest
 }
 
+func RunOptimizedConcurrencyLDPC_Seoul(header *types.Header, hash []byte) (bool, []int, []int, uint64, []byte) {
+	//Need to set difficulty before running LDPC
+	// Number of goroutines : 500, Number of attempts : 50000 Not bad
+
+	var LDPCNonce uint64
+	var hashVector []int
+	var outputWord []int
+	var digest []byte
+	var flag bool
+
+	//var wg sync.WaitGroup
+	//var outerLoopSignal = make(chan struct{})
+	//var innerLoopSignal = make(chan struct{})
+	//var goRoutineSignal = make(chan struct{})
+
+	parameters, _ := setParameters_Seoul(header)
+	H := generateH(parameters)
+	colInRow, rowInCol := generateQ(parameters, H)
+	
+	for i := 0; i < 64; i++ {
+		var goRoutineHashVector []int
+		var goRoutineOutputWord []int
+		goRoutineNonce := generateRandomNonce()
+		seed := make([]byte, 40)
+		copy(seed, hash)
+		binary.LittleEndian.PutUint64(seed[32:], goRoutineNonce)
+		seed = crypto.Keccak512(seed)
+		//fmt.Printf("nonce: %v\n", seed)
+
+		goRoutineHashVector = generateHv(parameters, seed)
+		goRoutineHashVector, goRoutineOutputWord, _ = OptimizedDecodingSeoul(parameters, goRoutineHashVector, H, rowInCol, colInRow)
+		
+		flag, _ = MakeDecision_Seoul(header, colInRow, goRoutineOutputWord)
+
+		if flag {
+			hashVector = goRoutineHashVector
+			outputWord = goRoutineOutputWord
+			LDPCNonce = goRoutineNonce
+			digest = seed
+			break
+		}
+	}
+	return flag, hashVector, outputWord, LDPCNonce, digest
+}
+
 //MakeDecision check outputWord is valid or not using colInRow
 func MakeDecision(header *types.Header, colInRow [][]int, outputWord []int) (bool, int){
 	parameters, difficultyLevel := setParameters(header)
@@ -176,7 +221,7 @@ func MakeDecision(header *types.Header, colInRow [][]int, outputWord []int) (boo
 
 //MakeDecision check outputWord is valid or not using colInRow
 func MakeDecision_Seoul(header *types.Header, colInRow [][]int, outputWord []int) (bool, int){
-	parameters, _ := setParameters(header)
+	parameters, _ := setParameters_Seoul(header)
 	for i := 0; i < parameters.m; i++ {
 		sum := 0
 		for j := 0; j < parameters.wr; j++ {

@@ -234,7 +234,8 @@ func (ecc *ECC) mine_seoul(block *types.Block, id int, seed uint64, abort chan s
 	logger := log.New("miner", id)
 	logger.Trace("Started ecc search for new nonces", "seed", seed)
 
-	parameters, _ := setParameters(header)
+	parameters, _ := setParameters_Seoul(header)
+	//fmt.Println(parameters)
 	H := generateH(parameters)
 	colInRow, rowInCol := generateQ(parameters, H)
 

@@ -885,7 +885,7 @@ func DefaultSeoulGenesisBlock() *Genesis {
 		Timestamp:  1651123670,
 		ExtraData:  hexutil.MustDecode("0x0000000000000000000000000000000000000000000000000000000000000000"),
 		GasLimit:   4700000,
-		Difficulty: big.NewInt(524288),
+		Difficulty: big.NewInt(1016),
 		Mixhash:    common.HexToHash("0x0000000000000000000000000000000000000000000000000000000000000000"),
 		Coinbase:   common.HexToAddress("0x0000000000000000000000000000000000000000"),
 		Number:     0,
