@@ -39,18 +39,20 @@ var (
 	Sensitivity         = big.NewInt(8)
 
 	// BlockGenerationTime for Seoul
-	stTime      int = 10
+	targetTime      int = 10
+	BlockGenerationTimeSeoul = big.NewInt(10) // 36) // 10 ) // 36)
+	SeoulDifficulty   = big.NewInt(1016)
 
-	avgTimeList     = [100]int{stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime,
-		stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime,
-		stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime,
-		stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime,
-		stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime,
-		stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime,
-		stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime,
-		stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime,
-		stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime,
-		stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime, stTime}
+	avgTimeList     = [100]int{targetTime, targetTime, targetTime, targetTime, targetTime, targetTime, targetTime, targetTime, targetTime, targetTime,
+		targetTime, targetTime, targetTime, targetTime, targetTime, targetTime, targetTime, targetTime, targetTime, targetTime,
+		targetTime, targetTime, targetTime, targetTime, targetTime, targetTime, targetTime, targetTime, targetTime, targetTime,
+		targetTime, targetTime, targetTime, targetTime, targetTime, targetTime, targetTime, targetTime, targetTime, targetTime,
+		targetTime, targetTime, targetTime, targetTime, targetTime, targetTime, targetTime, targetTime, targetTime, targetTime,
+		targetTime, targetTime, targetTime, targetTime, targetTime, targetTime, targetTime, targetTime, targetTime, targetTime,
+		targetTime, targetTime, targetTime, targetTime, targetTime, targetTime, targetTime, targetTime, targetTime, targetTime,
+		targetTime, targetTime, targetTime, targetTime, targetTime, targetTime, targetTime, targetTime, targetTime, targetTime,
+		targetTime, targetTime, targetTime, targetTime, targetTime, targetTime, targetTime, targetTime, targetTime, targetTime,
+		targetTime, targetTime, targetTime, targetTime, targetTime, targetTime, targetTime, targetTime, targetTime, targetTime}
 
 	
 	//initLevel int = 10
@@ -89,7 +91,7 @@ func MakeLDPCDifficultyCalculator() func(time uint64, parent *types.Header) *big
 		x.Sub(bigTime, bigParentTime)
 		//fmt.Printf("block_timestamp - parent_timestamp : %v\n", x)
 
-		x.Div(x, BlockGenerationTime)
+		x.Div(x, BlockGenerationTimeSeoul)
 		//fmt.Printf("(block_timestamp - parent_timestamp) / BlockGenerationTime : %v\n", x)
 
 		if parent.UncleHash == types.EmptyUncleHash {
@@ -123,7 +125,6 @@ func MakeLDPCDifficultyCalculator() func(time uint64, parent *types.Header) *big
 		}
 
 		//fmt.Printf("x : %v, Minimum difficulty : %v\n", x, MinimumDifficulty)
-
 		return x
 	}
 }
@@ -149,7 +150,7 @@ func MakeLDPCDifficultyCalculator_Seoul() func(chain consensus.ChainHeaderReader
 			x.Sub(bigTime, grandParentTime)
 			avgTime := int(x.Uint64()) / 100
 
-			if avgTime < stTime {
+			if avgTime < targetTime {
 				level += 1
 			} else {
 				if level > minLevel {
@@ -190,6 +191,27 @@ func SearchLevel(difficulty *big.Int) int {
 			level = Table[i].level
 			distance = math.Abs(currentProb - Table[i].miningProb)
 		} else {
+			break
+		}
+	}
+
+	return level
+}
+
+// SearchLevel return next level by using currentDifficulty of header
+// Type of Ethereum difficulty is *bit.Int so arg is *big.int
+func SearchLevel_Seoul(difficulty *big.Int) int {
+
+	var level int
+
+	difficultyf := new(big.Rat).SetInt(difficulty)
+	level_prob := big.NewRat(3, 2)
+	difficultyf.Quo(difficultyf, new(big.Rat).SetInt(SeoulDifficulty))
+
+	for {
+		difficultyf.Quo(difficultyf, level_prob)
+		level ++
+		if difficultyf.Cmp(big.NewRat(1, 1)) < 0 {
 			break
 		}
 	}

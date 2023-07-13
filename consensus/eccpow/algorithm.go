@@ -174,6 +174,35 @@ func MakeDecision(header *types.Header, colInRow [][]int, outputWord []int) (boo
 	return false, numOfOnes
 }
 
+//MakeDecision check outputWord is valid or not using colInRow
+func MakeDecision_Seoul(header *types.Header, colInRow [][]int, outputWord []int) (bool, int){
+	parameters, _ := setParameters(header)
+	for i := 0; i < parameters.m; i++ {
+		sum := 0
+		for j := 0; j < parameters.wr; j++ {
+			//	fmt.Printf("i : %d, j : %d, m : %d, wr : %d \n", i, j, m, wr)
+			sum = sum + outputWord[colInRow[j][i]]
+		}
+		if sum%2 == 1 {
+			return false, -1
+		}
+	}
+
+	var numOfOnes int
+	for _, val := range outputWord {
+		numOfOnes += val
+	}
+
+	if numOfOnes >= parameters.n/4 &&
+	numOfOnes <= parameters.n/2 {
+		//fmt.Printf("hamming weight: %v\n", numOfOnes)
+		return true, numOfOnes
+	}
+
+	return false, numOfOnes
+}
+
+
 //func isRegular(nSize, wCol, wRow int) bool {
 //	res := float64(nSize*wCol) / float64(wRow)
 //	m := math.Round(res)

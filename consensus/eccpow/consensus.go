@@ -317,7 +317,8 @@ func (ecc *ECC) CalcDifficulty(chain consensus.ChainHeaderReader, time uint64, p
 	next := new(big.Int).Add(parent.Number, big1)
 	switch {
 	case chain.Config().IsSeoul(next):
-		return calcDifficultySeoul(chain, time, parent)
+		//return calcDifficultySeoul(chain, time, parent)
+		return calcDifficultyFrontier(time, parent)
 	default:
 		//fmt.Println("frontier")
 		return calcDifficultyFrontier(time, parent)

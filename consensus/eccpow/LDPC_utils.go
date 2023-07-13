@@ -30,6 +30,7 @@ type Parameters struct {
 
 // setParameters sets n, wc, wr, m, seed return parameters and difficulty level
 func setParameters(header *types.Header) (Parameters, int) {
+	//level := SearchLevel(header.Difficulty)
 	level := SearchLevel(header.Difficulty)
 
 	parameters := Parameters{
@@ -42,6 +43,23 @@ func setParameters(header *types.Header) (Parameters, int) {
 
 	return parameters, level
 }
+
+// setParameters sets n, wc, wr, m, seed return parameters and difficulty level
+func setParameters_Seoul(header *types.Header) (Parameters, int) {
+	//level := SearchLevel(header.Difficulty)
+	level := SearchLevel_Seoul(header.Difficulty)
+	table := getTable(level)
+	parameters := Parameters{
+		n:  table.n,
+		wc: table.wc,
+		wr: table.wr,
+	}
+	parameters.m = int(parameters.n * parameters.wc / parameters.wr)
+	parameters.seed = generateSeed(header.ParentHash)
+
+	return parameters, level
+}
+
 
 //generateRandomNonce generate 64bit random nonce with similar way of ethereum block nonce
 func generateRandomNonce() uint64 {

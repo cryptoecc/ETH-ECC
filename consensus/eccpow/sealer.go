@@ -177,7 +177,7 @@ search:
 
 			// Correct nonce found, create a new header with it
 			if flag == true {
-				level := SearchLevel(header.Difficulty)
+				level := SearchLevel_Seoul(header.Difficulty)
 				fmt.Printf("level: %v\n", level)
 				fmt.Printf("total attempts: %v\n", total_attempts)
 				fmt.Printf("hashrate: %v\n", ecc.Hashrate())
@@ -265,7 +265,7 @@ search:
 			goRoutineHashVector := generateHv(parameters, digest)
 			goRoutineHashVector, goRoutineOutputWord, _ := OptimizedDecodingSeoul(parameters, goRoutineHashVector, H, rowInCol, colInRow)
 			
-			flag, _ := MakeDecision(header, colInRow, goRoutineOutputWord)
+			flag, _ := MakeDecision_Seoul(header, colInRow, goRoutineOutputWord)
 			//fmt.Printf("nonce: %v\n", nonce)
 			//fmt.Printf("nonce: %v\n", weight)
 
@@ -273,7 +273,7 @@ search:
 				//hashVector := goRoutineHashVector
 				outputWord := goRoutineOutputWord
 
-				level := SearchLevel(header.Difficulty)
+				level := SearchLevel_Seoul(header.Difficulty)
 				fmt.Printf("level: %v\n", level)
 				fmt.Printf("total attempts: %v\n", total_attempts)
 				fmt.Printf("hashrate: %v\n", ecc.Hashrate())

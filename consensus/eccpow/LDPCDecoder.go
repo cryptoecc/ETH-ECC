@@ -163,7 +163,7 @@ func OptimizedDecodingSeoul(parameters Parameters, hashVector []int, H, rowInCol
 
 //VerifyOptimizedDecoding return bool, hashVector, outputword, digest which are used for validation
 func VerifyOptimizedDecoding(header *types.Header, hash []byte) (bool, []int, []int, []byte) {
-	parameters, _ := setParameters(header)
+	parameters, _ := setParameters_Seoul(header)
 	H := generateH(parameters)
 	colInRow, rowInCol := generateQ(parameters, H)
 
