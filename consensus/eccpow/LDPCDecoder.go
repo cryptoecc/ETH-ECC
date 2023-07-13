@@ -200,7 +200,7 @@ func VerifyOptimizedDecodingSeoul(header *types.Header, hash []byte) (bool, []in
 	//hashVectorOfVerification, outputWordOfVerification, _ := OptimizedDecoding(parameters, hashVector, H, rowInCol, colInRow)
 	hashVectorOfVerification, outputWordOfVerification, _ := OptimizedDecodingSeoul(parameters, hashVector, H, rowInCol, colInRow)
 
-	flag , _ := MakeDecision(header, colInRow, outputWordOfVerification)
+	flag , _ := MakeDecision_Seoul(header, colInRow, outputWordOfVerification)
 	
 	if  flag {
 		return true, hashVectorOfVerification, outputWordOfVerification, seed
