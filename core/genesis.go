@@ -892,6 +892,7 @@ func DefaultSeoulGenesisBlock() *Genesis {
 		GasUsed:    0,
 		ParentHash: common.HexToHash("0x0000000000000000000000000000000000000000000000000000000000000000"),
 		Alloc: map[common.Address]GenesisAccount{
+			
 		},
 	}
 }

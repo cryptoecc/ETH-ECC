@@ -67,7 +67,7 @@ func getTable(level int ) difficulty {
 	return difficulty{level, n, 3, 4, 1/4 * n, 3/4 * n, 1, 0, 0}
 }
 	
-/*
+
 // Table is difficulty table slice
 var Table = []difficulty{
 	{0, 32, 3, 4, 10, 22, 2, 0.329111, 3.077970e-05},
@@ -452,8 +452,9 @@ var Table = []difficulty{
 	{379, 128, 3, 4, 34, 94, 1, 1.345734, 5.192020e-23},
 	{380, 128, 3, 4, 34, 34, 1, 1.345734, 2.600000e-23},
 
-}*/
+}
 
+/*
 // Table is difficulty table slice
 var Table = []difficulty{
 	{0, 32, 3, 4, 8, 24, 2, 0.329111, 3.077970e-05},
@@ -513,5 +514,5 @@ var Table = []difficulty{
 	{54, 248, 3, 4, 62, 186, 1, 0.628015, 4.986660e-10},
 	{55, 252, 3, 4, 63, 189, 1, 0.628015, 4.315180e-10},
 	{56, 256, 3, 4, 64, 192, 2, 0.628015, 3.848530e-10},
-}
+}*/
 
