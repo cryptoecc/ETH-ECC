@@ -43,7 +43,7 @@ var (
 	ByzantiumBlockReward      = big.NewInt(3e+18) // Block reward in wei for successfully mining a block upward from Byzantium
 	ConstantinopleBlockReward = big.NewInt(2e+18) // Block reward in wei for successfully mining a block upward from Constantinople
 	WorldLandBlockReward      = big.NewInt(3e+18) //Block reward in wei for successfully mining a block upward from WorldLand
-	WorldLandFirstBlockReward = big.NewInt(9e+18) //Block reward in wei for successfully mining a genesisblock upward from WorldLand
+	//WorldLandFirstBlockReward = big.NewInt(9e+18) //Block reward in wei for successfully mining a genesisblock upward from WorldLand
 
 	HALVING_INTERVAL  = uint64(6307200) //Block per year * 2year
 	MATURITY_INTERVAL = uint64(3153600) //Block per year
@@ -543,11 +543,11 @@ func accumulateRewards(config *params.ChainConfig, state *state.StateDB, header 
 			log.Println("maturityblockReward 2:", blockReward)
 		}
 
-		if config.IsWorldlandMerge(header.Number) {
+		/*if config.IsWorldlandMerge(header.Number) {
 			blockReward = WorldLandFirstBlockReward
 
 			log.Println("mergeblockReward:", blockReward)
-		}
+		}*/
 	}
 
 	//log.Println("after func blockReward:", blockReward)
