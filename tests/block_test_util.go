@@ -87,6 +87,7 @@ type btHeader struct {
 	Timestamp        uint64
 	BaseFeePerGas    *big.Int
 	Codeword         []byte
+	CodeLength       uint64
 }
 
 type btHeaderMarshaling struct {

@@ -819,6 +819,13 @@ func (b *Block) Codeword(ctx context.Context) (hexutil.Bytes, error) {
 	return header.Codeword, nil
 }
 
+func (b *Block) CodeLength(ctx context.Context) (Long, error) {
+	header, err := b.resolveHeader(ctx)
+	if err != nil {
+		return 0, err
+	}
+	return Long(header.CodeLength), nil
+}
 
 func (b *Block) LogsBloom(ctx context.Context) (hexutil.Bytes, error) {
 	header, err := b.resolveHeader(ctx)

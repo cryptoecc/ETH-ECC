@@ -36,8 +36,8 @@ var (
 
 	LveGenesisHash = common.HexToHash("0x7c5cb1a45d2424a2be1155c22979bbe384aff07810260041d5609a87bc3c58cc")
 	//need to update
-	SeoulGenesisHash = common.HexToHash("0x7c5cb1a45d2424a2be1155c22979bbe384aff07810260041d5609a87bc3c58cc")
-	GwangjuGenesisHash = common.HexToHash("0xd4e56740f876aef8c010b86a40d5f56745a118d0906a34e69aec8c0db1cb8fa3")
+	//SeoulGenesisHash = common.HexToHash("0x7c5cb1a45d2424a2be1155c22979bbe384aff07810260041d5609a87bc3c58cc")
+	//GwangjuGenesisHash = common.HexToHash("0xd4e56740f876aef8c010b86a40d5f56745a118d0906a34e69aec8c0db1cb8fa3")
 )
 
 // TrustedCheckpoints associates each known checkpoint with the genesis hash of
@@ -340,7 +340,7 @@ var (
 		LondonBlock:                   big.NewInt(0),
 		WorldlandBlock:        	       big.NewInt(0),
 		SeoulBlock:        	           big.NewInt(0),
-		Eccpow: 				 new(EccpowConfig),
+		Eccpow: 				       new(EccpowConfig),
 	}
 
 		/* SeoulTrustedCheckpoint contains the light client trusted checkpoint for the Görli test network.
@@ -365,24 +365,23 @@ var (
 	}*/
 
 	GwangjuChainConfig = &ChainConfig{
-		ChainID:             big.NewInt(10395),
-		HomesteadBlock:      big.NewInt(0),
-		EIP150Block:         big.NewInt(0),
-		EIP150Hash:          common.HexToHash("0x0000000000000000000000000000000000000000000000000000000000000000"),
-		EIP155Block:         big.NewInt(0),
-		EIP158Block:         big.NewInt(0),
-		ByzantiumBlock:      big.NewInt(0),
-		ConstantinopleBlock: big.NewInt(0),
-		PetersburgBlock:     big.NewInt(0),
-		IstanbulBlock:       big.NewInt(0),
-		MuirGlacierBlock:    nil,
-		BerlinBlock:         big.NewInt(0),
-		LondonBlock:         big.NewInt(0),
-		ArrowGlacierBlock:   nil,
-		GrayGlacierBlock:    nil,
-		WorldlandBlock:		 big.NewInt(3),
-		HalvingEndTime:		 big.NewInt(12),
-		Eccpow: new(EccpowConfig),
+		ChainID:                       big.NewInt(10395),
+		HomesteadBlock:                big.NewInt(0),
+		DAOForkBlock:                  nil,
+		DAOForkSupport:                true,
+		EIP150Block:                   big.NewInt(0),
+		EIP155Block:                   big.NewInt(0),
+		EIP158Block:                   big.NewInt(0),
+		ByzantiumBlock:                big.NewInt(0),
+		ConstantinopleBlock:           big.NewInt(0),
+		PetersburgBlock:               big.NewInt(0),
+		IstanbulBlock:                 big.NewInt(0),
+		MuirGlacierBlock:              big.NewInt(0),
+		BerlinBlock:                   big.NewInt(0),
+		LondonBlock:                   big.NewInt(0),
+		WorldlandBlock:        	       big.NewInt(0),
+		SeoulBlock:        	           big.NewInt(0),
+		Eccpow: 				       new(EccpowConfig),
 	}
 	
 	/* SeoulTrustedCheckpoint contains the light client trusted checkpoint for the Görli test network.

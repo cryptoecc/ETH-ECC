@@ -84,14 +84,13 @@ type Header struct {
 	MixDigest   common.Hash    `json:"mixHash"`
 	Nonce       BlockNonce     `json:"nonce"`
 
-
 	// BaseFee was added by EIP-1559 and is ignored in legacy headers.
-	BaseFee *big.Int `json:"baseFeePerGas" rlp:"optional"`
-
+	BaseFee *big.Int           `json:"baseFeePerGas" rlp:"optional"`
 	// Codeword was added by Worldlandhardfork and is ignored in legacy headers.
-	Codeword []byte   `json:"codeword" rlp:"optional"`
+	Codeword []byte            `json:"codeword" rlp:"optional"`
+	// CodeLength was added by Worldlandhardfork and is ignored in legacy headers.
+	CodeLength uint64          `json:"codelength" rlp:"optional"`
 	
-
 	/*
 		TODO (MariusVanDerWijden) Add this field once needed
 		// Random was added during the merge and contains the BeaconState randomness
@@ -109,6 +108,7 @@ type headerMarshaling struct {
 	Extra      hexutil.Bytes
 	BaseFee    *hexutil.Big
 	//Codeword   hexutil.Bytes
+	//CodeLength hexutil.Uint64
 	Hash       common.Hash `json:"hash"` // adds call to Hash() in MarshalJSON
 }
 
@@ -258,10 +258,13 @@ func CopyHeader(h *Header) *Header {
 		cpy.Extra = make([]byte, len(h.Extra))
 		copy(cpy.Extra, h.Extra)
 	}
-	if len(h.Codeword) > 0 {
+	/*if len(h.Codeword) > 0 {
 		cpy.Codeword = make([]byte, len(h.Codeword))
 		copy(cpy.Codeword, h.Codeword)
 	}
+	if h.CodeLength != nil {
+		cpy.BaseFee = new(big.Int).Set(h.CodeLength)
+	}*/
 	return &cpy
 }
 
@@ -323,6 +326,10 @@ func (b *Block) Codeword() []byte {
 		return nil
 	}
 	return common.CopyBytes(b.header.Codeword) 
+}
+
+func (b *Block) CodeLength() uint64 { 
+	return b.header.CodeLength
 }
 
 func (b *Block) BaseFee() *big.Int {

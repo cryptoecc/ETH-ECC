@@ -1955,19 +1955,13 @@ func SetEthConfig(ctx *cli.Context, stack *node.Node, cfg *ethconfig.Config) {
 			cfg.NetworkId = 103
 		}
 		cfg.Genesis = core.DefaultSeoulGenesisBlock()
-		SetDNSDiscoveryDefaults(cfg, params.SeoulGenesisHash)
+		//SetDNSDiscoveryDefaults(cfg, params.SeoulGenesisHash)
 	case ctx.Bool(GwangjuFlag.Name):
 		if !ctx.IsSet(NetworkIdFlag.Name) {
 			cfg.NetworkId = 10395
 		}
 		cfg.Genesis = core.DefaultGwangjuGenesisBlock()
-		SetDNSDiscoveryDefaults(cfg, params.SeoulGenesisHash)
-	case ctx.Bool(SeoulFlag.Name):
-		if !ctx.IsSet(NetworkIdFlag.Name) {
-			cfg.NetworkId = 103
-		}
-		cfg.Genesis = core.DefaultSeoulGenesisBlock()
-		SetDNSDiscoveryDefaults(cfg, params.SeoulGenesisHash)
+		//SetDNSDiscoveryDefaults(cfg, params.SeoulGenesisHash)
 	case ctx.Bool(DeveloperFlag.Name):
 		if !ctx.IsSet(NetworkIdFlag.Name) {
 			cfg.NetworkId = 1337

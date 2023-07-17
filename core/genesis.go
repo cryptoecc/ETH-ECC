@@ -162,10 +162,10 @@ func CommitGenesisState(db ethdb.Database, hash common.Hash) error {
 			genesis = DefaultSepoliaGenesisBlock()
 		case params.LveGenesisHash:
 			genesis = DefaultLveGenesisBlock()
-		case params.SeoulGenesisHash:
+		/*case params.SeoulGenesisHash:
 			genesis = DefaultSeoulGenesisBlock()
 		case params.GwangjuGenesisHash:
-			genesis = DefaultGwangjuGenesisBlock()
+			genesis = DefaultGwangjuGenesisBlock()*/
 		}
 		if genesis != nil {
 			alloc = genesis.Alloc
@@ -440,10 +440,10 @@ func (g *Genesis) configOrDefault(ghash common.Hash) *params.ChainConfig {
 		return DefaultKilnGenesisBlock().Config
 	case ghash == params.LveGenesisHash:
 		return params.LveChainConfig
-	case ghash == params.SeoulGenesisHash:
+	/*case ghash == params.SeoulGenesisHash:
 		return params.SeoulChainConfig
 	case ghash == params.GwangjuGenesisHash:
-		return params.GwangjuChainConfig
+		return params.GwangjuChainConfig*/
 	default:
 		return params.AllEthashProtocolChanges
 	}

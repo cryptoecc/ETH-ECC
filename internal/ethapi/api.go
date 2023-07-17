@@ -1175,12 +1175,17 @@ func RPCMarshalHeader(head *types.Header) map[string]interface{} {
 		"transactionsRoot": head.TxHash,
 		"receiptsRoot":     head.ReceiptHash,
 	}
-	if head.Codeword != nil {
-		result["codeword"] = hexutil.Bytes(head.Codeword)
-	}
 
 	if head.BaseFee != nil {
 		result["baseFeePerGas"] = (*hexutil.Big)(head.BaseFee)
+	}
+
+	if head.Codeword != nil {
+		result["codeword"] = hexutil.Bytes(head.Codeword)
+	}
+	
+	if head.CodeLength != 0 {
+		result["codelength"] = hexutil.Uint64(head.CodeLength)
 	}
 
 	return result

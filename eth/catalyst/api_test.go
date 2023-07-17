@@ -706,7 +706,8 @@ func setBlockhash(data *beacon.ExecutableDataV1) *beacon.ExecutableDataV1 {
 		BaseFee:     data.BaseFeePerGas,
 		Extra:       data.ExtraData,
 		MixDigest:   data.Random,
-		Codeword:    data.Codeword,
+		//Codeword:    data.Codeword,
+		//CodeLength:  data.CodeLength,
 	}
 	block := types.NewBlockWithHeader(header).WithBody(txs, nil /* uncles */)
 	data.BlockHash = block.Hash()

@@ -58,7 +58,8 @@ type ExecutableDataV1 struct {
 	BaseFeePerGas *big.Int       `json:"baseFeePerGas" gencodec:"required"`
 	BlockHash     common.Hash    `json:"blockHash"     gencodec:"required"`
 	Transactions  [][]byte       `json:"transactions"  gencodec:"required"`
-	//Codeword      []byte         `json:"codeword"`
+	//Codeword      []byte         `json:"codeword"      gencodec:"required"`
+	//CodeLength      uint64         `json:"codelength"      gencodec:"required"`
 	
 }
 
@@ -154,6 +155,7 @@ func ExecutableDataToBlock(params ExecutableDataV1) (*types.Block, error) {
 	if len(params.Codeword) > 32 {
 		return nil, fmt.Errorf("invalid extradata length: %v", len(params.Codeword))
 	}*/
+
 	if len(params.LogsBloom) != 256 {
 		return nil, fmt.Errorf("invalid logsBloom length: %v", len(params.LogsBloom))
 	}
@@ -178,6 +180,7 @@ func ExecutableDataToBlock(params ExecutableDataV1) (*types.Block, error) {
 		Extra:       params.ExtraData,
 		MixDigest:   params.Random,
 		//Codeword:    params.Codeword,
+		//CodeLength:  params.CodeLength,
 	}
 	block := types.NewBlockWithHeader(header).WithBody(txs, nil /* uncles */)
 	if block.Hash() != params.BlockHash {
@@ -205,5 +208,6 @@ func BlockToExecutableData(block *types.Block) *ExecutableDataV1 {
 		Random:        block.MixDigest(),
 		ExtraData:     block.Extra(),
 		//Codeword:      block.Codeword(),
+		//CodeLength:      block.CodeLength(),
 	}
 }

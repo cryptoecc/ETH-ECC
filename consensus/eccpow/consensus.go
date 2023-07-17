@@ -414,21 +414,6 @@ func (ecc *ECC) verifySeal(chain consensus.ChainHeaderReader, header *types.Head
 	}
 
 	if flag == false {
-		/*var codeword []byte
-		var codeVal byte
-		for i, v := range Codeword {
-			codeVal |= byte(v) << (7 - i%8)
-			if i%8 == 7 {
-				codeword = append(codeword, codeVal)
-				codeVal = 0
-				}
-			}
-		if len(Codeword)%8 != 0 {
-			codeword = append(codeword, codeVal)
-		}
-
-		fmt.Printf("ver codeword: %v",codeword)
-		fmt.Printf("header codeword: %v",header.Codeword) */
 		return errInvalidPoW
 	}
 
@@ -484,10 +469,7 @@ func (ecc *ECC) SealHash(header *types.Header) (hash common.Hash) {
 	if header.BaseFee != nil {
 		enc = append(enc, header.BaseFee)
 	}
-	/*
-		if header.Codeword != nil {
-			enc = append(enc, header.Codeword)
-		}*/
+	
 	rlp.Encode(hasher, enc)
 	hasher.Sum(hash[:0])
 	return hash
