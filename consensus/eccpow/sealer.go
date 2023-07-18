@@ -282,6 +282,7 @@ search:
 				fmt.Printf("Codeword : %d\n", outputWord)
 
 				header = types.CopyHeader(header)
+				header.CodeLength = uint64(parameters.n)
 				header.MixDigest = common.BytesToHash(digest)
 				header.Nonce = types.EncodeNonce(nonce)
 				

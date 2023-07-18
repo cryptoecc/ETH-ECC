@@ -428,6 +428,7 @@ func (ecc *ECC) Prepare(chain consensus.ChainHeaderReader, header *types.Header)
 		return consensus.ErrUnknownAncestor
 	}
 	header.Difficulty = ecc.CalcDifficulty(chain, header.Time, parent)
+	
 	return nil
 }
 

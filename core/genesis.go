@@ -878,7 +878,7 @@ func DefaultLveGenesisBlock() *Genesis {
 }
 
 // DefaultLveGenesisBlock returns the LVE TEST network genesis block.
-func DefaultSeoulGenesisBlock() *Genesis {
+/*func DefaultSeoulGenesisBlock() *Genesis {
 	return &Genesis{
 		Config:     params.SeoulChainConfig,
 		Nonce: 0,
@@ -895,8 +895,33 @@ func DefaultSeoulGenesisBlock() *Genesis {
 			
 		},
 	}
+}*/
+
+func DefaultSeoulGenesisBlock() *Genesis {
+	return &Genesis{
+		Config:     params.SeoulChainConfig,
+		Nonce:      103,
+		Timestamp:  1689649200,
+		ExtraData:  []byte("Worldland Seoul!"),
+		GasLimit:   30000000,
+		Difficulty: big.NewInt(1016),
+		Alloc:      map[common.Address]GenesisAccount{},
+	}
 }
 
+func DefaultGwangjuGenesisBlock() *Genesis {
+	return &Genesis{
+		Config:     params.GwangjuChainConfig,
+		Nonce:      10395,
+		Timestamp:  1689649200,
+		ExtraData:  []byte("Worldland Gwnagju!"),
+		GasLimit:   30000000,
+		Difficulty: big.NewInt(1016),
+		Alloc:      map[common.Address]GenesisAccount{},
+	}
+}
+
+/*
 func DefaultGwangjuGenesisBlock() *Genesis {
 	return &Genesis{
 		Config:     params.GwangjuChainConfig,
@@ -912,7 +937,7 @@ func DefaultGwangjuGenesisBlock() *Genesis {
 		ParentHash: common.HexToHash("0x0000000000000000000000000000000000000000000000000000000000000000"),
 		Alloc:      map[common.Address]GenesisAccount{},
 	}
-}
+}*/
 
 // DeveloperGenesisBlock returns the 'geth --dev' genesis block.
 func DeveloperGenesisBlock(period uint64, gasLimit uint64, faucet common.Address) *Genesis {
