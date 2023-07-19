@@ -238,8 +238,8 @@ func MakeDecision_Seoul(header *types.Header, colInRow [][]int, outputWord []int
 		numOfOnes += val
 	}
 
-	if numOfOnes >= parameters.decisionFrom &&
-		numOfOnes <= parameters.decisionTo {
+	if numOfOnes >= parameters.n/4  &&
+		numOfOnes <= parameters.n/4 * 3 {
 		//fmt.Printf("hamming weight: %v\n", numOfOnes)
 		return true, numOfOnes
 	}
