@@ -38,21 +38,8 @@ var (
 
 	// BlockGenerationTime for Seoul
 	BlockGenerationTimeSeoul = big.NewInt(10) // 36) // 10 ) // 36)
-	SeoulDifficulty          = big.NewInt(1016)
 	SeoulDifficulty   = big.NewInt(1023)
 
-	avgTimeList     = [100]int{targetTime, targetTime, targetTime, targetTime, targetTime, targetTime, targetTime, targetTime, targetTime, targetTime,
-		targetTime, targetTime, targetTime, targetTime, targetTime, targetTime, targetTime, targetTime, targetTime, targetTime,
-		targetTime, targetTime, targetTime, targetTime, targetTime, targetTime, targetTime, targetTime, targetTime, targetTime,
-		targetTime, targetTime, targetTime, targetTime, targetTime, targetTime, targetTime, targetTime, targetTime, targetTime,
-		targetTime, targetTime, targetTime, targetTime, targetTime, targetTime, targetTime, targetTime, targetTime, targetTime,
-		targetTime, targetTime, targetTime, targetTime, targetTime, targetTime, targetTime, targetTime, targetTime, targetTime,
-		targetTime, targetTime, targetTime, targetTime, targetTime, targetTime, targetTime, targetTime, targetTime, targetTime,
-		targetTime, targetTime, targetTime, targetTime, targetTime, targetTime, targetTime, targetTime, targetTime, targetTime,
-		targetTime, targetTime, targetTime, targetTime, targetTime, targetTime, targetTime, targetTime, targetTime, targetTime,
-		targetTime, targetTime, targetTime, targetTime, targetTime, targetTime, targetTime, targetTime, targetTime, targetTime}
-
-	
 	//initLevel int = 10
 	minLevel  int = 10
 	diff_interval = 100
