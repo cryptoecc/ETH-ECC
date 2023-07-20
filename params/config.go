@@ -645,12 +645,12 @@ func (c *ChainConfig) String() string {
 	default:
 		banner += "Consensus: unknown\n"
 	}
-	banner += "\n"
+	//banner += "\n"
 
 	// Create a list of forks with a short description of them. Forks that only
 	// makes sense for mainnet should be optional at printing to avoid bloating
 	// the output for testnets and private networks.
-	banner += "Pre-Merge hard forks:\n"
+	/*banner += "Hard forks:\n"
 	banner += fmt.Sprintf(" - Homestead:                   %-8v (https://github.com/ethereum/execution-specs/blob/master/network-upgrades/mainnet-upgrades/homestead.md)\n", c.HomesteadBlock)
 	if c.DAOForkBlock != nil {
 		banner += fmt.Sprintf(" - DAO Fork:                    %-8v (https://github.com/ethereum/execution-specs/blob/master/network-upgrades/mainnet-upgrades/dao-fork.md)\n", c.DAOForkBlock)
@@ -666,7 +666,8 @@ func (c *ChainConfig) String() string {
 		banner += fmt.Sprintf(" - Muir Glacier:                %-8v (https://github.com/ethereum/execution-specs/blob/master/network-upgrades/mainnet-upgrades/muir-glacier.md)\n", c.MuirGlacierBlock)
 	}
 	banner += fmt.Sprintf(" - Berlin:                      %-8v (https://github.com/ethereum/execution-specs/blob/master/network-upgrades/mainnet-upgrades/berlin.md)\n", c.BerlinBlock)
-	banner += fmt.Sprintf(" - London:                      %-8v (https://github.com/ethereum/execution-specs/blob/master/network-upgrades/mainnet-upgrades/london.md)\n", c.LondonBlock)
+	banner += fmt.Sprintf("...\n")
+	banner += fmt.Sprintf(" - London:                      %-8v\n", c.LondonBlock)
 	if c.ArrowGlacierBlock != nil {
 		banner += fmt.Sprintf(" - Arrow Glacier:               %-8v (https://github.com/ethereum/execution-specs/blob/master/network-upgrades/mainnet-upgrades/arrow-glacier.md)\n", c.ArrowGlacierBlock)
 	}
@@ -678,7 +679,8 @@ func (c *ChainConfig) String() string {
 	}
 	if c.CancunBlock != nil {
 		banner += fmt.Sprintf(" - Cancun:                      %-8v\n", c.CancunBlock)
-	}
+	}*/
+	/*
 	if c.WorldlandBlock != nil {
 		banner += fmt.Sprintf(" - Worldland:                   %-8v\n", c.WorldlandBlock)
 	}
@@ -686,7 +688,7 @@ func (c *ChainConfig) String() string {
 		banner += fmt.Sprintf(" - Seoul:                       %-8v\n", c.SeoulBlock)
 	}
 	banner += "\n"
-
+    */
 	// Add a special section for the merge as it's non-obvious
 	/*if c.TerminalTotalDifficulty == nil {
 		banner += "The Merge is not yet available for this network!\n"
