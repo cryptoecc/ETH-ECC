@@ -39,7 +39,7 @@ var (
 	// BlockGenerationTime for Seoul
 	targetTime      int = 10
 	BlockGenerationTimeSeoul = big.NewInt(10) // 36) // 10 ) // 36)
-	SeoulDifficulty   = big.NewInt(1016)
+	SeoulDifficulty   = big.NewInt(1023)
 
 	avgTimeList     = [100]int{targetTime, targetTime, targetTime, targetTime, targetTime, targetTime, targetTime, targetTime, targetTime, targetTime,
 		targetTime, targetTime, targetTime, targetTime, targetTime, targetTime, targetTime, targetTime, targetTime, targetTime,

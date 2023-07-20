@@ -680,10 +680,10 @@ func (c *ChainConfig) String() string {
 		banner += fmt.Sprintf(" - Cancun:                      %-8v\n", c.CancunBlock)
 	}
 	if c.WorldlandBlock != nil {
-		banner += fmt.Sprintf(" - Worldland:                      %-8v\n", c.WorldlandBlock)
+		banner += fmt.Sprintf(" - Worldland:                   %-8v\n", c.WorldlandBlock)
 	}
 	if c.SeoulBlock != nil {
-		banner += fmt.Sprintf(" - Seoul:                      %-8v\n", c.SeoulBlock)
+		banner += fmt.Sprintf(" - Seoul:                       %-8v\n", c.SeoulBlock)
 	}
 	banner += "\n"
 
