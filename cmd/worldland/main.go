@@ -48,7 +48,7 @@ import (
 )
 
 const (
-	clientIdentifier = "geth" // Client identifier to advertise over the network
+	clientIdentifier = "worldland" // Client identifier to advertise over the network
 )
 
 var (
@@ -318,7 +318,7 @@ func prepare(ctx *cli.Context) {
 `)
 		
 	case !ctx.IsSet(utils.NetworkIdFlag.Name):
-		log.Info("Starting Geth on Worldland Seoul mainnet...")
+		log.Info("Starting clinet on Worldland Seoul mainnet...")
 		ctx.Set(utils.SeoulFlag.Name, strconv.FormatBool(true))
 	}
 	// If we're a full node on mainnet without --cache specified, bump default cache allowance
