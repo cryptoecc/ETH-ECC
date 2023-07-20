@@ -37,8 +37,8 @@ var (
 	Sensitivity         = big.NewInt(8)
 
 	// BlockGenerationTime for Seoul
-	targetTime      int = 10
 	BlockGenerationTimeSeoul = big.NewInt(10) // 36) // 10 ) // 36)
+	SeoulDifficulty          = big.NewInt(1016)
 	SeoulDifficulty   = big.NewInt(1023)
 
 	avgTimeList     = [100]int{targetTime, targetTime, targetTime, targetTime, targetTime, targetTime, targetTime, targetTime, targetTime, targetTime,
@@ -178,53 +178,6 @@ func MakeLDPCDifficultyCalculator_Seoul() func(time uint64, parent *types.Header
 	}
 }
 
-/*func MakeLDPCDifficultyCalculator_Seoul() func(chain consensus.ChainHeaderReader, time uint64, parent *types.Header) *big.Int {
-	return func(chain consensus.ChainHeaderReader, time uint64, parent *types.Header) *big.Int {
-
-		if parent.Number.Uint64() < uint64(diff_interval){
-			return parent.Difficulty
-		}
-
-		bigTime := new(big.Int).SetUint64(time)
-		bigParentTime := new(big.Int).SetUint64(parent.Time)
-		x := new(big.Int)
-		diff := new(big.Int)
-		index := int(parent.Number.Uint64()) % diff_interval
-		
-		if index == 0 { // 난이도 변경 시점인 경우.
-			level := SearchLevel(parent.Difficulty)
-			grandParent := chain.GetHeaderByNumber(parent.Number.Uint64() - uint64(diff_interval))
-			grandParentTime := new(big.Int).SetUint64(grandParent.Time)
-			
-			x.Sub(bigTime, grandParentTime)
-			avgTime := int(x.Uint64()) / 100
-
-			if avgTime < targetTime {
-				level += 1
-			} else {
-				if level > minLevel {
-					level -= 1
-				}
-			}
-			diff = ProbToDifficulty(Table[level].miningProb)
-
-			//테스트 출력.
-			log.Println("Level: ", level)
-			log.Println("Average Time: ", avgTime, "s")
-			log.Println("Time List: ", avgTimeList)
-		} else { // 난이도 변경 시점이 아닌 경우.
-			diff = parent.Difficulty
-		}
-		
-		//분포 측정을 위한 코드.
-		blocktime := new(big.Int)
-		blocktime.Sub(bigTime, bigParentTime)
-		avgTimeList[index] = int(blocktime.Uint64())
-
-		return diff
-	}
-}*/
-
 // SearchLevel return next level by using currentDifficulty of header
 // Type of Ethereum difficulty is *bit.Int so arg is *big.int
 func SearchLevel(difficulty *big.Int) int {
@@ -259,7 +212,7 @@ func SearchLevel_Seoul(difficulty *big.Int) int {
 
 	for {
 		difficultyf.Quo(difficultyf, level_prob)
-		level ++
+		level++
 		if difficultyf.Cmp(big.NewRat(1, 1)) < 0 {
 			break
 		}
@@ -267,6 +220,3 @@ func SearchLevel_Seoul(difficulty *big.Int) int {
 
 	return level
 }
-
-
-
