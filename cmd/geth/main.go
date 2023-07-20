@@ -291,17 +291,17 @@ func prepare(ctx *cli.Context) {
 		log.Info("Starting Geth on Kiln testnet...")
 
 	case ctx.IsSet(utils.LveFlag.Name):
-		log.Info("Starting Geth on Lve ...")
+		log.Info("Starting Worldland on Lve ...")
 
 	case ctx.IsSet(utils.SeoulFlag.Name):
-		log.Info("Starting Geth on Seoul ...")
+		log.Info("Starting Worldland on Seoul ...")
 
 	case ctx.IsSet(utils.GwangjuFlag.Name):
-		log.Info("Starting Geth on Gwangju testnet...")
+		log.Info("Starting Worldland on Gwangju testnet ...")
 
 	case ctx.IsSet(utils.DeveloperFlag.Name):
-		log.Info("Starting Geth in ephemeral dev mode...")
-		log.Warn(`You are running Geth in --dev mode. Please note the following:
+		log.Info("Starting Worldland in ephemeral dev mode...")
+		log.Warn(`You are running Worldland in --dev mode. Please note the following:
 
   1. This mode is only intended for fast, iterative development without assumptions on
      security or persistence.
