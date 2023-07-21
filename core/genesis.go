@@ -904,7 +904,7 @@ func DefaultSeoulGenesisBlock() *Genesis {
 		Timestamp:  1689649200,
 		ExtraData:  []byte("Worldland Seoul!"),
 		GasLimit:   30000000,
-		Difficulty: big.NewInt(1016),
+		Difficulty: big.NewInt(1023),
 		Alloc:      map[common.Address]GenesisAccount{},
 	}
 }
@@ -916,7 +916,7 @@ func DefaultGwangjuGenesisBlock() *Genesis {
 		Timestamp:  1689649200,
 		ExtraData:  []byte("Worldland Gwnagju!"),
 		GasLimit:   30000000,
-		Difficulty: big.NewInt(1016),
+		Difficulty: big.NewInt(1023),
 		Alloc:      map[common.Address]GenesisAccount{},
 	}
 }
