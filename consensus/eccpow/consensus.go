@@ -405,7 +405,6 @@ func (ecc *ECC) verifySeal(chain consensus.ChainHeaderReader, header *types.Head
 		//fmt.Println("Seoul")
 		flag, _, _, digest = VerifyOptimizedDecodingSeoul(header, ecc.SealHash(header).Bytes())
 	} else{
-		fmt.Println("Gwangju")
 		flag, _, _, digest = VerifyOptimizedDecoding(header, ecc.SealHash(header).Bytes())
 	}
 	
