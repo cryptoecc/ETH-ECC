@@ -1,6 +1,0 @@
-=============== Jul 20, 2023 (KST) ===============
-15:47:29.571048 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
-15:47:29.576035 db@open opening
-15:47:29.576179 version@stat F·[] S·0B[] Sc·[]
-15:47:29.577835 db@janitor F·2 G·0
-15:47:29.577846 db@open done T·1.801489ms
