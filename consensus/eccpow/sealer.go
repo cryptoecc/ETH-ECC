@@ -23,7 +23,6 @@ import (
 	"encoding/binary"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"math"
 	"math/big"
 	"math/rand"
@@ -177,12 +176,12 @@ search:
 
 			// Correct nonce found, create a new header with it
 			if flag == true {
-				level := SearchLevel_Seoul(header.Difficulty)
-				fmt.Printf("level: %v\n", level)
-				fmt.Printf("total attempts: %v\n", total_attempts)
-				fmt.Printf("hashrate: %v\n", ecc.Hashrate())
-				fmt.Printf("Codeword found with nonce = %d\n", LDPCNonce)
-				fmt.Printf("Codeword : %d\n", outputWord)
+				//level := SearchLevel_Seoul(header.Difficulty)
+				//fmt.Printf("level: %v\n", level)
+				//fmt.Printf("total attempts: %v\n", total_attempts)
+				//fmt.Printf("hashrate: %v\n", ecc.Hashrate())
+				//fmt.Printf("Codeword found with nonce = %d\n", LDPCNonce)
+				//fmt.Printf("Codeword : %d\n", outputWord)
 
 				header = types.CopyHeader(header)
 				header.MixDigest = common.BytesToHash(digest)
@@ -274,12 +273,12 @@ search:
 				//hashVector := goRoutineHashVector
 				outputWord := goRoutineOutputWord
 
-				level := SearchLevel_Seoul(header.Difficulty)
-				fmt.Printf("level: %v\n", level)
+				//level := SearchLevel_Seoul(header.Difficulty)
+				/*fmt.Printf("level: %v\n", level)
 				fmt.Printf("total attempts: %v\n", total_attempts)
 				fmt.Printf("hashrate: %v\n", ecc.Hashrate())
 				fmt.Printf("Codeword found with nonce = %d\n", nonce)
-				fmt.Printf("Codeword : %d\n", outputWord)
+				fmt.Printf("Codeword : %d\n", outputWord)*/
 
 				header = types.CopyHeader(header)
 				header.CodeLength = uint64(parameters.n)
