@@ -194,7 +194,7 @@ func SearchLevel_Seoul(difficulty *big.Int) int {
 	var level int
 
 	difficultyf := new(big.Rat).SetInt(difficulty)
-	level_prob := big.NewRat(3, 2)
+	level_prob := big.NewRat(29, 20)
 	difficultyf.Quo(difficultyf, new(big.Rat).SetInt(SeoulDifficulty))
 
 	for {
