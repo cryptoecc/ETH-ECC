@@ -79,6 +79,8 @@ var SeoulBootnodes = []string{
 // Gwangju Bootnodes are the enode URLs of the P2P bootstrap nodes running on the
 // Gwangju network.
 var GwangjuBootnodes = []string{
+	"enode://36553e02eb5cb3976b91febb38a7a1c7a247b547006a58de6b60bdb01f447dd19182420771e7e580472a37b1da9e404a723ef5897e2cf2a3b44490fa5d13e9fa@43.200.52.189:30303",
+	"enode://790872321612001846095022238ce9473c8158a13c0fbb5dc7381869945500adcf15b8c31415ddd2d991572bf0af7f4492a65be56e8d2c44de5b461e3306e334@3.36.252.183:30303",
 
 }
 
