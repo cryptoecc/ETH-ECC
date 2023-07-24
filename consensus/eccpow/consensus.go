@@ -42,7 +42,7 @@ var (
 	FrontierBlockReward       = big.NewInt(5e+18) // Block reward in wei for successfully mining a block
 	ByzantiumBlockReward      = big.NewInt(3e+18) // Block reward in wei for successfully mining a block upward from Byzantium
 	ConstantinopleBlockReward = big.NewInt(2e+18) // Block reward in wei for successfully mining a block upward from Constantinople
-	WorldLandBlockReward      = big.NewInt(3e+18) //Block reward in wei for successfully mining a block upward from WorldLand
+	WorldLandBlockReward      = big.NewInt(3333333333333333333) //Block reward in wei for successfully mining a block upward from WorldLand
 	//WorldLandFirstBlockReward = big.NewInt(9e+18) //Block reward in wei for successfully mining a genesisblock upward from WorldLand
 
 	HALVING_INTERVAL  = uint64(6307200) //Block per year * 2year
@@ -505,25 +505,22 @@ func accumulateRewards(config *params.ChainConfig, state *state.StateDB, header 
 			HalvingLevel := (blockHeight - config.WorldlandBlock.Uint64()) / HALVING_INTERVAL
 
 			blockReward.Rsh(blockReward, uint(HalvingLevel))
-			log.Println("halvingblockReward:", blockReward)
 
 		} else if config.IsWorldLandMaturity(header.Number) {
 			blockHeight := header.Number.Uint64()
 			MaturityLevel := (blockHeight - config.HalvingEndTime.Uint64()) / MATURITY_INTERVAL
 			blockReward.Rsh(blockReward, uint(MaxHalving-1))
-			log.Println("maturityblockReward 0:", blockReward)
-			// r is 1.04 currently
+
 			blockReward.Mul(blockReward, SumRewardUntilMaturity)
-			blockReward.Div(blockReward, new(big.Int).SetUint64(MATURITY_INTERVAL)) //Maturity Ineterval, Halving Interval Uint로 할 이유가 있는지?
+			blockReward.Div(blockReward, new(big.Int).SetUint64(MATURITY_INTERVAL)) 
 
 			blockReward.Mul(blockReward, big.NewInt(4))
 			blockReward.Div(blockReward, big.NewInt(100))
-			log.Println("maturityblockReward 1:", blockReward)
+			
 			for i := 0; i < int(MaturityLevel); i++ {
 				blockReward.Mul(blockReward, big.NewInt(104))
 				blockReward.Div(blockReward, big.NewInt(100))
 			}
-			log.Println("maturityblockReward 2:", blockReward)
 		}
 
 		/*if config.IsWorldlandMerge(header.Number) {
