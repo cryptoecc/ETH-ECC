@@ -878,7 +878,7 @@ func DefaultLveGenesisBlock() *Genesis {
 }
 
 func DefaultSeoulGenesisBlock() *Genesis {
-	balanceStr := "15_768_000_000_000_000_000_000_000"
+	balanceStr := "15768000000000000000000000"
 	balance, _ := new(big.Int).SetString(balanceStr, 10)
 	return &Genesis{
 		Config:     params.SeoulChainConfig,
