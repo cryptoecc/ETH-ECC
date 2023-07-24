@@ -146,10 +146,10 @@ func KnownDNSNetwork(genesis common.Hash, protocol string) string {
 		net = "sepolia"
 	case LveGenesisHash:
 		net = "lve"
-	/*case GwangjuGenesisHash:
+	case GwangjuGenesisHash:
 		net = "gwangju"
 	case SeoulGenesisHash:
-		net = "seoul"*/
+		net = "seoul"
 	default:
 		return ""
 	}

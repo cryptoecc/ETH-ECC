@@ -1956,13 +1956,13 @@ func SetEthConfig(ctx *cli.Context, stack *node.Node, cfg *ethconfig.Config) {
 			cfg.NetworkId = 103
 		}
 		cfg.Genesis = core.DefaultSeoulGenesisBlock()
-		//SetDNSDiscoveryDefaults(cfg, params.SeoulGenesisHash)
+		SetDNSDiscoveryDefaults(cfg, params.SeoulGenesisHash)
 	case ctx.Bool(GwangjuFlag.Name):
 		if !ctx.IsSet(NetworkIdFlag.Name) {
 			cfg.NetworkId = 10395
 		}
 		cfg.Genesis = core.DefaultGwangjuGenesisBlock()
-		//SetDNSDiscoveryDefaults(cfg, params.SeoulGenesisHash)
+		SetDNSDiscoveryDefaults(cfg, params.GwangjuGenesisHash)
 	case ctx.Bool(DeveloperFlag.Name):
 		if !ctx.IsSet(NetworkIdFlag.Name) {
 			cfg.NetworkId = 1337
@@ -2218,6 +2218,8 @@ func MakeGenesis(ctx *cli.Context) *core.Genesis {
 		genesis = core.DefaultLveGenesisBlock()
 	case ctx.Bool(SeoulFlag.Name):
 		genesis = core.DefaultSeoulGenesisBlock()
+	case ctx.Bool(GwangjuFlag.Name):
+		genesis = core.DefaultGwangjuGenesisBlock()
 	case ctx.Bool(DeveloperFlag.Name):
 		Fatalf("Developer chains are ephemeral")
 	}
