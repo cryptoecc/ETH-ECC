@@ -125,9 +125,10 @@ type ConsensusAPI struct {
 // NewConsensusAPI creates a new consensus api for the given backend.
 // The underlying blockchain needs to have a valid terminal total difficulty set.
 func NewConsensusAPI(eth *eth.Ethereum) *ConsensusAPI {
+	/*
 	if eth.BlockChain().Config().TerminalTotalDifficulty == nil {
 		log.Warn("Engine API started but chain not configured for merge yet")
-	}
+	}*/
 	api := &ConsensusAPI{
 		eth:               eth,
 		remoteBlocks:      newHeaderQueue(),
