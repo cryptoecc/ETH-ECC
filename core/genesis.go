@@ -162,10 +162,10 @@ func CommitGenesisState(db ethdb.Database, hash common.Hash) error {
 			genesis = DefaultSepoliaGenesisBlock()
 		case params.LveGenesisHash:
 			genesis = DefaultLveGenesisBlock()
-		/*case params.SeoulGenesisHash:
+		case params.SeoulGenesisHash:
 			genesis = DefaultSeoulGenesisBlock()
 		case params.GwangjuGenesisHash:
-			genesis = DefaultGwangjuGenesisBlock()*/
+			genesis = DefaultGwangjuGenesisBlock()
 		}
 		if genesis != nil {
 			alloc = genesis.Alloc
@@ -440,10 +440,10 @@ func (g *Genesis) configOrDefault(ghash common.Hash) *params.ChainConfig {
 		return DefaultKilnGenesisBlock().Config
 	case ghash == params.LveGenesisHash:
 		return params.LveChainConfig
-	/*case ghash == params.SeoulGenesisHash:
+	case ghash == params.SeoulGenesisHash:
 		return params.SeoulChainConfig
 	case ghash == params.GwangjuGenesisHash:
-		return params.GwangjuChainConfig*/
+		return params.GwangjuChainConfig
 	default:
 		return params.AllEthashProtocolChanges
 	}
@@ -877,26 +877,6 @@ func DefaultLveGenesisBlock() *Genesis {
 	}
 }
 
-// DefaultLveGenesisBlock returns the LVE TEST network genesis block.
-/*func DefaultSeoulGenesisBlock() *Genesis {
-	return &Genesis{
-		Config:     params.SeoulChainConfig,
-		Nonce: 0,
-		Timestamp:  1651123670,
-		ExtraData:  hexutil.MustDecode("0x0000000000000000000000000000000000000000000000000000000000000000"),
-		GasLimit:   4700000,
-		Difficulty: big.NewInt(1016),
-		Mixhash:    common.HexToHash("0x0000000000000000000000000000000000000000000000000000000000000000"),
-		Coinbase:   common.HexToAddress("0x0000000000000000000000000000000000000000"),
-		Number:     0,
-		GasUsed:    0,
-		ParentHash: common.HexToHash("0x0000000000000000000000000000000000000000000000000000000000000000"),
-		Alloc: map[common.Address]GenesisAccount{
-			
-		},
-	}
-}*/
-
 func DefaultSeoulGenesisBlock() *Genesis {
 	return &Genesis{
 		Config:     params.SeoulChainConfig,
@@ -905,7 +885,9 @@ func DefaultSeoulGenesisBlock() *Genesis {
 		ExtraData:  []byte("Worldland Seoul!"),
 		GasLimit:   30000000,
 		Difficulty: big.NewInt(1023),
-		Alloc:      map[common.Address]GenesisAccount{},
+		Alloc:      map[common.Address]GenesisAccount{
+			common.BytesToAddress([]byte{1224494954574979926334027900441816021312327669385}): {Balance: big.NewInt(15768000e+18)}
+		},
 	}
 }
 
@@ -917,27 +899,11 @@ func DefaultGwangjuGenesisBlock() *Genesis {
 		ExtraData:  []byte("Worldland Gwnagju!"),
 		GasLimit:   30000000,
 		Difficulty: big.NewInt(1023),
-		Alloc:      map[common.Address]GenesisAccount{},
+		Alloc:      map[common.Address]GenesisAccount{
+			common.BytesToAddress([]byte{1224494954574979926334027900441816021312327669385}): {Balance: big.NewInt(15768000e+18)}
+		},
 	}
 }
-
-/*
-func DefaultGwangjuGenesisBlock() *Genesis {
-	return &Genesis{
-		Config:     params.GwangjuChainConfig,
-		Nonce:      0,
-		Timestamp:  1683184480,
-		ExtraData:  hexutil.MustDecode("0x0000000000000000000000000000000000000000000000000000000000000000"),
-		GasLimit:   4700000,
-		Difficulty: big.NewInt(1253659117),
-		Mixhash:    common.HexToHash("0x0000000000000000000000000000000000000000000000000000000000000000"),
-		Coinbase:   common.HexToAddress("0x0000000000000000000000000000000000000000"),
-		Number:     0,
-		GasUsed:    0,
-		ParentHash: common.HexToHash("0x0000000000000000000000000000000000000000000000000000000000000000"),
-		Alloc:      map[common.Address]GenesisAccount{},
-	}
-}*/
 
 // DeveloperGenesisBlock returns the 'geth --dev' genesis block.
 func DeveloperGenesisBlock(period uint64, gasLimit uint64, faucet common.Address) *Genesis {

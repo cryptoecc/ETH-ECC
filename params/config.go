@@ -35,9 +35,8 @@ var (
 	KilnGenesisHash    = common.HexToHash("0x51c7fe41be669f69c45c33a56982cbde405313342d9e2b00d7c91a7b284dd4f8")
 
 	LveGenesisHash = common.HexToHash("0x7c5cb1a45d2424a2be1155c22979bbe384aff07810260041d5609a87bc3c58cc")
-	//need to update
-	//SeoulGenesisHash = common.HexToHash("0x7c5cb1a45d2424a2be1155c22979bbe384aff07810260041d5609a87bc3c58cc")
-	//GwangjuGenesisHash = common.HexToHash("0xd4e56740f876aef8c010b86a40d5f56745a118d0906a34e69aec8c0db1cb8fa3")
+	SeoulGenesisHash = common.HexToHash("0x610bbaa319f2e7d8d8f5cbf3e59520ac4c44e4121d0afbcd3684b7da43911a4c")
+	GwangjuGenesisHash = common.HexToHash("0xfe081d795797b34d9e59bcc015163a8097e974f765dc9839d3b2eb0bc15371c2")
 )
 
 // TrustedCheckpoints associates each known checkpoint with the genesis hash of
