@@ -6,7 +6,7 @@ import (
 	"math/big"
 	"math/rand"
 
-	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/cryptoecc/ETH-ECC/core/types"
 )
 
 //Parameters for matrix and seed

@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/cryptoecc/ETH-ECC/core/types"
 )
 
 func TestTablePrint(t *testing.T) {

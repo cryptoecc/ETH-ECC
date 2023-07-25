@@ -22,9 +22,9 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/core/rawdb"
-	"github.com/ethereum/go-ethereum/params"
+	"github.com/cryptoecc/ETH-ECC/common"
+	"github.com/cryptoecc/ETH-ECC/core/rawdb"
+	"github.com/cryptoecc/ETH-ECC/params"
 )
 
 // Genesis block for nodes which don't care about the DAO fork (i.e. not configured)

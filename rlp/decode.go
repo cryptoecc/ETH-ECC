@@ -28,7 +28,7 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/ethereum/go-ethereum/rlp/internal/rlpstruct"
+	"github.com/cryptoecc/ETH-ECC/rlp/internal/rlpstruct"
 )
 
 //lint:ignore ST1012 EOL is not an error.

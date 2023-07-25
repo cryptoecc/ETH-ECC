@@ -4,7 +4,7 @@ import (
 	"math"
 	"math/big"
 
-	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/cryptoecc/ETH-ECC/core/types"
 )
 
 /*
@@ -29,7 +29,7 @@ import (
 
 */
 
-// "github.com/ethereum/go-ethereum/consensus/ethash/consensus.go"
+// "github.com/cryptoecc/ETH-ECC/consensus/ethash/consensus.go"
 // Some weird constants to avoid constant memory allocs for them.
 var (
 	MinimumDifficulty   = ProbToDifficulty(Table[0].miningProb)
