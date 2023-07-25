@@ -21,7 +21,7 @@ import (
 	"fmt"
 	"math/big"
 
-	_ "github.com/cryptoecc/ETH-ECC"
+	ethereum "github.com/cryptoecc/ETH-ECC"
 	"github.com/cryptoecc/ETH-ECC/common"
 	"github.com/cryptoecc/ETH-ECC/core/types"
 	"github.com/cryptoecc/ETH-ECC/event"

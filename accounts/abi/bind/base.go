@@ -24,7 +24,7 @@ import (
 	"strings"
 	"sync"
 
-	_ "github.com/cryptoecc/ETH-ECC"
+	ethereum "github.com/cryptoecc/ETH-ECC"
 	"github.com/cryptoecc/ETH-ECC/accounts/abi"
 	"github.com/cryptoecc/ETH-ECC/common"
 	"github.com/cryptoecc/ETH-ECC/core/types"

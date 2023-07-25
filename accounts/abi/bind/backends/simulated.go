@@ -24,6 +24,7 @@ import (
 	"sync"
 	"time"
 
+	ethereum "github.com/cryptoecc/ETH-ECC"
 	"github.com/cryptoecc/ETH-ECC/accounts/abi"
 	"github.com/cryptoecc/ETH-ECC/accounts/abi/bind"
 	"github.com/cryptoecc/ETH-ECC/common"
