@@ -73,7 +73,9 @@ var LveBootnodes = []string{
 // SeoulBootnodes are the enode URLs of the P2P bootstrap nodes running on the
 // Seoul network.
 var SeoulBootnodes = []string{
-
+	"enode://00de00356ccba2b6960fb0fe29d596388494efd4f889772e5b86f45cf52055c343e35daa2a8fe5f02e7c239056ddfb4e143d7488dc0831b00f018f7ce0ddab4b@3.39.197.118:30303",
+	"enode://7b32ddd47f9db43dd660ae3e2cb05ebd36d1092aa1a3ee31a9090c7d459ac26dbc2352693d6217d466ad8dfdf09fe69a48265d2a53a7dc18a931347ad6a481dd@3.36.252.183:30303",
+	"enode://6477bc373216b8a59f59532ae01461f69f6ec88ec5ba81d293026089d973386d02f43004db1db5939532617c3dc20dd1f05c3dbd81c4fb23efedefb6129a1fb9@13.250.246.202:30303",
 }
 
 // Gwangju Bootnodes are the enode URLs of the P2P bootstrap nodes running on the
