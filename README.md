@@ -1,4 +1,6 @@
-# Ethereum Worldland
+# ETH-ECC
+
+Worldland Blockchain node client
 
 # [What is the DeSecure Blockchain?](https://Desecure.org)
 
