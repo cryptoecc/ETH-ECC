@@ -58,17 +58,17 @@ import (
 	"time"
 
 	"github.com/cespare/cp"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/crypto/signify"
-	"github.com/ethereum/go-ethereum/internal/build"
-	"github.com/ethereum/go-ethereum/params"
+	"github.com/cryptoecc/ETH-ECC/common"
+	"github.com/cryptoecc/ETH-ECC/crypto/signify"
+	"github.com/cryptoecc/ETH-ECC/internal/build"
+	"github.com/cryptoecc/ETH-ECC/params"
 )
 
 var (
 	// Files that end up in the geth*.zip archive.
 	gethArchiveFiles = []string{
 		"COPYING",
-		executablePath("geth"),
+		executablePath("worldland"),
 	}
 
 	// Files that end up in the geth-alltools*.zip archive.
@@ -77,7 +77,7 @@ var (
 		executablePath("abigen"),
 		executablePath("bootnode"),
 		executablePath("evm"),
-		executablePath("geth"),
+		executablePath("worldland"),
 		executablePath("puppeth"),
 		executablePath("rlpdump"),
 		executablePath("clef"),
@@ -98,8 +98,8 @@ var (
 			Description: "Developer utility version of the EVM (Ethereum Virtual Machine) that is capable of running bytecode snippets within a configurable environment and execution mode.",
 		},
 		{
-			BinaryName:  "geth",
-			Description: "Ethereum CLI client.",
+			BinaryName:  "worldland",
+			Description: "Worldland CLI client.",
 		},
 		{
 			BinaryName:  "puppeth",
@@ -1029,7 +1029,7 @@ func doAndroidArchive(cmdline []string) {
 	build.MustRun(tc.Go("mod", "download"))
 
 	// Build the Android archive and Maven resources
-	build.MustRun(gomobileTool("bind", "-ldflags", "-s -w", "--target", "android", "--javapkg", "org.ethereum", "-v", "github.com/ethereum/go-ethereum/mobile"))
+	build.MustRun(gomobileTool("bind", "-ldflags", "-s -w", "--target", "android", "--javapkg", "org.ethereum", "-v", "github.com/cryptoecc/ETH-ECC/mobile"))
 
 	if *local {
 		// If we're building locally, copy bundle to build dir and skip Maven
@@ -1154,7 +1154,7 @@ func doXCodeFramework(cmdline []string) {
 	build.MustRun(tc.Install(GOBIN, "golang.org/x/mobile/cmd/gomobile", "golang.org/x/mobile/cmd/gobind"))
 
 	// Build the iOS XCode framework
-	bind := gomobileTool("bind", "-ldflags", "-s -w", "--target", "ios", "-v", "github.com/ethereum/go-ethereum/mobile")
+	bind := gomobileTool("bind", "-ldflags", "-s -w", "--target", "ios", "-v", "github.com/cryptoecc/ETH-ECC/mobile")
 
 	if *local {
 		// If we're building locally, use the build folder and stop afterwards

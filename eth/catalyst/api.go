@@ -26,21 +26,21 @@ import (
 	"sync"
 	"time"
 
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/common/hexutil"
-	"github.com/ethereum/go-ethereum/core/beacon"
-	"github.com/ethereum/go-ethereum/core/rawdb"
-	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/ethereum/go-ethereum/eth"
-	"github.com/ethereum/go-ethereum/eth/downloader"
-	"github.com/ethereum/go-ethereum/log"
-	"github.com/ethereum/go-ethereum/node"
-	"github.com/ethereum/go-ethereum/rpc"
+	"github.com/cryptoecc/ETH-ECC/common"
+	"github.com/cryptoecc/ETH-ECC/common/hexutil"
+	"github.com/cryptoecc/ETH-ECC/core/beacon"
+	"github.com/cryptoecc/ETH-ECC/core/rawdb"
+	"github.com/cryptoecc/ETH-ECC/core/types"
+	"github.com/cryptoecc/ETH-ECC/eth"
+	"github.com/cryptoecc/ETH-ECC/eth/downloader"
+	"github.com/cryptoecc/ETH-ECC/log"
+	"github.com/cryptoecc/ETH-ECC/node"
+	"github.com/cryptoecc/ETH-ECC/rpc"
 )
 
 // Register adds the engine API to the full node.
 func Register(stack *node.Node, backend *eth.Ethereum) error {
-	log.Warn("Engine API enabled", "protocol", "eth")
+	log.Warn("Engine API enabled", "protocol", "worldland")
 	stack.RegisterAPIs([]rpc.API{
 		{
 			Namespace:     "engine",
@@ -125,9 +125,10 @@ type ConsensusAPI struct {
 // NewConsensusAPI creates a new consensus api for the given backend.
 // The underlying blockchain needs to have a valid terminal total difficulty set.
 func NewConsensusAPI(eth *eth.Ethereum) *ConsensusAPI {
+	/*
 	if eth.BlockChain().Config().TerminalTotalDifficulty == nil {
 		log.Warn("Engine API started but chain not configured for merge yet")
-	}
+	}*/
 	api := &ConsensusAPI{
 		eth:               eth,
 		remoteBlocks:      newHeaderQueue(),

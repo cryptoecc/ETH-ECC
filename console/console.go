@@ -29,12 +29,12 @@ import (
 	"sync"
 	"syscall"
 
+	"github.com/cryptoecc/ETH-ECC/console/prompt"
+	"github.com/cryptoecc/ETH-ECC/internal/jsre"
+	"github.com/cryptoecc/ETH-ECC/internal/jsre/deps"
+	"github.com/cryptoecc/ETH-ECC/internal/web3ext"
+	"github.com/cryptoecc/ETH-ECC/rpc"
 	"github.com/dop251/goja"
-	"github.com/ethereum/go-ethereum/console/prompt"
-	"github.com/ethereum/go-ethereum/internal/jsre"
-	"github.com/ethereum/go-ethereum/internal/jsre/deps"
-	"github.com/ethereum/go-ethereum/internal/web3ext"
-	"github.com/ethereum/go-ethereum/rpc"
 	"github.com/mattn/go-colorable"
 	"github.com/peterh/liner"
 )
@@ -313,7 +313,7 @@ func (c *Console) AutoCompleteInput(line string, pos int) (string, []string, str
 // Welcome show summary of current Geth instance and some metadata about the
 // console's available modules.
 func (c *Console) Welcome() {
-	message := "Welcome to the Geth JavaScript console!\n\n"
+	message := "Welcome to the Worldland JavaScript console!\n\n"
 
 	// Print some generic Geth metadata
 	if res, err := c.jsre.Run(`

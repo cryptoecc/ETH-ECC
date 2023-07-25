@@ -24,16 +24,16 @@ import (
 	"math/big"
 	"os"
 
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/common/hexutil"
-	"github.com/ethereum/go-ethereum/common/math"
-	"github.com/ethereum/go-ethereum/consensus/clique"
-	"github.com/ethereum/go-ethereum/consensus/ethash"
-	"github.com/ethereum/go-ethereum/consensus/eccpow"
-	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/ethereum/go-ethereum/crypto"
-	"github.com/ethereum/go-ethereum/log"
-	"github.com/ethereum/go-ethereum/rlp"
+	"github.com/cryptoecc/ETH-ECC/common"
+	"github.com/cryptoecc/ETH-ECC/common/hexutil"
+	"github.com/cryptoecc/ETH-ECC/common/math"
+	"github.com/cryptoecc/ETH-ECC/consensus/clique"
+	"github.com/cryptoecc/ETH-ECC/consensus/eccpow"
+	"github.com/cryptoecc/ETH-ECC/consensus/ethash"
+	"github.com/cryptoecc/ETH-ECC/core/types"
+	"github.com/cryptoecc/ETH-ECC/crypto"
+	"github.com/cryptoecc/ETH-ECC/log"
+	"github.com/cryptoecc/ETH-ECC/rlp"
 	"github.com/urfave/cli/v2"
 )
 
@@ -56,6 +56,7 @@ type header struct {
 	Nonce       *types.BlockNonce `json:"nonce"`
 	BaseFee     *big.Int          `json:"baseFeePerGas" rlp:"optional"`
 	Codeword    []byte            `json:"codeword" rlp:"optional"`
+	CodeLength  uint64            `json:"codelength" rlp:"optional"`
 }
 
 type headerMarshaling struct {
@@ -134,7 +135,6 @@ func (i *bbInput) ToBlock() *types.Block {
 		Extra:       i.Header.Extra,
 		MixDigest:   i.Header.MixDigest,
 		BaseFee:     i.Header.BaseFee,
-		Codeword:    i.Header.Codeword,
 	}
 
 	// Fill optional values.
@@ -159,6 +159,13 @@ func (i *bbInput) ToBlock() *types.Block {
 	if header.Difficulty != nil {
 		header.Difficulty = i.Header.Difficulty
 	}
+	if header.Codeword != nil {
+		header.Codeword = i.Header.Codeword
+	}
+	if header.CodeLength != 0 {
+		header.CodeLength = i.Header.CodeLength
+	}
+
 	return types.NewBlockWithHeader(header).WithBody(i.Txs, i.Ommers)
 }
 

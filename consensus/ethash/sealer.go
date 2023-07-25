@@ -30,10 +30,10 @@ import (
 	"sync"
 	"time"
 
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/common/hexutil"
-	"github.com/ethereum/go-ethereum/consensus"
-	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/cryptoecc/ETH-ECC/common"
+	"github.com/cryptoecc/ETH-ECC/common/hexutil"
+	"github.com/cryptoecc/ETH-ECC/consensus"
+	"github.com/cryptoecc/ETH-ECC/core/types"
 )
 
 const (

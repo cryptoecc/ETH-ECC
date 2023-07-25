@@ -19,9 +19,9 @@ package vm
 import (
 	"sync/atomic"
 
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/ethereum/go-ethereum/params"
+	"github.com/cryptoecc/ETH-ECC/common"
+	"github.com/cryptoecc/ETH-ECC/core/types"
+	"github.com/cryptoecc/ETH-ECC/params"
 	"github.com/holiman/uint256"
 	"golang.org/x/crypto/sha3"
 )

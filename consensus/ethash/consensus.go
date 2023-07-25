@@ -24,16 +24,16 @@ import (
 	"runtime"
 	"time"
 
+	"github.com/cryptoecc/ETH-ECC/common"
+	"github.com/cryptoecc/ETH-ECC/common/math"
+	"github.com/cryptoecc/ETH-ECC/consensus"
+	"github.com/cryptoecc/ETH-ECC/consensus/misc"
+	"github.com/cryptoecc/ETH-ECC/core/state"
+	"github.com/cryptoecc/ETH-ECC/core/types"
+	"github.com/cryptoecc/ETH-ECC/params"
+	"github.com/cryptoecc/ETH-ECC/rlp"
+	"github.com/cryptoecc/ETH-ECC/trie"
 	mapset "github.com/deckarep/golang-set"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/common/math"
-	"github.com/ethereum/go-ethereum/consensus"
-	"github.com/ethereum/go-ethereum/consensus/misc"
-	"github.com/ethereum/go-ethereum/core/state"
-	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/ethereum/go-ethereum/params"
-	"github.com/ethereum/go-ethereum/rlp"
-	"github.com/ethereum/go-ethereum/trie"
 	"golang.org/x/crypto/sha3"
 )
 
@@ -283,7 +283,7 @@ func (ethash *Ethash) verifyHeader(chain consensus.ChainHeaderReader, header, pa
 	expected := ethash.CalcDifficulty(chain, header.Time, parent)
 
 	if expected.Cmp(header.Difficulty) != 0 {
-		return fmt.Errorf("invalid difficulty: have %v, want %v", header.Difficulty, expected)
+		return fmt.Errorf("invalid ethash difficulty: have %v, want %v", header.Difficulty, expected)
 	}
 	// Verify that the gas limit is <= 2^63-1
 	if header.GasLimit > params.MaxGasLimit {
@@ -616,7 +616,6 @@ func (ethash *Ethash) FinalizeAndAssemble(chain consensus.ChainHeaderReader, hea
 // SealHash returns the hash of a block prior to it being sealed.
 func (ethash *Ethash) SealHash(header *types.Header) (hash common.Hash) {
 	hasher := sha3.NewLegacyKeccak256()
-
 	enc := []interface{}{
 		header.ParentHash,
 		header.UncleHash,
@@ -635,10 +634,6 @@ func (ethash *Ethash) SealHash(header *types.Header) (hash common.Hash) {
 	if header.BaseFee != nil {
 		enc = append(enc, header.BaseFee)
 	}
-	/*
-	if header.Codeword != nil {
-		enc = append(enc, header.Codeword)
-	}*/
 	rlp.Encode(hasher, enc)
 	hasher.Sum(hash[:0])
 	return hash

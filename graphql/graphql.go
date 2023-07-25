@@ -25,17 +25,17 @@ import (
 	"sort"
 	"strconv"
 
-	"github.com/ethereum/go-ethereum"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/common/hexutil"
-	"github.com/ethereum/go-ethereum/common/math"
-	"github.com/ethereum/go-ethereum/consensus/misc"
-	"github.com/ethereum/go-ethereum/core/state"
-	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/ethereum/go-ethereum/eth/filters"
-	"github.com/ethereum/go-ethereum/internal/ethapi"
-	"github.com/ethereum/go-ethereum/rlp"
-	"github.com/ethereum/go-ethereum/rpc"
+	"github.com/cryptoecc/ETH-ECC"
+	"github.com/cryptoecc/ETH-ECC/common"
+	"github.com/cryptoecc/ETH-ECC/common/hexutil"
+	"github.com/cryptoecc/ETH-ECC/common/math"
+	"github.com/cryptoecc/ETH-ECC/consensus/misc"
+	"github.com/cryptoecc/ETH-ECC/core/state"
+	"github.com/cryptoecc/ETH-ECC/core/types"
+	"github.com/cryptoecc/ETH-ECC/eth/filters"
+	"github.com/cryptoecc/ETH-ECC/internal/ethapi"
+	"github.com/cryptoecc/ETH-ECC/rlp"
+	"github.com/cryptoecc/ETH-ECC/rpc"
 )
 
 var (
@@ -819,6 +819,13 @@ func (b *Block) Codeword(ctx context.Context) (hexutil.Bytes, error) {
 	return header.Codeword, nil
 }
 
+func (b *Block) CodeLength(ctx context.Context) (Long, error) {
+	header, err := b.resolveHeader(ctx)
+	if err != nil {
+		return 0, err
+	}
+	return Long(header.CodeLength), nil
+}
 
 func (b *Block) LogsBloom(ctx context.Context) (hexutil.Bytes, error) {
 	header, err := b.resolveHeader(ctx)

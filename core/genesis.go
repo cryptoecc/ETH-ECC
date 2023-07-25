@@ -25,18 +25,18 @@ import (
 	"math/big"
 	"strings"
 
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/common/hexutil"
-	"github.com/ethereum/go-ethereum/common/math"
-	"github.com/ethereum/go-ethereum/core/rawdb"
-	"github.com/ethereum/go-ethereum/core/state"
-	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/ethereum/go-ethereum/crypto"
-	"github.com/ethereum/go-ethereum/ethdb"
-	"github.com/ethereum/go-ethereum/log"
-	"github.com/ethereum/go-ethereum/params"
-	"github.com/ethereum/go-ethereum/rlp"
-	"github.com/ethereum/go-ethereum/trie"
+	"github.com/cryptoecc/ETH-ECC/common"
+	"github.com/cryptoecc/ETH-ECC/common/hexutil"
+	"github.com/cryptoecc/ETH-ECC/common/math"
+	"github.com/cryptoecc/ETH-ECC/core/rawdb"
+	"github.com/cryptoecc/ETH-ECC/core/state"
+	"github.com/cryptoecc/ETH-ECC/core/types"
+	"github.com/cryptoecc/ETH-ECC/crypto"
+	"github.com/cryptoecc/ETH-ECC/ethdb"
+	"github.com/cryptoecc/ETH-ECC/log"
+	"github.com/cryptoecc/ETH-ECC/params"
+	"github.com/cryptoecc/ETH-ECC/rlp"
+	"github.com/cryptoecc/ETH-ECC/trie"
 )
 
 //go:generate go run github.com/fjl/gencodec -type Genesis -field-override genesisSpecMarshaling -out gen_genesis.go
@@ -162,10 +162,10 @@ func CommitGenesisState(db ethdb.Database, hash common.Hash) error {
 			genesis = DefaultSepoliaGenesisBlock()
 		case params.LveGenesisHash:
 			genesis = DefaultLveGenesisBlock()
-		case params.LvetestGenesisHash:
-			genesis = DefaultLvetestGenesisBlock()
-		case params.WorldlandtestGenesisHash:
-			genesis = DefaultWorldlandtestGenesisBlock()
+		case params.SeoulGenesisHash:
+			genesis = DefaultSeoulGenesisBlock()
+		case params.GwangjuGenesisHash:
+			genesis = DefaultGwangjuGenesisBlock()
 		}
 		if genesis != nil {
 			alloc = genesis.Alloc
@@ -388,6 +388,40 @@ func LoadCliqueConfig(db ethdb.Database, genesis *Genesis) (*params.CliqueConfig
 	return nil, nil
 }
 
+func LoadEccpowConfig(db ethdb.Database, genesis *Genesis) (*params.EccpowConfig, error) {
+	// Load the stored chain config from the database. It can be nil
+	// in case the database is empty. Notably, we only care about the
+	// chain config corresponds to the canonical chain.
+	stored := rawdb.ReadCanonicalHash(db, 0)
+	if stored != (common.Hash{}) {
+		storedcfg := rawdb.ReadChainConfig(db, stored)
+		if storedcfg != nil {
+			return storedcfg.Eccpow, nil
+		}
+	}
+	// Load the clique config from the provided genesis specification.
+	if genesis != nil {
+		// Reject invalid genesis spec without valid chain config
+		if genesis.Config == nil {
+			return nil, errGenesisNoConfig
+		}
+		// If the canonical genesis header is present, but the chain
+		// config is missing(initialize the empty leveldb with an
+		// external ancient chain segment), ensure the provided genesis
+		// is matched.
+		if stored != (common.Hash{}) && genesis.ToBlock().Hash() != stored {
+			return nil, &GenesisMismatchError{stored, genesis.ToBlock().Hash()}
+		}
+		return genesis.Config.Eccpow, nil
+	}
+	// There is no stored chain config and no new config provided,
+	// In this case the default chain config(mainnet) will be used,
+	// namely ethash is the specified consensus engine, return nil.
+	return nil, nil
+}
+
+
+
 func (g *Genesis) configOrDefault(ghash common.Hash) *params.ChainConfig {
 	switch {
 	case g != nil:
@@ -406,10 +440,10 @@ func (g *Genesis) configOrDefault(ghash common.Hash) *params.ChainConfig {
 		return DefaultKilnGenesisBlock().Config
 	case ghash == params.LveGenesisHash:
 		return params.LveChainConfig
-	case ghash == params.LvetestGenesisHash:
-		return params.LvetestChainConfig
-	case ghash == params.WorldlandtestGenesisHash:
-		return params.WorldlandtestChainConfig
+	case ghash == params.SeoulGenesisHash:
+		return params.SeoulChainConfig
+	case ghash == params.GwangjuGenesisHash:
+		return params.GwangjuChainConfig
 	default:
 		return params.AllEthashProtocolChanges
 	}
@@ -571,118 +605,118 @@ func DefaultKilnGenesisBlock() *Genesis {
 func DefaultLveGenesisBlock() *Genesis {
 	return &Genesis{
 		Config:     params.LveChainConfig,
-		Nonce: 0,
+		Nonce:      0,
 		Timestamp:  1651123670,
 		ExtraData:  hexutil.MustDecode("0x0000000000000000000000000000000000000000000000000000000000000000"),
 		GasLimit:   4700000,
 		Difficulty: big.NewInt(524288),
-		Mixhash: common.HexToHash("0x0000000000000000000000000000000000000000000000000000000000000000"),
-		Coinbase: common.HexToAddress("0x0000000000000000000000000000000000000000"),
-		Number: 0,
-		GasUsed: 0,
+		Mixhash:    common.HexToHash("0x0000000000000000000000000000000000000000000000000000000000000000"),
+		Coinbase:   common.HexToAddress("0x0000000000000000000000000000000000000000"),
+		Number:     0,
+		GasUsed:    0,
 		ParentHash: common.HexToHash("0x0000000000000000000000000000000000000000000000000000000000000000"),
 		Alloc: map[common.Address]GenesisAccount{
-			common.BytesToAddress([]byte{0}): {Balance: big.NewInt(1)},
-			common.BytesToAddress([]byte{1}): {Balance: big.NewInt(1)}, // ECRecover
-			common.BytesToAddress([]byte{2}): {Balance: big.NewInt(1)}, // SHA256
-			common.BytesToAddress([]byte{3}): {Balance: big.NewInt(1)}, // RIPEMD
-			common.BytesToAddress([]byte{4}): {Balance: big.NewInt(1)}, // Identity
-			common.BytesToAddress([]byte{5}): {Balance: big.NewInt(1)}, // ModExp
-			common.BytesToAddress([]byte{6}): {Balance: big.NewInt(1)}, // ECAdd
-			common.BytesToAddress([]byte{7}): {Balance: big.NewInt(1)}, // ECScalarMul
-			common.BytesToAddress([]byte{8}): {Balance: big.NewInt(1)}, // ECPairing
-			common.BytesToAddress([]byte{8}): {Balance: big.NewInt(1)},
-			common.BytesToAddress([]byte{9}): {Balance: big.NewInt(1)},
-			common.BytesToAddress([]byte{10}): {Balance: big.NewInt(1)},
-			common.BytesToAddress([]byte{11}): {Balance: big.NewInt(1)},
-			common.BytesToAddress([]byte{12}): {Balance: big.NewInt(1)},
-			common.BytesToAddress([]byte{13}): {Balance: big.NewInt(1)},
-			common.BytesToAddress([]byte{14}): {Balance: big.NewInt(1)},
-			common.BytesToAddress([]byte{15}): {Balance: big.NewInt(1)},
-			common.BytesToAddress([]byte{16}): {Balance: big.NewInt(1)},
-			common.BytesToAddress([]byte{17}): {Balance: big.NewInt(1)},
-			common.BytesToAddress([]byte{18}): {Balance: big.NewInt(1)},
-			common.BytesToAddress([]byte{19}): {Balance: big.NewInt(1)},
-			common.BytesToAddress([]byte{20}): {Balance: big.NewInt(1)},
-			common.BytesToAddress([]byte{21}): {Balance: big.NewInt(1)},
-			common.BytesToAddress([]byte{22}): {Balance: big.NewInt(1)},
-			common.BytesToAddress([]byte{23}): {Balance: big.NewInt(1)},
-			common.BytesToAddress([]byte{24}): {Balance: big.NewInt(1)},
-			common.BytesToAddress([]byte{25}): {Balance: big.NewInt(1)},
-			common.BytesToAddress([]byte{26}): {Balance: big.NewInt(1)},
-			common.BytesToAddress([]byte{27}): {Balance: big.NewInt(1)},
-			common.BytesToAddress([]byte{28}): {Balance: big.NewInt(1)},
-			common.BytesToAddress([]byte{29}): {Balance: big.NewInt(1)},
-			common.BytesToAddress([]byte{30}): {Balance: big.NewInt(1)},
-			common.BytesToAddress([]byte{31}): {Balance: big.NewInt(1)},
-			common.BytesToAddress([]byte{32}): {Balance: big.NewInt(1)},
-			common.BytesToAddress([]byte{33}): {Balance: big.NewInt(1)},
-			common.BytesToAddress([]byte{34}): {Balance: big.NewInt(1)},
-			common.BytesToAddress([]byte{35}): {Balance: big.NewInt(1)},
-			common.BytesToAddress([]byte{36}): {Balance: big.NewInt(1)},
-			common.BytesToAddress([]byte{37}): {Balance: big.NewInt(1)},
-			common.BytesToAddress([]byte{38}): {Balance: big.NewInt(1)},
-			common.BytesToAddress([]byte{39}): {Balance: big.NewInt(1)},
-			common.BytesToAddress([]byte{40}): {Balance: big.NewInt(1)},
-			common.BytesToAddress([]byte{41}): {Balance: big.NewInt(1)},
-			common.BytesToAddress([]byte{42}): {Balance: big.NewInt(1)},
-			common.BytesToAddress([]byte{43}): {Balance: big.NewInt(1)},
-			common.BytesToAddress([]byte{44}): {Balance: big.NewInt(1)},
-			common.BytesToAddress([]byte{45}): {Balance: big.NewInt(1)},
-			common.BytesToAddress([]byte{46}): {Balance: big.NewInt(1)},
-			common.BytesToAddress([]byte{47}): {Balance: big.NewInt(1)},
-			common.BytesToAddress([]byte{48}): {Balance: big.NewInt(1)},
-			common.BytesToAddress([]byte{49}): {Balance: big.NewInt(1)},
-			common.BytesToAddress([]byte{50}): {Balance: big.NewInt(1)},
-			common.BytesToAddress([]byte{51}): {Balance: big.NewInt(1)},
-			common.BytesToAddress([]byte{52}): {Balance: big.NewInt(1)},
-			common.BytesToAddress([]byte{53}): {Balance: big.NewInt(1)},
-			common.BytesToAddress([]byte{54}): {Balance: big.NewInt(1)},
-			common.BytesToAddress([]byte{55}): {Balance: big.NewInt(1)},
-			common.BytesToAddress([]byte{56}): {Balance: big.NewInt(1)},
-			common.BytesToAddress([]byte{57}): {Balance: big.NewInt(1)},
-			common.BytesToAddress([]byte{58}): {Balance: big.NewInt(1)},
-			common.BytesToAddress([]byte{59}): {Balance: big.NewInt(1)},
-			common.BytesToAddress([]byte{60}): {Balance: big.NewInt(1)},
-			common.BytesToAddress([]byte{61}): {Balance: big.NewInt(1)},
-			common.BytesToAddress([]byte{62}): {Balance: big.NewInt(1)},
-			common.BytesToAddress([]byte{63}): {Balance: big.NewInt(1)},
-			common.BytesToAddress([]byte{64}): {Balance: big.NewInt(1)},
-			common.BytesToAddress([]byte{65}): {Balance: big.NewInt(1)},
-			common.BytesToAddress([]byte{66}): {Balance: big.NewInt(1)},
-			common.BytesToAddress([]byte{67}): {Balance: big.NewInt(1)},
-			common.BytesToAddress([]byte{68}): {Balance: big.NewInt(1)},
-			common.BytesToAddress([]byte{69}): {Balance: big.NewInt(1)},
-			common.BytesToAddress([]byte{70}): {Balance: big.NewInt(1)},
-			common.BytesToAddress([]byte{71}): {Balance: big.NewInt(1)},
-			common.BytesToAddress([]byte{72}): {Balance: big.NewInt(1)},
-			common.BytesToAddress([]byte{73}): {Balance: big.NewInt(1)},
-			common.BytesToAddress([]byte{74}): {Balance: big.NewInt(1)},
-			common.BytesToAddress([]byte{75}): {Balance: big.NewInt(1)},
-			common.BytesToAddress([]byte{76}): {Balance: big.NewInt(1)},
-			common.BytesToAddress([]byte{77}): {Balance: big.NewInt(1)},
-			common.BytesToAddress([]byte{78}): {Balance: big.NewInt(1)},
-			common.BytesToAddress([]byte{79}): {Balance: big.NewInt(1)},
-			common.BytesToAddress([]byte{80}): {Balance: big.NewInt(1)},
-			common.BytesToAddress([]byte{81}): {Balance: big.NewInt(1)},
-			common.BytesToAddress([]byte{82}): {Balance: big.NewInt(1)},
-			common.BytesToAddress([]byte{83}): {Balance: big.NewInt(1)},
-			common.BytesToAddress([]byte{84}): {Balance: big.NewInt(1)},
-			common.BytesToAddress([]byte{85}): {Balance: big.NewInt(1)},
-			common.BytesToAddress([]byte{86}): {Balance: big.NewInt(1)},
-			common.BytesToAddress([]byte{87}): {Balance: big.NewInt(1)},
-			common.BytesToAddress([]byte{88}): {Balance: big.NewInt(1)},
-			common.BytesToAddress([]byte{89}): {Balance: big.NewInt(1)},
-			common.BytesToAddress([]byte{90}): {Balance: big.NewInt(1)},
-			common.BytesToAddress([]byte{91}): {Balance: big.NewInt(1)},
-			common.BytesToAddress([]byte{92}): {Balance: big.NewInt(1)},
-			common.BytesToAddress([]byte{93}): {Balance: big.NewInt(1)},
-			common.BytesToAddress([]byte{94}): {Balance: big.NewInt(1)},
-			common.BytesToAddress([]byte{95}): {Balance: big.NewInt(1)},
-			common.BytesToAddress([]byte{96}): {Balance: big.NewInt(1)},
-			common.BytesToAddress([]byte{97}): {Balance: big.NewInt(1)},
-			common.BytesToAddress([]byte{98}): {Balance: big.NewInt(1)},
-			common.BytesToAddress([]byte{99}): {Balance: big.NewInt(1)},
+			common.BytesToAddress([]byte{0}):   {Balance: big.NewInt(1)},
+			common.BytesToAddress([]byte{1}):   {Balance: big.NewInt(1)}, // ECRecover
+			common.BytesToAddress([]byte{2}):   {Balance: big.NewInt(1)}, // SHA256
+			common.BytesToAddress([]byte{3}):   {Balance: big.NewInt(1)}, // RIPEMD
+			common.BytesToAddress([]byte{4}):   {Balance: big.NewInt(1)}, // Identity
+			common.BytesToAddress([]byte{5}):   {Balance: big.NewInt(1)}, // ModExp
+			common.BytesToAddress([]byte{6}):   {Balance: big.NewInt(1)}, // ECAdd
+			common.BytesToAddress([]byte{7}):   {Balance: big.NewInt(1)}, // ECScalarMul
+			common.BytesToAddress([]byte{8}):   {Balance: big.NewInt(1)}, // ECPairing
+			common.BytesToAddress([]byte{8}):   {Balance: big.NewInt(1)},
+			common.BytesToAddress([]byte{9}):   {Balance: big.NewInt(1)},
+			common.BytesToAddress([]byte{10}):  {Balance: big.NewInt(1)},
+			common.BytesToAddress([]byte{11}):  {Balance: big.NewInt(1)},
+			common.BytesToAddress([]byte{12}):  {Balance: big.NewInt(1)},
+			common.BytesToAddress([]byte{13}):  {Balance: big.NewInt(1)},
+			common.BytesToAddress([]byte{14}):  {Balance: big.NewInt(1)},
+			common.BytesToAddress([]byte{15}):  {Balance: big.NewInt(1)},
+			common.BytesToAddress([]byte{16}):  {Balance: big.NewInt(1)},
+			common.BytesToAddress([]byte{17}):  {Balance: big.NewInt(1)},
+			common.BytesToAddress([]byte{18}):  {Balance: big.NewInt(1)},
+			common.BytesToAddress([]byte{19}):  {Balance: big.NewInt(1)},
+			common.BytesToAddress([]byte{20}):  {Balance: big.NewInt(1)},
+			common.BytesToAddress([]byte{21}):  {Balance: big.NewInt(1)},
+			common.BytesToAddress([]byte{22}):  {Balance: big.NewInt(1)},
+			common.BytesToAddress([]byte{23}):  {Balance: big.NewInt(1)},
+			common.BytesToAddress([]byte{24}):  {Balance: big.NewInt(1)},
+			common.BytesToAddress([]byte{25}):  {Balance: big.NewInt(1)},
+			common.BytesToAddress([]byte{26}):  {Balance: big.NewInt(1)},
+			common.BytesToAddress([]byte{27}):  {Balance: big.NewInt(1)},
+			common.BytesToAddress([]byte{28}):  {Balance: big.NewInt(1)},
+			common.BytesToAddress([]byte{29}):  {Balance: big.NewInt(1)},
+			common.BytesToAddress([]byte{30}):  {Balance: big.NewInt(1)},
+			common.BytesToAddress([]byte{31}):  {Balance: big.NewInt(1)},
+			common.BytesToAddress([]byte{32}):  {Balance: big.NewInt(1)},
+			common.BytesToAddress([]byte{33}):  {Balance: big.NewInt(1)},
+			common.BytesToAddress([]byte{34}):  {Balance: big.NewInt(1)},
+			common.BytesToAddress([]byte{35}):  {Balance: big.NewInt(1)},
+			common.BytesToAddress([]byte{36}):  {Balance: big.NewInt(1)},
+			common.BytesToAddress([]byte{37}):  {Balance: big.NewInt(1)},
+			common.BytesToAddress([]byte{38}):  {Balance: big.NewInt(1)},
+			common.BytesToAddress([]byte{39}):  {Balance: big.NewInt(1)},
+			common.BytesToAddress([]byte{40}):  {Balance: big.NewInt(1)},
+			common.BytesToAddress([]byte{41}):  {Balance: big.NewInt(1)},
+			common.BytesToAddress([]byte{42}):  {Balance: big.NewInt(1)},
+			common.BytesToAddress([]byte{43}):  {Balance: big.NewInt(1)},
+			common.BytesToAddress([]byte{44}):  {Balance: big.NewInt(1)},
+			common.BytesToAddress([]byte{45}):  {Balance: big.NewInt(1)},
+			common.BytesToAddress([]byte{46}):  {Balance: big.NewInt(1)},
+			common.BytesToAddress([]byte{47}):  {Balance: big.NewInt(1)},
+			common.BytesToAddress([]byte{48}):  {Balance: big.NewInt(1)},
+			common.BytesToAddress([]byte{49}):  {Balance: big.NewInt(1)},
+			common.BytesToAddress([]byte{50}):  {Balance: big.NewInt(1)},
+			common.BytesToAddress([]byte{51}):  {Balance: big.NewInt(1)},
+			common.BytesToAddress([]byte{52}):  {Balance: big.NewInt(1)},
+			common.BytesToAddress([]byte{53}):  {Balance: big.NewInt(1)},
+			common.BytesToAddress([]byte{54}):  {Balance: big.NewInt(1)},
+			common.BytesToAddress([]byte{55}):  {Balance: big.NewInt(1)},
+			common.BytesToAddress([]byte{56}):  {Balance: big.NewInt(1)},
+			common.BytesToAddress([]byte{57}):  {Balance: big.NewInt(1)},
+			common.BytesToAddress([]byte{58}):  {Balance: big.NewInt(1)},
+			common.BytesToAddress([]byte{59}):  {Balance: big.NewInt(1)},
+			common.BytesToAddress([]byte{60}):  {Balance: big.NewInt(1)},
+			common.BytesToAddress([]byte{61}):  {Balance: big.NewInt(1)},
+			common.BytesToAddress([]byte{62}):  {Balance: big.NewInt(1)},
+			common.BytesToAddress([]byte{63}):  {Balance: big.NewInt(1)},
+			common.BytesToAddress([]byte{64}):  {Balance: big.NewInt(1)},
+			common.BytesToAddress([]byte{65}):  {Balance: big.NewInt(1)},
+			common.BytesToAddress([]byte{66}):  {Balance: big.NewInt(1)},
+			common.BytesToAddress([]byte{67}):  {Balance: big.NewInt(1)},
+			common.BytesToAddress([]byte{68}):  {Balance: big.NewInt(1)},
+			common.BytesToAddress([]byte{69}):  {Balance: big.NewInt(1)},
+			common.BytesToAddress([]byte{70}):  {Balance: big.NewInt(1)},
+			common.BytesToAddress([]byte{71}):  {Balance: big.NewInt(1)},
+			common.BytesToAddress([]byte{72}):  {Balance: big.NewInt(1)},
+			common.BytesToAddress([]byte{73}):  {Balance: big.NewInt(1)},
+			common.BytesToAddress([]byte{74}):  {Balance: big.NewInt(1)},
+			common.BytesToAddress([]byte{75}):  {Balance: big.NewInt(1)},
+			common.BytesToAddress([]byte{76}):  {Balance: big.NewInt(1)},
+			common.BytesToAddress([]byte{77}):  {Balance: big.NewInt(1)},
+			common.BytesToAddress([]byte{78}):  {Balance: big.NewInt(1)},
+			common.BytesToAddress([]byte{79}):  {Balance: big.NewInt(1)},
+			common.BytesToAddress([]byte{80}):  {Balance: big.NewInt(1)},
+			common.BytesToAddress([]byte{81}):  {Balance: big.NewInt(1)},
+			common.BytesToAddress([]byte{82}):  {Balance: big.NewInt(1)},
+			common.BytesToAddress([]byte{83}):  {Balance: big.NewInt(1)},
+			common.BytesToAddress([]byte{84}):  {Balance: big.NewInt(1)},
+			common.BytesToAddress([]byte{85}):  {Balance: big.NewInt(1)},
+			common.BytesToAddress([]byte{86}):  {Balance: big.NewInt(1)},
+			common.BytesToAddress([]byte{87}):  {Balance: big.NewInt(1)},
+			common.BytesToAddress([]byte{88}):  {Balance: big.NewInt(1)},
+			common.BytesToAddress([]byte{89}):  {Balance: big.NewInt(1)},
+			common.BytesToAddress([]byte{90}):  {Balance: big.NewInt(1)},
+			common.BytesToAddress([]byte{91}):  {Balance: big.NewInt(1)},
+			common.BytesToAddress([]byte{92}):  {Balance: big.NewInt(1)},
+			common.BytesToAddress([]byte{93}):  {Balance: big.NewInt(1)},
+			common.BytesToAddress([]byte{94}):  {Balance: big.NewInt(1)},
+			common.BytesToAddress([]byte{95}):  {Balance: big.NewInt(1)},
+			common.BytesToAddress([]byte{96}):  {Balance: big.NewInt(1)},
+			common.BytesToAddress([]byte{97}):  {Balance: big.NewInt(1)},
+			common.BytesToAddress([]byte{98}):  {Balance: big.NewInt(1)},
+			common.BytesToAddress([]byte{99}):  {Balance: big.NewInt(1)},
 			common.BytesToAddress([]byte{100}): {Balance: big.NewInt(1)},
 			common.BytesToAddress([]byte{101}): {Balance: big.NewInt(1)},
 			common.BytesToAddress([]byte{102}): {Balance: big.NewInt(1)},
@@ -843,40 +877,37 @@ func DefaultLveGenesisBlock() *Genesis {
 	}
 }
 
-// DefaultLveGenesisBlock returns the LVE TEST network genesis block.
-func DefaultLvetestGenesisBlock() *Genesis {
+func DefaultSeoulGenesisBlock() *Genesis {
+	balanceStr := "15768000000000000000000000"
+	balance, _ := new(big.Int).SetString(balanceStr, 10)
 	return &Genesis{
-		Config:     params.LvetestChainConfig,
-		Timestamp:  1643853426,
-		ExtraData:  hexutil.MustDecode("0x0000000000000000000000000000000000000000000000000000000000000000"),
-		GasLimit:   4700000,
-		Difficulty: big.NewInt(524288),
+		Config:     params.SeoulChainConfig,
+		Nonce:      103,
+		Timestamp:  1689649200,
+		ExtraData:  []byte("Worldland Seoul"),
+		GasLimit:   30000000,
+		Difficulty: big.NewInt(1023),
 		Alloc: map[common.Address]GenesisAccount{
-			common.BytesToAddress([]byte{1}): {Balance: big.NewInt(1)}, // ECRecover
-			common.BytesToAddress([]byte{2}): {Balance: big.NewInt(1)}, // SHA256
-			common.BytesToAddress([]byte{3}): {Balance: big.NewInt(1)}, // RIPEMD
-			common.BytesToAddress([]byte{4}): {Balance: big.NewInt(1)}, // Identity
-			common.BytesToAddress([]byte{5}): {Balance: big.NewInt(1)}, // ModExp
-			common.BytesToAddress([]byte{6}): {Balance: big.NewInt(1)}, // ECAdd
-			common.BytesToAddress([]byte{7}): {Balance: big.NewInt(1)}, // ECScalarMul
-			common.BytesToAddress([]byte{8}): {Balance: big.NewInt(1)}, // ECPairing
+			common.HexToAddress("0xd67c40b6488032BAC40C781c52E55e2593345689"): { Balance: balance },
 		},
 	}
 }
 
-// DefaultGenesisBlock returns the Ethereum main net genesis block.
-func DefaultWorldlandtestGenesisBlock() *Genesis {
+func DefaultGwangjuGenesisBlock() *Genesis {
+	balanceStr := "15768000000000000000000000"
+	balance, _ := new(big.Int).SetString(balanceStr, 10)
 	return &Genesis{
-		Config:     params.MainnetChainConfig,
-		Nonce:      66,
-		ExtraData:  hexutil.MustDecode("0x11bbe8db4e347b4e8c937c1c8370e4b5ed33adb3db69cbdb7a38e1e50b1b82fa"),
-		GasLimit:   5000,
-		Difficulty: big.NewInt(17179869184),
-		Alloc:      decodePrealloc(mainnetAllocData),
+		Config:     params.GwangjuChainConfig,
+		Nonce:      10395,
+		Timestamp:  1689649200,
+		ExtraData:  []byte("Worldland Gwnagju"),
+		GasLimit:   30000000,
+		Difficulty: big.NewInt(1023),
+		Alloc:      map[common.Address]GenesisAccount{
+			common.HexToAddress("0xd67c40b6488032BAC40C781c52E55e2593345689"): { Balance: balance },
+		},
 	}
 }
-
-
 
 // DeveloperGenesisBlock returns the 'geth --dev' genesis block.
 func DeveloperGenesisBlock(period uint64, gasLimit uint64, faucet common.Address) *Genesis {

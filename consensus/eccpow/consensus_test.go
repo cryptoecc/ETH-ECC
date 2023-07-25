@@ -25,10 +25,10 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/common/math"
-	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/ethereum/go-ethereum/params"
+	"github.com/cryptoecc/ETH-ECC/common"
+	"github.com/cryptoecc/ETH-ECC/common/math"
+	"github.com/cryptoecc/ETH-ECC/core/types"
+	"github.com/cryptoecc/ETH-ECC/params"
 )
 
 type diffTest struct {
@@ -95,7 +95,7 @@ func TestDecodingVerification(t *testing.T) {
 		header.Difficulty = ProbToDifficulty(Table[0].miningProb)
 		hash := ecc.SealHash(header).Bytes()
 
-		hashVector, outputWord, LDPCNonce, digest := RunOptimizedConcurrencyLDPC(header, hash)
+		_, hashVector, outputWord, LDPCNonce, digest := RunOptimizedConcurrencyLDPC(header, hash)
 
 		headerForTest := types.CopyHeader(header)
 		headerForTest.MixDigest = common.BytesToHash(digest)

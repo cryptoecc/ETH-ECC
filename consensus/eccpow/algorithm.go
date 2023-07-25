@@ -2,18 +2,18 @@ package eccpow
 
 import (
 	"encoding/binary"
+	"hash"
 	"math/big"
 	"math/rand"
-	"hash"
 	"sync"
 	"time"
 
-	"github.com/ethereum/go-ethereum/consensus"
-	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/ethereum/go-ethereum/log"
-	"github.com/ethereum/go-ethereum/crypto"
-	"github.com/ethereum/go-ethereum/metrics"
-	"github.com/ethereum/go-ethereum/rpc"
+	"github.com/cryptoecc/ETH-ECC/consensus"
+	"github.com/cryptoecc/ETH-ECC/core/types"
+	"github.com/cryptoecc/ETH-ECC/crypto"
+	"github.com/cryptoecc/ETH-ECC/log"
+	"github.com/cryptoecc/ETH-ECC/metrics"
+	"github.com/cryptoecc/ETH-ECC/rpc"
 	"golang.org/x/crypto/sha3"
 )
 
@@ -38,15 +38,15 @@ type ECC struct {
 	fakeFail  uint64        // Block number which fails PoW check even in fake mode
 	fakeDelay time.Duration // Time delay to sleep for before returning from verify
 
-	lock      sync.Mutex      // Ensures thread safety for the in-memory caches and mining fields
-	closeOnce sync.Once       // Ensures exit channel will not be closed twice.
+	lock      sync.Mutex // Ensures thread safety for the in-memory caches and mining fields
+	closeOnce sync.Once  // Ensures exit channel will not be closed twice.
 }
 
 type Mode uint
 
 const (
-	epochLength        = 30000   // Blocks per epoch
-	ModeNormal Mode = iota
+	epochLength      = 30000 // Blocks per epoch
+	ModeNormal  Mode = iota
 	//ModeShared
 	ModeTest
 	ModeFake
@@ -55,11 +55,11 @@ const (
 
 // Config are the configuration parameters of the ethash.
 type Config struct {
-	PowMode          Mode
+	PowMode Mode
 	// When set, notifications sent by the remote sealer will
 	// be block header JSON objects instead of work package arrays.
 	NotifyFull bool
-	Log log.Logger `toml:"-"`
+	Log        log.Logger `toml:"-"`
 }
 
 // hasher is a repetitive hasher allowing the same hash data structures to be
@@ -68,7 +68,7 @@ type Config struct {
 
 var (
 	two256 = new(big.Int).Exp(big.NewInt(2), big.NewInt(256), big.NewInt(0))
-	
+
 	// sharedECC is a full instance that can be shared between multiple users.
 	sharedECC *ECC
 
@@ -78,7 +78,7 @@ var (
 
 func init() {
 	sharedConfig := Config{
-		PowMode:       ModeNormal,
+		PowMode: ModeNormal,
 	}
 	sharedECC = New(sharedConfig, nil, false)
 }
@@ -118,7 +118,7 @@ func RunOptimizedConcurrencyLDPC(header *types.Header, hash []byte) (bool, []int
 	parameters, _ := setParameters(header)
 	H := generateH(parameters)
 	colInRow, rowInCol := generateQ(parameters, H)
-	
+
 	for i := 0; i < 64; i++ {
 		var goRoutineHashVector []int
 		var goRoutineOutputWord []int
@@ -127,10 +127,57 @@ func RunOptimizedConcurrencyLDPC(header *types.Header, hash []byte) (bool, []int
 		copy(seed, hash)
 		binary.LittleEndian.PutUint64(seed[32:], goRoutineNonce)
 		seed = crypto.Keccak512(seed)
+		//fmt.Printf("nonce: %v\n", seed)
 
 		goRoutineHashVector = generateHv(parameters, seed)
 		goRoutineHashVector, goRoutineOutputWord, _ = OptimizedDecoding(parameters, goRoutineHashVector, H, rowInCol, colInRow)
-		flag = MakeDecision(header, colInRow, goRoutineOutputWord)
+
+		flag, _ = MakeDecision(header, colInRow, goRoutineOutputWord)
+
+		if flag {
+			hashVector = goRoutineHashVector
+			outputWord = goRoutineOutputWord
+			LDPCNonce = goRoutineNonce
+			digest = seed
+			break
+		}
+	}
+	return flag, hashVector, outputWord, LDPCNonce, digest
+}
+
+func RunOptimizedConcurrencyLDPC_Seoul(header *types.Header, hash []byte) (bool, []int, []int, uint64, []byte) {
+	//Need to set difficulty before running LDPC
+	// Number of goroutines : 500, Number of attempts : 50000 Not bad
+
+	var LDPCNonce uint64
+	var hashVector []int
+	var outputWord []int
+	var digest []byte
+	var flag bool
+
+	//var wg sync.WaitGroup
+	//var outerLoopSignal = make(chan struct{})
+	//var innerLoopSignal = make(chan struct{})
+	//var goRoutineSignal = make(chan struct{})
+
+	parameters, _ := setParameters_Seoul(header)
+	H := generateH(parameters)
+	colInRow, rowInCol := generateQ(parameters, H)
+
+	for i := 0; i < 64; i++ {
+		var goRoutineHashVector []int
+		var goRoutineOutputWord []int
+		goRoutineNonce := generateRandomNonce()
+		seed := make([]byte, 40)
+		copy(seed, hash)
+		binary.LittleEndian.PutUint64(seed[32:], goRoutineNonce)
+		seed = crypto.Keccak512(seed)
+		//fmt.Printf("nonce: %v\n", seed)
+
+		goRoutineHashVector = generateHv(parameters, seed)
+		goRoutineHashVector, goRoutineOutputWord, _ = OptimizedDecodingSeoul(parameters, goRoutineHashVector, H, rowInCol, colInRow)
+
+		flag, _ = MakeDecision_Seoul(header, colInRow, goRoutineOutputWord)
 
 		if flag {
 			hashVector = goRoutineHashVector
@@ -144,7 +191,7 @@ func RunOptimizedConcurrencyLDPC(header *types.Header, hash []byte) (bool, []int
 }
 
 //MakeDecision check outputWord is valid or not using colInRow
-func MakeDecision(header *types.Header, colInRow [][]int, outputWord []int) bool {
+func MakeDecision(header *types.Header, colInRow [][]int, outputWord []int) (bool, int) {
 	parameters, difficultyLevel := setParameters(header)
 	for i := 0; i < parameters.m; i++ {
 		sum := 0
@@ -153,7 +200,7 @@ func MakeDecision(header *types.Header, colInRow [][]int, outputWord []int) bool
 			sum = sum + outputWord[colInRow[j][i]]
 		}
 		if sum%2 == 1 {
-			return false
+			return false, -1
 		}
 	}
 
@@ -165,10 +212,39 @@ func MakeDecision(header *types.Header, colInRow [][]int, outputWord []int) bool
 	if numOfOnes >= Table[difficultyLevel].decisionFrom &&
 		numOfOnes <= Table[difficultyLevel].decisionTo &&
 		numOfOnes%Table[difficultyLevel].decisionStep == 0 {
-		return true
+		//fmt.Printf("hamming weight: %v\n", numOfOnes)
+		return true, numOfOnes
 	}
 
-	return false
+	return false, numOfOnes
+}
+
+//MakeDecision check outputWord is valid or not using colInRow
+func MakeDecision_Seoul(header *types.Header, colInRow [][]int, outputWord []int) (bool, int) {
+	parameters, _ := setParameters_Seoul(header)
+	for i := 0; i < parameters.m; i++ {
+		sum := 0
+		for j := 0; j < parameters.wr; j++ {
+			//	fmt.Printf("i : %d, j : %d, m : %d, wr : %d \n", i, j, m, wr)
+			sum = sum + outputWord[colInRow[j][i]]
+		}
+		if sum%2 == 1 {
+			return false, -1
+		}
+	}
+
+	var numOfOnes int
+	for _, val := range outputWord {
+		numOfOnes += val
+	}
+
+	if numOfOnes >= parameters.n/4  &&
+		numOfOnes <= parameters.n/4 * 3 {
+		//fmt.Printf("hamming weight: %v\n", numOfOnes)
+		return true, numOfOnes
+	}
+
+	return false, numOfOnes
 }
 
 //func isRegular(nSize, wCol, wRow int) bool {
@@ -425,7 +501,6 @@ func seedHash(block uint64) []byte {
 	}
 	return seed
 }
-
 
 //// SeedHash is the seed to use for generating a verification cache and the mining
 //// dataset.

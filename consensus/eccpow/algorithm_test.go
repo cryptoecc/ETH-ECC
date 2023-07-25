@@ -4,9 +4,9 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/common/hexutil"
-	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/cryptoecc/ETH-ECC/common"
+	"github.com/cryptoecc/ETH-ECC/common/hexutil"
+	"github.com/cryptoecc/ETH-ECC/core/types"
 )
 
 func TestRandomSeed(t *testing.T) {
@@ -42,7 +42,7 @@ func TestLDPC(t *testing.T) {
 	//t.Log(hexutil.Encode(header.ParentHash))
 	header.Difficulty = ProbToDifficulty(Table[0].miningProb)
 	var hash []byte
-	hashVector, outputWord, LDPCNonce, digest := RunOptimizedConcurrencyLDPC(header, hash)
+	_, hashVector, outputWord, LDPCNonce, digest := RunOptimizedConcurrencyLDPC(header, hash)
 
 	t.Logf("Hash vector : %v\n", hashVector)
 	t.Logf("Outputword : %v\n", outputWord)
@@ -62,6 +62,7 @@ func BenchmarkECCPoW(b *testing.B) {
 		RunOptimizedConcurrencyLDPC(header, hash)
 	}
 }
+
 
 func TestHashRate(t *testing.T) {
 	var (

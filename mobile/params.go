@@ -21,9 +21,9 @@ package geth
 import (
 	"encoding/json"
 
-	"github.com/ethereum/go-ethereum/core"
-	"github.com/ethereum/go-ethereum/p2p/enode"
-	"github.com/ethereum/go-ethereum/params"
+	"github.com/cryptoecc/ETH-ECC/core"
+	"github.com/cryptoecc/ETH-ECC/p2p/enode"
+	"github.com/cryptoecc/ETH-ECC/params"
 )
 
 // MainnetGenesis returns the JSON spec to use for the main Ethereum network. It
@@ -77,17 +77,18 @@ func LveGenesis() string {
 	return string(enc)
 }
 
-// LvetestGenesis returns the JSON spec to use for the LVE TEST network
-func LvetestGenesis() string {
-	enc, err := json.Marshal(core.DefaultLvetestGenesisBlock())
+// SeoulGenesis returns the JSON spec to use for the LVE TEST network
+func SeoulGenesis() string {
+	enc, err := json.Marshal(core.DefaultSeoulGenesisBlock())
 	if err != nil {
 		panic(err)
 	}
 	return string(enc)
 }
 
-func WorldlandtestGenesis() string {
-	enc, err := json.Marshal(core.DefaultWorldlandtestGenesisBlock())
+// GwangjuGenesis returns the JSON spec to use for the LVE TEST network
+func GwangjuGenesis() string {
+	enc, err := json.Marshal(core.DefaultGwangjuGenesisBlock())
 	if err != nil {
 		panic(err)
 	}

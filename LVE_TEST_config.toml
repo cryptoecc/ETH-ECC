@@ -3,7 +3,7 @@ NetworkId = 123456
 SyncMode = "full"
 
 [Node]
-DataDir = "/home/ubuntu/SMIN/LVETEST" 
+DataDir = "/home/ubuntu/SMIN/Seoul" 
 
 [Node.P2P]
 MaxPeers = 25

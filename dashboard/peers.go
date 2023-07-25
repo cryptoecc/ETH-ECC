@@ -21,10 +21,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/ethereum/go-ethereum/metrics"
+	"github.com/cryptoecc/ETH-ECC/metrics"
 
-	"github.com/ethereum/go-ethereum/log"
-	"github.com/ethereum/go-ethereum/p2p"
+	"github.com/cryptoecc/ETH-ECC/log"
+	"github.com/cryptoecc/ETH-ECC/p2p"
 )
 
 const (

@@ -24,31 +24,31 @@ import (
 	"strconv"
 	"strings"
 	"time"
-	"github.com/ethereum/go-ethereum/accounts"
-	"github.com/ethereum/go-ethereum/accounts/keystore"
-	"github.com/ethereum/go-ethereum/cmd/utils"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/console/prompt"
-	"github.com/ethereum/go-ethereum/eth"
-	"github.com/ethereum/go-ethereum/eth/downloader"
-	"github.com/ethereum/go-ethereum/ethclient"
-	"github.com/ethereum/go-ethereum/internal/debug"
-	"github.com/ethereum/go-ethereum/internal/ethapi"
-	"github.com/ethereum/go-ethereum/internal/flags"
-	"github.com/ethereum/go-ethereum/log"
-	"github.com/ethereum/go-ethereum/metrics"
-	"github.com/ethereum/go-ethereum/node"
+
+	"github.com/cryptoecc/ETH-ECC/accounts"
+	"github.com/cryptoecc/ETH-ECC/accounts/keystore"
+	"github.com/cryptoecc/ETH-ECC/cmd/utils"
+	"github.com/cryptoecc/ETH-ECC/common"
+	"github.com/cryptoecc/ETH-ECC/console/prompt"
+	"github.com/cryptoecc/ETH-ECC/eth"
+	"github.com/cryptoecc/ETH-ECC/eth/downloader"
+	"github.com/cryptoecc/ETH-ECC/ethclient"
+	"github.com/cryptoecc/ETH-ECC/internal/debug"
+	"github.com/cryptoecc/ETH-ECC/internal/ethapi"
+	"github.com/cryptoecc/ETH-ECC/internal/flags"
+	"github.com/cryptoecc/ETH-ECC/log"
+	"github.com/cryptoecc/ETH-ECC/metrics"
+	"github.com/cryptoecc/ETH-ECC/node"
 
 	// Force-load the tracer engines to trigger registration
-	_ "github.com/ethereum/go-ethereum/eth/tracers/js"
-	_ "github.com/ethereum/go-ethereum/eth/tracers/native"
+	_ "github.com/cryptoecc/ETH-ECC/eth/tracers/js"
+	_ "github.com/cryptoecc/ETH-ECC/eth/tracers/native"
 
 	"github.com/urfave/cli/v2"
-
 )
 
 const (
-	clientIdentifier = "geth" // Client identifier to advertise over the network
+	clientIdentifier = "worldland" // Client identifier to advertise over the network
 )
 
 var (
@@ -275,7 +275,7 @@ func main() {
 func prepare(ctx *cli.Context) {
 	// If we're running a known preset, log it for convenience.
 	switch {
-	case ctx.IsSet(utils.RopstenFlag.Name):
+	/*case ctx.IsSet(utils.RopstenFlag.Name):
 		log.Info("Starting Geth on Ropsten testnet...")
 
 	case ctx.IsSet(utils.RinkebyFlag.Name):
@@ -288,20 +288,20 @@ func prepare(ctx *cli.Context) {
 		log.Info("Starting Geth on Sepolia testnet...")
 
 	case ctx.IsSet(utils.KilnFlag.Name):
-		log.Info("Starting Geth on Kiln testnet...")
+		log.Info("Starting Geth on Kiln testnet...")*/
 
 	case ctx.IsSet(utils.LveFlag.Name):
-		log.Info("Starting Geth on Lve ...")
+		log.Info("Starting Worldland on Lve ...")
 
-	case ctx.IsSet(utils.LvetestFlag.Name):
-		log.Info("Starting Geth on Lve testnet...")
+	case ctx.IsSet(utils.SeoulFlag.Name):
+		log.Info("Starting Worldland on Seoul ...")
 
-	case ctx.IsSet(utils.WorldlandtestFlag.Name):
-		log.Info("Starting Geth on Worldland testnet...")
+	case ctx.IsSet(utils.GwangjuFlag.Name):
+		log.Info("Starting Worldland on Gwangju testnet ...")
 
 	case ctx.IsSet(utils.DeveloperFlag.Name):
-		log.Info("Starting Geth in ephemeral dev mode...")
-		log.Warn(`You are running Geth in --dev mode. Please note the following:
+		log.Info("Starting Worldland in ephemeral dev mode...")
+		log.Warn(`You are running Worldland in --dev mode. Please note the following:
 
   1. This mode is only intended for fast, iterative development without assumptions on
      security or persistence.
@@ -316,24 +316,26 @@ func prepare(ctx *cli.Context) {
   5. Networking is disabled; there is no listen-address, the maximum number of peers is set
      to 0, and discovery is disabled.
 `)
-
+		
 	case !ctx.IsSet(utils.NetworkIdFlag.Name):
-		log.Info("Starting Geth on Ethereum mainnet...")
+		log.Info("Starting clinet on Worldland Seoul mainnet...")
+		ctx.Set(utils.SeoulFlag.Name, strconv.FormatBool(true))
 	}
 	// If we're a full node on mainnet without --cache specified, bump default cache allowance
 	if ctx.String(utils.SyncModeFlag.Name) != "light" && !ctx.IsSet(utils.CacheFlag.Name) && !ctx.IsSet(utils.NetworkIdFlag.Name) {
 		// Make sure we're not on any supported preconfigured testnet either
-		if !ctx.IsSet(utils.RopstenFlag.Name) &&
+		if /*!ctx.IsSet(utils.RopstenFlag.Name) &&
 			!ctx.IsSet(utils.SepoliaFlag.Name) &&
 			!ctx.IsSet(utils.RinkebyFlag.Name) &&
 			!ctx.IsSet(utils.GoerliFlag.Name) &&
-			!ctx.IsSet(utils.KilnFlag.Name) &&
+			!ctx.IsSet(utils.KilnFlag.Name) &&*/
 			!ctx.IsSet(utils.LveFlag.Name) &&
-			!ctx.IsSet(utils.LvetestFlag.Name) &&
-			!ctx.IsSet(utils.WorldlandtestFlag.Name) &&
+			!ctx.IsSet(utils.SeoulFlag.Name) &&
+			!ctx.IsSet(utils.GwangjuFlag.Name) &&
 			!ctx.IsSet(utils.DeveloperFlag.Name) {
 			// Nope, we're really on mainnet. Bump that cache up!
 			log.Info("Bumping default cache on mainnet", "provided", ctx.Int(utils.CacheFlag.Name), "updated", 4096)
+			//ctx.Set(utils.SeoulFlag.Name,"seoul")
 			ctx.Set(utils.CacheFlag.Name, strconv.Itoa(4096))
 		}
 	}
@@ -360,8 +362,8 @@ func geth(ctx *cli.Context) error {
 
 	prepare(ctx)
 	stack, backend := makeFullNode(ctx)
-	defer stack.Close()	
-	startNode( ctx, stack , backend , false )	
+	defer stack.Close()
+	startNode(ctx, stack, backend, false)
 	stack.Wait()
 	return nil
 }
@@ -464,7 +466,7 @@ func startNode(ctx *cli.Context, stack *node.Node, backend ethapi.Backend, isCon
 		}
 	}
 
-} 
+}
 
 // unlockAccounts unlocks any account specifically requested.
 func unlockAccounts(ctx *cli.Context, stack *node.Node) {

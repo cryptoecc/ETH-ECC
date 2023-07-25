@@ -25,10 +25,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/ethereum/go-ethereum/core/forkid"
-	"github.com/ethereum/go-ethereum/p2p/enr"
-	"github.com/ethereum/go-ethereum/params"
-	"github.com/ethereum/go-ethereum/rlp"
+	"github.com/cryptoecc/ETH-ECC/core/forkid"
+	"github.com/cryptoecc/ETH-ECC/p2p/enr"
+	"github.com/cryptoecc/ETH-ECC/params"
+	"github.com/cryptoecc/ETH-ECC/rlp"
 	"github.com/urfave/cli/v2"
 )
 
@@ -239,10 +239,10 @@ func ethFilter(args []string) (nodeFilter, error) {
 		filter = forkid.NewStaticFilter(params.SepoliaChainConfig, params.SepoliaGenesisHash)
 	case "lve":
 		filter = forkid.NewStaticFilter(params.LveChainConfig, params.LveGenesisHash)
-	case "lvetest":
-		filter = forkid.NewStaticFilter(params.LvetestChainConfig, params.LvetestGenesisHash)
-	case "worldlandtest":
-		filter = forkid.NewStaticFilter(params.WorldlandtestChainConfig, params.WorldlandtestGenesisHash)
+	case "seoul":
+		filter = forkid.NewStaticFilter(params.SeoulChainConfig, params.SeoulGenesisHash)
+	case "gwangju":
+		filter = forkid.NewStaticFilter(params.GwangjuChainConfig, params.GwangjuGenesisHash)
 	default:
 		return nil, fmt.Errorf("unknown network %q", args[0])
 	}

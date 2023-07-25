@@ -39,23 +39,23 @@ import (
 	"sync"
 	"time"
 
-	"github.com/ethereum/go-ethereum/accounts"
-	"github.com/ethereum/go-ethereum/accounts/keystore"
-	"github.com/ethereum/go-ethereum/cmd/utils"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/core"
-	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/ethereum/go-ethereum/eth/downloader"
-	"github.com/ethereum/go-ethereum/eth/ethconfig"
-	"github.com/ethereum/go-ethereum/ethclient"
-	"github.com/ethereum/go-ethereum/ethstats"
-	"github.com/ethereum/go-ethereum/les"
-	"github.com/ethereum/go-ethereum/log"
-	"github.com/ethereum/go-ethereum/node"
-	"github.com/ethereum/go-ethereum/p2p"
-	"github.com/ethereum/go-ethereum/p2p/enode"
-	"github.com/ethereum/go-ethereum/p2p/nat"
-	"github.com/ethereum/go-ethereum/params"
+	"github.com/cryptoecc/ETH-ECC/accounts"
+	"github.com/cryptoecc/ETH-ECC/accounts/keystore"
+	"github.com/cryptoecc/ETH-ECC/cmd/utils"
+	"github.com/cryptoecc/ETH-ECC/common"
+	"github.com/cryptoecc/ETH-ECC/core"
+	"github.com/cryptoecc/ETH-ECC/core/types"
+	"github.com/cryptoecc/ETH-ECC/eth/downloader"
+	"github.com/cryptoecc/ETH-ECC/eth/ethconfig"
+	"github.com/cryptoecc/ETH-ECC/ethclient"
+	"github.com/cryptoecc/ETH-ECC/ethstats"
+	"github.com/cryptoecc/ETH-ECC/les"
+	"github.com/cryptoecc/ETH-ECC/log"
+	"github.com/cryptoecc/ETH-ECC/node"
+	"github.com/cryptoecc/ETH-ECC/p2p"
+	"github.com/cryptoecc/ETH-ECC/p2p/enode"
+	"github.com/cryptoecc/ETH-ECC/p2p/nat"
+	"github.com/cryptoecc/ETH-ECC/params"
 	"github.com/gorilla/websocket"
 )
 
@@ -88,9 +88,9 @@ var (
 	rinkebyFlag = flag.Bool("rinkeby", false, "Initializes the faucet with Rinkeby network config")
 	sepoliaFlag = flag.Bool("sepolia", false, "Initializes the faucet with Sepolia network config")
 
-	//lveFlag  = flag.Bool("lve", false, "Initializes the faucet with Lve network config")
-	//lvetestFlag  = flag.Bool("lvetest", false, "Initializes the faucet with Lvetest network config")
-	//WorldlandtestFlag  = flag.Bool("worldlandtest", false, "Initializes the faucet with worldlandtest network config")
+	lveFlag  = flag.Bool("lve", false, "Initializes the faucet with Lve network config")
+	SeoulFlag  = flag.Bool("seoul", false, "Initializes the faucet with Seoul network config")
+	GwangjuFlag  = flag.Bool("gwangju", false, "Initializes the faucet with Gwangju network config")
 )
 
 var (
@@ -470,7 +470,7 @@ func (f *faucet) apiHandler(w http.ResponseWriter, r *http.Request) {
 			id = username
 		default:
 			//lint:ignore ST1005 This error is to be displayed in the browser
-			err = errors.New("Something funky happened, please open an issue at https://github.com/ethereum/go-ethereum/issues")
+			err = errors.New("Something funky happened, please open an issue at https://github.com/cryptoecc/ETH-ECC/issues")
 		}
 		if err != nil {
 			if err = sendError(wsconn, err); err != nil {

@@ -28,13 +28,13 @@ import (
 
 	"net"
 
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/common/hexutil"
-	"github.com/ethereum/go-ethereum/crypto"
-	"github.com/ethereum/go-ethereum/p2p"
-	"github.com/ethereum/go-ethereum/p2p/enode"
-	"github.com/ethereum/go-ethereum/p2p/nat"
-	"github.com/ethereum/go-ethereum/rlp"
+	"github.com/cryptoecc/ETH-ECC/common"
+	"github.com/cryptoecc/ETH-ECC/common/hexutil"
+	"github.com/cryptoecc/ETH-ECC/crypto"
+	"github.com/cryptoecc/ETH-ECC/p2p"
+	"github.com/cryptoecc/ETH-ECC/p2p/enode"
+	"github.com/cryptoecc/ETH-ECC/p2p/nat"
+	"github.com/cryptoecc/ETH-ECC/rlp"
 )
 
 var keys = []string{

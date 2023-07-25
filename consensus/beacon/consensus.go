@@ -21,14 +21,14 @@ import (
 	"fmt"
 	"math/big"
 
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/consensus"
-	"github.com/ethereum/go-ethereum/consensus/misc"
-	"github.com/ethereum/go-ethereum/core/state"
-	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/ethereum/go-ethereum/params"
-	"github.com/ethereum/go-ethereum/rpc"
-	"github.com/ethereum/go-ethereum/trie"
+	"github.com/cryptoecc/ETH-ECC/common"
+	"github.com/cryptoecc/ETH-ECC/consensus"
+	"github.com/cryptoecc/ETH-ECC/consensus/misc"
+	"github.com/cryptoecc/ETH-ECC/core/state"
+	"github.com/cryptoecc/ETH-ECC/core/types"
+	"github.com/cryptoecc/ETH-ECC/params"
+	"github.com/cryptoecc/ETH-ECC/rpc"
+	"github.com/cryptoecc/ETH-ECC/trie"
 )
 
 // Proof-of-stake protocol constants.
@@ -113,8 +113,7 @@ func (beacon *Beacon) VerifyHeader(chain consensus.ChainHeaderReader, header *ty
 // VerifyHeaders expect the headers to be ordered and continuous.
 // have to update
 func (beacon *Beacon) VerifyHeaders(chain consensus.ChainHeaderReader, headers []*types.Header, seals []bool) (chan<- struct{}, <-chan error) {
-		//wordland hardfork
-
+	//wordland hardfork
 	//VerifyHeaders expect the headers to be ordered
 	if !beacon.IsPoSHeader(headers[len(headers)-1]) {
 		if !chain.Config().IsWorldland(headers[len(headers)-1].Number) {
@@ -352,7 +351,7 @@ func (beacon *Beacon) verifyHeader(chain consensus.ChainHeaderReader, header, pa
 	}
 	// Verify the block's difficulty to ensure it's the default constant
 	if beaconDifficulty.Cmp(header.Difficulty) != 0 {
-		return fmt.Errorf("invalid difficulty: have %v, want %v", header.Difficulty, beaconDifficulty)
+		return fmt.Errorf("invalid beacon difficulty: have %v, want %v", header.Difficulty, beaconDifficulty)
 	}
 	// Verify that the gas limit is <= 2^63-1
 	if header.GasLimit > params.MaxGasLimit {

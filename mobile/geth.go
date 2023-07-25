@@ -24,17 +24,17 @@ import (
 	"fmt"
 	"path/filepath"
 
-	"github.com/ethereum/go-ethereum/core"
-	"github.com/ethereum/go-ethereum/eth/downloader"
-	"github.com/ethereum/go-ethereum/eth/ethconfig"
-	"github.com/ethereum/go-ethereum/ethclient"
-	"github.com/ethereum/go-ethereum/ethstats"
-	"github.com/ethereum/go-ethereum/internal/debug"
-	"github.com/ethereum/go-ethereum/les"
-	"github.com/ethereum/go-ethereum/node"
-	"github.com/ethereum/go-ethereum/p2p"
-	"github.com/ethereum/go-ethereum/p2p/nat"
-	"github.com/ethereum/go-ethereum/params"
+	"github.com/cryptoecc/ETH-ECC/core"
+	"github.com/cryptoecc/ETH-ECC/eth/downloader"
+	"github.com/cryptoecc/ETH-ECC/eth/ethconfig"
+	"github.com/cryptoecc/ETH-ECC/ethclient"
+	"github.com/cryptoecc/ETH-ECC/ethstats"
+	"github.com/cryptoecc/ETH-ECC/internal/debug"
+	"github.com/cryptoecc/ETH-ECC/les"
+	"github.com/cryptoecc/ETH-ECC/node"
+	"github.com/cryptoecc/ETH-ECC/p2p"
+	"github.com/cryptoecc/ETH-ECC/p2p/nat"
+	"github.com/cryptoecc/ETH-ECC/params"
 )
 
 // NodeConfig represents the collection of configuration values to fine tune the Geth
@@ -195,19 +195,20 @@ func NewNode(datadir string, config *NodeConfig) (stack *Node, _ error) {
 			}
 		}
 
-		if config.EthereumGenesis == LvetestGenesis() {
-			genesis.Config = params.LvetestChainConfig
+		if config.EthereumGenesis == SeoulGenesis() {
+			genesis.Config = params.SeoulChainConfig
 			if config.EthereumNetworkID == 1 {
-				config.EthereumNetworkID = 12346
+				config.EthereumNetworkID = 103
 			}
 		}
 
-		if config.EthereumGenesis == WorldlandtestGenesis() {
-			genesis.Config = params.WorldlandtestChainConfig
+		if config.EthereumGenesis == GwangjuGenesis() {
+			genesis.Config = params.GwangjuChainConfig
 			if config.EthereumNetworkID == 1 {
-				config.EthereumNetworkID = 10001
+				config.EthereumNetworkID = 10395
 			}
 		}
+
 	}
 	// Register the Ethereum protocol if requested
 	if config.EthereumEnabled {
