@@ -10,7 +10,7 @@ https://camo.githubusercontent.com/915b7be44ada53c290eb157634330494ebe3e30a/6874
 
 ## What is Worldland?
 
-Worldland is an EVM-compatible blockchain that uses [Error-Correction Code Proof-of-Work(ECCPoW)](https://doi.org/10.3390/sym12060988).
+Worldland is an EVM-compatible blockchain that uses [Error-Correction Code Proof-of-Work(ECCPoW)](https://doi.org/10.48550/arXiv.2006.12306).
 
 ## Documentation
 * Worldland Documentation can be found [here](https://docs.worldland.foundation/).
