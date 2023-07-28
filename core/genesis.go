@@ -888,7 +888,7 @@ func DefaultSeoulGenesisBlock() *Genesis {
 		GasLimit:   30000000,
 		Difficulty: big.NewInt(1023),
 		Alloc: map[common.Address]GenesisAccount{
-			common.HexToAddress("0xd67c40b6488032BAC40C781c52E55e2593345689"): { Balance: balance },
+			common.HexToAddress("0x8C98EAeA19F1B9B36af58e7d7E78e0F1df8138f0"): { Balance: balance },
 		},
 	}
 }
@@ -904,7 +904,7 @@ func DefaultGwangjuGenesisBlock() *Genesis {
 		GasLimit:   30000000,
 		Difficulty: big.NewInt(1023),
 		Alloc:      map[common.Address]GenesisAccount{
-			common.HexToAddress("0xd67c40b6488032BAC40C781c52E55e2593345689"): { Balance: balance },
+			common.HexToAddress("0x8C98EAeA19F1B9B36af58e7d7E78e0F1df8138f0"): { Balance: balance },
 		},
 	}
 }

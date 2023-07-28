@@ -983,14 +983,14 @@ func isHalving(HalvingEndTime, head *big.Int) bool {
 	if HalvingEndTime == nil || head == nil {
 		return false
 	}
-	return HalvingEndTime.Cmp(head) > 0
+	return HalvingEndTime.Cmp(head) >= 0
 }
 
 func isMatured(HalvingEndTime, head *big.Int) bool {
 	if HalvingEndTime == nil || head == nil {
 		return false
 	}
-	return HalvingEndTime.Cmp(head) <= 0
+	return HalvingEndTime.Cmp(head) < 0
 }
 
 func configNumEqual(x, y *big.Int) bool {
