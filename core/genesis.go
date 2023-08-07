@@ -883,7 +883,7 @@ func DefaultSeoulGenesisBlock() *Genesis {
 	return &Genesis{
 		Config:     params.SeoulChainConfig,
 		Nonce:      103,
-		Timestamp:  1689649200,
+		Timestamp:  1691449688,
 		ExtraData:  []byte("Worldland Seoul"),
 		GasLimit:   30000000,
 		Difficulty: big.NewInt(1023),
