@@ -1,6 +1,0 @@
-
-slope of index vs some numbers
-(0.498513 - 0.329111) / (23-0) = 0.00736530435
-
-slope of index vs log10( discover probability)
-( 7.828203363-4.511735617 ) / 30  = 0.110548925
