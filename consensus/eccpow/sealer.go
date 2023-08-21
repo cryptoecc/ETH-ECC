@@ -30,7 +30,6 @@ import (
 	"runtime"
 	"sync"
 	"time"
-	"fmt"
 
 	"github.com/cryptoecc/ETH-ECC/common"
 	"github.com/cryptoecc/ETH-ECC/common/hexutil"
