@@ -538,6 +538,9 @@ func (beacon *Beacon) SetThreads(threads int) {
 	if th, ok := beacon.ethone.(threaded); ok {
 		th.SetThreads(threads)
 	}
+	if th, ok := beacon.ethtwo.(threaded); ok {
+		th.SetThreads(threads)
+	}
 }
 
 // IsTTDReached checks if the TotalTerminalDifficulty has been surpassed on the `parentHash` block.

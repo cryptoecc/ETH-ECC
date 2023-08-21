@@ -30,6 +30,7 @@ import (
 	"runtime"
 	"sync"
 	"time"
+	"fmt"
 
 	"github.com/cryptoecc/ETH-ECC/common"
 	"github.com/cryptoecc/ETH-ECC/common/hexutil"
@@ -95,6 +96,7 @@ func (ecc *ECC) Seal(chain consensus.ChainHeaderReader, block *types.Block, resu
 		pend   sync.WaitGroup
 		locals = make(chan *types.Block)
 	)
+	
 	for i := 0; i < threads; i++ {
 		pend.Add(1)
 		go func(id int, nonce uint64) {
