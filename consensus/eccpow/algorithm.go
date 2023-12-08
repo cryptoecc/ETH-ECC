@@ -288,6 +288,7 @@ func MakeDecision_Seoul(header *types.Header, colInRow [][]int, outputWord []int
 // New creates a full sized ethash PoW scheme and starts a background thread for
 // remote mining, also optionally notifying a batch of remote services of new work
 // packages.
+
 func New(config Config, notify []string, noverify bool) *ECC {
 	ecc := &ECC{
 		config:       config,
@@ -299,7 +300,7 @@ func New(config Config, notify []string, noverify bool) *ECC {
 		fetchRateCh:  make(chan chan uint64),
 		submitRateCh: make(chan *hashrate),
 	}
-	ecc.remote = startRemoteSealer(ecc, notify, noverify)
+	//ecc.remote = startRemoteSealer(ecc, notify, noverify)
 	return ecc
 }
 

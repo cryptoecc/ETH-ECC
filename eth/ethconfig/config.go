@@ -228,7 +228,7 @@ func CreateConsensusEngine(stack *node.Node, ethashConfig *ethash.Config, clique
 	if cliqueConfig != nil {
 		engine = clique.New(cliqueConfig, db)
 	} else if eccpowConfig != nil {
-		engine = eccpow.New(eccpow.Config{}, nil, false)
+		engine = eccpow.New(eccpow.Config{}, notify, noverify)
 	} else {
 		switch ethashConfig.PowMode {
 		case ethash.ModeFake:
@@ -254,8 +254,7 @@ func CreateConsensusEngine(stack *node.Node, ethashConfig *ethash.Config, clique
 	}
 	//return engine , add worldland hardfork consensus.
 	
-	return beacon.New(engine, eccpow.New(eccpow.Config{}, nil, false))
-	
+	//return beacon.New(engine, eccpow.New(eccpow.Config{}, nil, false))
 
-	//return beacon.New(engine, nil)
+	return beacon.New(engine)
 }
