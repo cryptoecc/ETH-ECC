@@ -47,7 +47,7 @@ type Mode uint
 const (
 	epochLength      = 30000 // Blocks per epoch
 	ModeNormal  Mode = iota
-	//ModeShared
+	ModeShared
 	ModeTest
 	ModeFake
 	ModeFullFake
@@ -290,6 +290,9 @@ func MakeDecision_Seoul(header *types.Header, colInRow [][]int, outputWord []int
 // packages.
 
 func New(config Config, notify []string, noverify bool) *ECC {
+	if config.Log == nil {
+		config.Log = log.Root()
+	}
 	ecc := &ECC{
 		config:       config,
 		update:       make(chan struct{}),
@@ -300,7 +303,10 @@ func New(config Config, notify []string, noverify bool) *ECC {
 		fetchRateCh:  make(chan chan uint64),
 		submitRateCh: make(chan *hashrate),
 	}
-	//ecc.remote = startRemoteSealer(ecc, notify, noverify)
+	if config.PowMode == ModeShared {
+		ecc.shared = sharedECC
+	}
+	ecc.remote = startRemoteSealer(ecc, notify, noverify)
 	return ecc
 }
 
