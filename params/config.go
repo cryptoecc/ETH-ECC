@@ -338,7 +338,7 @@ var (
 		LondonBlock:                   big.NewInt(0),
 		WorldlandBlock:        	       big.NewInt(0),
 		SeoulBlock:        	           big.NewInt(0),
-		FORKNAMEBlock:               big.NewInt(2000000),
+		FORKNAMEBlock:               big.NewInt(3000000),
 		HalvingEndTime:       		   big.NewInt(25228800),
 		Eccpow: 				       new(EccpowConfig),
 	}
@@ -380,7 +380,7 @@ var (
 		LondonBlock:                   big.NewInt(0),
 		WorldlandBlock:        	       big.NewInt(0),
 		SeoulBlock:        	           big.NewInt(0),
-		FORKNAMEBlock:               big.NewInt(2000000),
+		FORKNAMEBlock:               big.NewInt(3000000),
 		HalvingEndTime:                big.NewInt(25228800),
 		Eccpow: 				       new(EccpowConfig),
 	}
