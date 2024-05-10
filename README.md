@@ -7,6 +7,7 @@ https://camo.githubusercontent.com/915b7be44ada53c290eb157634330494ebe3e30a/6874
 
 > Official Node client of the Worldland blockchain.
 > It is a fork of [ethereum/go-ethereum](https://github.com/ethereum/go-ethereum)
+This repository is no longer maintained. Please visit this repository instead: https://github.com/cryptoecc/WorldLand.
 
 ## What is Worldland?
 
